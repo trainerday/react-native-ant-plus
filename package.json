@@ -1,0 +1,33 @@
+{
+  "name": "react-native-ant-plus",
+  "version": "0.0.1",
+  "description": "An Ant+ module for react native.",
+  "main": "AntPlus",
+  "types": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trainerday/react-native-ant-plus.git"
+  },
+  "keywords": [
+    "react-native",
+    "android",
+    "ios",
+    "ant",
+    "ant+",
+    "weight-scale",
+    "heart-rate",
+    "blood-pressure",
+    "stride-meter",
+    "bike-speed-distance",
+    "multi-device-search"
+  ],
+  "author": {
+    "name": "TrainerDay LLC",
+    "url": "https://trainerday.com"
+  },
+  "bugs": {
+    "url": "https://github.com/trainerday/react-native-ant-plus/issues"
+  },
+  "homepage": "https://github.com/trainerday/react-native-ant-plus#readme",
+  "license": "Apache-2.0"
+}
