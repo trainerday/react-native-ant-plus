@@ -39,7 +39,10 @@
     "heart-rate",
     "multi-device-search"
   ],
-  "repository": "https://github.com/trainerday/react-native-ant-plus",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trainerday/react-native-ant-plus"
+  },
   "author": "TrainerDay LLC <support@trainerday.com> (https://github.com/trainerday)",
   "license": "MIT",
   "bugs": {
