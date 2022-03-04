@@ -11,11 +11,11 @@ npm install react-native-ant-plus
 ## Usage
 
 ```js
-import { multiply } from "react-native-ant-plus";
+import { AntPlus } from "react-native-ant-plus";
 
 // ...
 
-const result = await multiply(3, 7);
+AntPlus.startSearch([], 30)
 ```
 
 ## Contributing
