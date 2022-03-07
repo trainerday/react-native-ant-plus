@@ -2,7 +2,14 @@
 
 An Ant+ module for React Native
 
-## Installation
+The library is in the early stages of development!
+Only the HeartRate sensor is working at the moment.
+
+## Supported Platforms
+
+- Android
+
+# Installation
 
 ```sh
 npm install react-native-ant-plus
