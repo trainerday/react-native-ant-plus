@@ -194,7 +194,7 @@ The searching find a new device.
 
 - `resultID` - `number` - result ID.
 - `describeContents` - `string` - describe contents.
-- `antPlusDeviceNumber` - `number` - the Ant device number.
+- `antDeviceNumber` - `number` - the Ant device number.
 - `antPlusDeviceTypeName` - `string` - the name device type.
 - `antPlusDeviceType` - `number` - the ANT+ Device Type.
 - `deviceDisplayName` - `string` - the user's saved name for the device if it exists in the ANT+ Plugin Service database or a default generated name based on the device number.
@@ -207,6 +207,21 @@ The searching find a new device.
 
 ```js
 AntPlusEmitter.addListener('foundDevice', device => {})
+```
+
+### rssi
+
+The rssi signal while the search is going on.
+
+**Arguments**
+
+- `resultID` - `number` - result ID.
+- `rssi` - `number?` - rssi signal.
+
+**Example**
+
+```js
+AntPlusEmitter.addListener('rssi', device => {})
 ```
 
 ### heartRate

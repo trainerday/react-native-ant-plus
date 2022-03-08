@@ -21,7 +21,7 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
       val device = Arguments.createMap()
       device.putInt("resultID", deviceFound.resultID)
       device.putInt("describeContents", deviceFound.describeContents())
-      device.putInt("antPlusDeviceNumber", deviceFound.antDeviceNumber)
+      device.putInt("antDeviceNumber", deviceFound.antDeviceNumber)
       device.putString("antPlusDeviceTypeName", deviceFound.antDeviceType.toString())
       device.putInt("antPlusDeviceType", deviceFound.antDeviceType.intValue)
       device.putString("deviceDisplayName", deviceFound.deviceDisplayName)

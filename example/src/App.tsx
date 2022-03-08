@@ -6,7 +6,7 @@ import AntPlus, {
   AntPlusDeviceType,
   AntPlusEmitter,
   AntPlusEvent,
-  AntPlusSearchStatus,
+  AntPlusSearchStatus, RssiEvent,
 } from 'react-native-ant-plus'
 
 export default function App() {
@@ -15,7 +15,7 @@ export default function App() {
 
   const startSearch = async () => {
     try {
-      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE], 10, false)
+      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE], 20, true)
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
@@ -29,12 +29,16 @@ export default function App() {
 
   const foundDevice = (device: AntPlusDevice) => {
     setResult(prev => {
-      if (prev.includes(device.antDeviceTypeName)) {
+      if (prev.includes(device.antPlusDeviceTypeName)) {
         return prev
       }
-      return [...prev, device.antDeviceTypeName]
+      return [...prev, device.antPlusDeviceTypeName]
     })
     console.log(device, 'foundDevice')
+  }
+
+  const rssi = (event: RssiEvent) => {
+    console.log(event, 'foundDevice')
   }
 
   React.useEffect(() => {
@@ -44,10 +48,12 @@ export default function App() {
 
     AntPlusEmitter.addListener(AntPlusEvent.searchStatus, searchStatus)
     AntPlusEmitter.addListener(AntPlusEvent.foundDevice, foundDevice)
+    AntPlusEmitter.addListener(AntPlusEvent.rssi, rssi)
 
     return () => {
       AntPlusEmitter.removeListener(AntPlusEvent.searchStatus, searchStatus)
       AntPlusEmitter.removeListener(AntPlusEvent.foundDevice, foundDevice)
+      AntPlusEmitter.removeListener(AntPlusEvent.rssi, rssi)
     }
   }, []);
 

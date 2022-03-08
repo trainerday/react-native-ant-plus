@@ -78,8 +78,8 @@ export enum AntPlusHeartRateEvents {
 
 export interface AntPlusDevice {
   antDeviceNumber: number
-  antDeviceType: AntPlusDeviceType
-  antDeviceTypeName: AntPlusDevicesTypeName
+  antPlusDeviceType: AntPlusDeviceType
+  antPlusDeviceTypeName: AntPlusDevicesTypeName
   describeContents: number
   deviceDisplayName: string
   isAlreadyConnected: boolean
