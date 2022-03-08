@@ -66,7 +66,7 @@ export const RssiSignal = {
   satisfactory: -85,
 }
 
-enum AntPlusHeartRateEvents {
+export enum AntPlusHeartRateEvents {
   CalculatedRrInterval = 'CalculatedRrInterval',
   HeartRateData = 'HeartRateData',
   Page4AddtData = 'Page4AddtData',
