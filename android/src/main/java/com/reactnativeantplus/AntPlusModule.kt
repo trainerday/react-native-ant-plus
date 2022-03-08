@@ -30,8 +30,8 @@ class AntPlusModule(context: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  fun startSearch(deviceTypes: ReadableArray, searchSeconds: Int, promise: Promise) {
-    antPlusSearch.startSearch(deviceTypes, searchSeconds, promise)
+  fun startSearch(deviceTypes: ReadableArray, searchSeconds: Int, allowRssi: Boolean, promise: Promise) {
+    antPlusSearch.startSearch(deviceTypes, searchSeconds, allowRssi, promise)
   }
 
   @ReactMethod

@@ -11,7 +11,6 @@ import java.util.*
 
 class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
   private var context: ReactApplicationContext = context
-  private var antPlus: AntPlusModule = antPlus
   private var search: MultiDeviceSearch? = null
   private var isSearching = false
 
@@ -20,9 +19,9 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
       val device = Arguments.createMap()
       device.putInt("resultID", deviceFound.resultID)
       device.putInt("describeContents", deviceFound.describeContents())
-      device.putInt("antDeviceNumber", deviceFound.antDeviceNumber)
-      device.putString("antDeviceTypeName", deviceFound.antDeviceType.toString())
-      device.putInt("antDeviceType", deviceFound.antDeviceType.intValue)
+      device.putInt("antPlusDeviceNumber", deviceFound.antDeviceNumber)
+      device.putString("antPlusDeviceTypeName", deviceFound.antDeviceType.toString())
+      device.putInt("antPlusDeviceType", deviceFound.antDeviceType.intValue)
       device.putString("deviceDisplayName", deviceFound.deviceDisplayName)
       device.putBoolean("isAlreadyConnected", deviceFound.isAlreadyConnected)
       device.putBoolean("isPreferredDevice", deviceFound.isPreferredDevice)
@@ -40,25 +39,31 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
     }
 
     override fun onSearchStopped(reason: RequestAccessResult) {
+      val map = Arguments.createMap()
+
+      if (reason == RequestAccessResult.USER_CANCELLED) {
+        map.putString("reason", RequestAccessResult.SEARCH_TIMEOUT.toString())
+      } else {
+        map.putString("reason", reason.toString())
+      }
+
       isSearching = false
 
-      val map = Arguments.createMap()
-      map.putBoolean("isSearching", false)
-      map.putString("reason", reason.toString())
+      map.putBoolean("isSearching", isSearching)
       antPlus.sendEvent(AntPlusEvent.searchStatus, map)
     }
   }
 
   private val rssiCallback = RssiCallback { resultId, rssi ->
-    runOnUiThread(Runnable {
+    runOnUiThread {
       val map = Arguments.createMap()
       map.putInt("rssi", rssi)
       map.putInt("resultID", resultId)
       antPlus.sendEvent(AntPlusEvent.rssi, map)
-    })
+    }
   }
 
-  fun startSearch(deviceTypes: ReadableArray, searchSeconds: Int, promise: Promise) {
+  fun startSearch(deviceTypes: ReadableArray, searchSeconds: Int, allowRssi: Boolean, promise: Promise) {
     try {
       if (isSearching) {
         throw Error("The search is on")
@@ -74,7 +79,11 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
         }
       }
 
-      search = MultiDeviceSearch(context, devices, searchCallback, rssiCallback)
+      search = if (allowRssi) {
+        MultiDeviceSearch(context, devices, searchCallback, rssiCallback)
+      } else {
+        MultiDeviceSearch(context, devices, searchCallback)
+      }
 
       if (searchSeconds > 0) {
         val thread: Thread = object : Thread() {
@@ -84,8 +93,8 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
             } catch (ignored: InterruptedException) {
             }
             runOnUiThread {
-              search?.close()
               isSearching = false
+              search?.close()
             }
           }
         }
@@ -94,11 +103,11 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
+    promise.resolve(true)
   }
 
   fun stopSearch(promise: Promise) {
     try {
-      isSearching = false
       search?.close()
       promise.resolve(true)
     } catch (throwable: Throwable) {

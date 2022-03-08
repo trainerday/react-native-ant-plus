@@ -3,7 +3,7 @@ import {NativeEventEmitter, NativeModules} from 'react-native'
 const AntPlusModule = NativeModules.AntPlusModule ? NativeModules.AntPlusModule : null
 export const AntPlusEmitter = new NativeEventEmitter(AntPlusModule)
 
-export enum AntPlusDevicesType {
+export enum AntPlusDeviceType {
   BIKE_POWER = 11,
   CONTROLLABLE_DEVICE = 16,
   FITNESS_EQUIPMENT = 17,
@@ -17,6 +17,15 @@ export enum AntPlusDevicesType {
   BIKE_SPD = 123,
   STRIDE_SDM = 124,
   UNKNOWN = -1,
+}
+
+export enum AntPlusDeviceState {
+  DEAD = -100,
+  CLOSED = 1,
+  SEARCHING = 2,
+  TRACKING = 3,
+  PROCESSING_REQUEST = 300,
+  UNRECOGNIZED = -1,
 }
 
 export enum AntPlusDevicesTypeName {
@@ -57,9 +66,19 @@ export const RssiSignal = {
   satisfactory: -85,
 }
 
+enum AntPlusHeartRateEvents {
+  CalculatedRrInterval = 'CalculatedRrInterval',
+  HeartRateData = 'HeartRateData',
+  Page4AddtData = 'Page4AddtData',
+  CumulativeOperatingTime = 'CumulativeOperatingTime',
+  ManufacturerAndSerial = 'ManufacturerAndSerial',
+  VersionAndModel = 'VersionAndModel',
+  Rssi = 'Rssi',
+}
+
 export interface AntPlusDevice {
   antDeviceNumber: number
-  antDeviceType: AntPlusDevicesType
+  antDeviceType: AntPlusDeviceType
   antDeviceTypeName: AntPlusDevicesTypeName
   describeContents: number
   deviceDisplayName: string
@@ -70,26 +89,52 @@ export interface AntPlusDevice {
   rssi?: number
 }
 
+// class AntPlus {
+//   static async startSearch(antPlusDeviceTypes: AntPlusDeviceType[], seconds: number = 30, allowRssi: boolean = false): Promise<boolean> {
+//     return await AntPlusModule.startSearch(antPlusDeviceTypes, seconds, allowRssi)
+//   }
+//   static async stopSearch(): Promise<boolean> {
+//     return await AntPlusModule.stopSearch()
+//   }
+//   static addListener(eventType: string, listener: (...args: any[]) => any) {
+//     AntPlusEmitter.addListener(eventType, listener)
+//   }
+//   static removeListener(eventType: string, listener: (...args: any[]) => any) {
+//     AntPlusEmitter.removeListener(eventType, listener)
+//   }
+// }
 
-interface AntPlusInterface {
-  startSearch(devices: number[], scanSearch: number): Promise<string>
-
-  stopSearch(): Promise<void>
-
-  connect(antDeviceNumber: number, antDeviceType: AntPlusDevicesType): Promise<any>
-
-  disconnect(antDeviceNumber: number, antDeviceType: AntPlusDevicesType): Promise<void>
-
-  subscribe(antDeviceNumber: number, antDeviceType: AntPlusDevicesType): Promise<void>
+enum AntPlusRequestAccessResult {
+  SUCCESS = 'SUCCESS',
+  USER_CANCELLED = 'USER_CANCELLED',
+  CHANNEL_NOT_AVAILABLE = 'CHANNEL_NOT_AVAILABLE',
+  OTHER_FAILURE = 'OTHER_FAILURE',
+  DEPENDENCY_NOT_INSTALLED = 'DEPENDENCY_NOT_INSTALLED',
+  DEVICE_ALREADY_IN_USE = 'DEVICE_ALREADY_IN_USE',
+  SEARCH_TIMEOUT = 'SEARCH_TIMEOUT',
+  ALREADY_SUBSCRIBED = 'ALREADY_SUBSCRIBED',
+  BAD_PARAMS = 'BAD_PARAMS',
+  ADAPTER_NOT_DETECTED = 'ADAPTER_NOT_DETECTED',
+  UNRECOGNIZED = 'UNRECOGNIZED',
 }
 
-class AntPlus {
-  static startSearch(devices: AntPlusDevicesType[], scanSearch: number = 30, rssi: boolean = false) {
-    AntPlusModule.startSearch(devices, scanSearch, rssi)
-  }
-  static stopSearch() {
-    AntPlusModule.stopSearch()
-  }
+export interface AntPlusSearchStatus {
+  isSearching: boolean
+  reason: AntPlusRequestAccessResult
 }
 
-export default AntPlus
+export interface AntPlusConnect {
+  name: string
+  state: AntPlusDeviceState
+  connected: boolean
+  code: AntPlusRequestAccessResult
+}
+
+interface AntPlus {
+  startSearch: (antPlusDeviceTypes: AntPlusDeviceType[], seconds: number, allowRssi: boolean) => Promise<boolean>
+  stopSearch: () => Promise<boolean>
+  connect: (antPlusDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType) => Promise<AntPlusConnect>
+  disconnect: (antPlusDeviceNumber: number) => Promise<boolean>
+}
+
+export default AntPlusModule as AntPlus

@@ -11,12 +11,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 
-class AntPlusHeartRate(
-  reactContext: ReactApplicationContext,
-  antPlusModule: AntPlusModule,
-  _antDeviceNumber: Int,
-  connectPromise: Promise
-) {
+class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: AntPlusModule, _antDeviceNumber: Int, connectPromise: Promise) {
   private val context: ReactApplicationContext = reactContext
   private val antPlus: AntPlusModule = antPlusModule
   private var heartRate: AntPlusHeartRatePcc? = null
@@ -37,21 +32,13 @@ class AntPlusHeartRate(
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
       when (event) {
-        AntPlusHeartRateEvents.CalculatedRrInterval.toString() -> subscribeCalculatedRrIntervalEvent(
-          isOnlyNewData
-        )
+        AntPlusHeartRateEvents.CalculatedRrInterval.toString() -> subscribeCalculatedRrIntervalEvent(isOnlyNewData)
         AntPlusHeartRateEvents.HeartRateData.toString() -> subscribeHeartRateDataEvent(isOnlyNewData)
         AntPlusHeartRateEvents.Page4AddtData.toString() -> subscribePage4AddtDataEvent(isOnlyNewData)
 
-        AntPlusHeartRateEvents.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTimeEvent(
-          isOnlyNewData
-        )
-        AntPlusHeartRateEvents.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerialEvent(
-          isOnlyNewData
-        )
-        AntPlusHeartRateEvents.VersionAndModel.toString() -> subscribeVersionAndModelEvent(
-          isOnlyNewData
-        )
+        AntPlusHeartRateEvents.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTimeEvent(isOnlyNewData)
+        AntPlusHeartRateEvents.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerialEvent(isOnlyNewData)
+        AntPlusHeartRateEvents.VersionAndModel.toString() -> subscribeVersionAndModelEvent(isOnlyNewData)
         AntPlusHeartRateEvents.Rssi.toString() -> subscribeRssiEvent(isOnlyNewData)
       }
     }
@@ -123,7 +110,7 @@ class AntPlusHeartRate(
       deviceData["cumulativeOperatingTime"] = cumulativeOperatingTime
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusHeartRateEvents.CumulativeOperatingTime.toString())
+      map.putString("event", AntPlusLegacyCommonEvents.CumulativeOperatingTime.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
@@ -171,6 +158,10 @@ class AntPlusHeartRate(
     }
   }
 
+  fun unsubscribeRssiEvent() {
+    heartRate!!.subscribeRssiEvent(null)
+  }
+
   fun subscribeRssiEvent(isOnlyNewData: Boolean) {
     heartRate!!.subscribeRssiEvent { estTimestamp, eventFlags, rssi ->
       if (isOnlyNewData && deviceData["rssi"] == rssi) {
@@ -193,13 +184,13 @@ class AntPlusHeartRate(
       val status = Arguments.createMap()
       status.putString("name", result.deviceName)
       status.putString("state", initialDeviceState.toString())
+      status.putString("code", resultCode.toString())
 
       if (resultCode === RequestAccessResult.SUCCESS) {
         heartRate = result
         status.putBoolean("connected", true)
       } else {
         status.putBoolean("connected", false)
-        status.putString("code", resultCode.toString())
       }
       connectPromise.resolve(status)
     }

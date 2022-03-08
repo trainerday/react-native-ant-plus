@@ -1,25 +1,33 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import AntPlus, {DevicesType, AntPlusEmitter, AntPlusEvent} from 'react-native-ant-plus'
+import AntPlus, {
+  AntPlusDevice,
+  AntPlusDeviceType,
+  AntPlusEmitter,
+  AntPlusEvent,
+  AntPlusSearchStatus,
+} from 'react-native-ant-plus'
 
 export default function App() {
-  const [result, setResult] = React.useState(() => ([]));
+  const [result, setResult] = React.useState<string[]>(() => ([]));
+  const [statusSearch, setStatusSearch] = React.useState(false);
 
   const startSearch = async () => {
     try {
-      const result = await AntPlus?.startSearch([DevicesType.HEARTRATE], 10)
+      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE], 10, false)
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
     }
   }
 
-  const searchStatus = (event) => {
-    console.log(event, 'searchStatus')
+  const searchStatus = (status: AntPlusSearchStatus) => {
+    console.log('status', status)
+    setStatusSearch(status.isSearching)
   }
 
-  const foundDevice = (device) => {
+  const foundDevice = (device: AntPlusDevice) => {
     setResult(prev => {
       if (prev.includes(device.antDeviceTypeName)) {
         return prev
@@ -30,8 +38,6 @@ export default function App() {
   }
 
   React.useEffect(() => {
-    console.log(AntPlus)
-
     if (AntPlus) {
       startSearch()
     }
@@ -47,6 +53,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Text>Searching: {String(statusSearch)}</Text>
       <Text>Result: {result.join(', ')}</Text>
     </View>
   );
