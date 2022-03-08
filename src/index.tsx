@@ -133,8 +133,10 @@ export interface AntPlusConnect {
 interface AntPlus {
   startSearch: (antPlusDeviceTypes: AntPlusDeviceType[], seconds: number, allowRssi: boolean) => Promise<boolean>
   stopSearch: () => Promise<boolean>
-  connect: (antPlusDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType) => Promise<AntPlusConnect>
-  disconnect: (antPlusDeviceNumber: number) => Promise<boolean>
+  connect: (antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType) => Promise<AntPlusConnect>
+  disconnect: (antDeviceNumber: number) => Promise<boolean>
+  subscribe: (antDeviceNumber: number, events: AntPlusHeartRateEvents, isOnlyNewData: boolean) => Promise<boolean>
+  unsubscribe: (antDeviceNumber: number, events: AntPlusHeartRateEvents) => Promise<boolean>
 }
 
 export default AntPlusModule as AntPlus
