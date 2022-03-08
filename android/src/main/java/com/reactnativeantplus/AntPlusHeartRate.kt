@@ -11,7 +11,12 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 
-class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: AntPlusModule, _antDeviceNumber: Int, connectPromise: Promise) {
+class AntPlusHeartRate(
+  reactContext: ReactApplicationContext,
+  antPlusModule: AntPlusModule,
+  _antDeviceNumber: Int,
+  connectPromise: Promise
+) {
   private val context: ReactApplicationContext = reactContext
   private val antPlus: AntPlusModule = antPlusModule
   private var heartRate: AntPlusHeartRatePcc? = null
@@ -35,7 +40,6 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
         AntPlusHeartRateEvents.CalculatedRrInterval.toString() -> subscribeCalculatedRrIntervalEvent(isOnlyNewData)
         AntPlusHeartRateEvents.HeartRateData.toString() -> subscribeHeartRateDataEvent(isOnlyNewData)
         AntPlusHeartRateEvents.Page4AddtData.toString() -> subscribePage4AddtDataEvent(isOnlyNewData)
-
         AntPlusHeartRateEvents.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTimeEvent(isOnlyNewData)
         AntPlusHeartRateEvents.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerialEvent(isOnlyNewData)
         AntPlusHeartRateEvents.VersionAndModel.toString() -> subscribeVersionAndModelEvent(isOnlyNewData)
@@ -44,22 +48,46 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
     }
   }
 
+  fun unsubscribe(events: ReadableArray) {
+    events.toArrayList().forEach { event ->
+      when (event) {
+        AntPlusHeartRateEvents.CalculatedRrInterval.toString() -> unsubscribeCalculatedRrIntervalEvent()
+        AntPlusHeartRateEvents.HeartRateData.toString() -> unsubscribeHeartRateDataEvent()
+        AntPlusHeartRateEvents.Page4AddtData.toString() -> unsubscribePage4AddtDataEvent()
+        AntPlusHeartRateEvents.CumulativeOperatingTime.toString() -> unsubscribeCumulativeOperatingTimeEvent()
+        AntPlusHeartRateEvents.ManufacturerAndSerial.toString() -> unsubscribeManufacturerAndSerialEvent()
+        AntPlusHeartRateEvents.VersionAndModel.toString() -> unsubscribeVersionAndModelEvent()
+        AntPlusHeartRateEvents.Rssi.toString() -> unsubscribeRssiEvent()
+      }
+    }
+  }
+
+  fun unsubscribeCalculatedRrIntervalEvent() {
+    heartRate!!.subscribeCalculatedRrIntervalEvent(null)
+  }
+
   fun subscribeCalculatedRrIntervalEvent(isOnlyNewData: Boolean) {
     heartRate!!.subscribeCalculatedRrIntervalEvent { estTimestamp, eventFlags, rrInterval, flag ->
-      if (isOnlyNewData && deviceData["rrInterval"] == rrInterval) {
+      if (isOnlyNewData && deviceData["rrInterval"] == rrInterval && deviceData["rrFlag"] == flag) {
         return@subscribeCalculatedRrIntervalEvent
       }
 
       deviceData["rrInterval"] = rrInterval
+      deviceData["rrFlag"] = flag
 
       val device = Arguments.createMap()
       device.putString("event", AntPlusHeartRateEvents.CalculatedRrInterval.toString())
       device.putString("eventFlags", eventFlags.toString())
       device.putInt("estTimestamp", estTimestamp.toInt())
       device.putDouble("rrInterval", rrInterval.toDouble())
-      device.putString("flag", flag.toString())
+      device.putString("rrFlag", flag.toString())
       antPlus.sendEvent(AntPlusEvent.heartRate, device)
     }
+  }
+
+
+  fun unsubscribeHeartRateDataEvent() {
+    heartRate!!.subscribeHeartRateDataEvent(null)
   }
 
   fun subscribeHeartRateDataEvent(isOnlyNewData: Boolean) {
@@ -74,12 +102,15 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
       device.putString("event", AntPlusHeartRateEvents.HeartRateData.toString())
       device.putString("eventFlags", eventFlags.toString())
       device.putInt("heartRate", computedHeartRate)
-      device.putInt("deviceNumber", antDeviceNumber)
       device.putInt("heartBeatCount", heartBeatCounter.toInt())
       device.putInt("heartBeatEventTime", heartBeatEventTime.toInt())
       device.putInt("dataState", dataState.intValue)
       antPlus.sendEvent(AntPlusEvent.heartRate, device)
     }
+  }
+
+  fun unsubscribePage4AddtDataEvent() {
+    heartRate!!.subscribePage4AddtDataEvent(null)
   }
 
   fun subscribePage4AddtDataEvent(isOnlyNewData: Boolean) {
@@ -101,6 +132,10 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
     }
   }
 
+  fun unsubscribeCumulativeOperatingTimeEvent() {
+    heartRate!!.subscribeCumulativeOperatingTimeEvent(null)
+  }
+
   fun subscribeCumulativeOperatingTimeEvent(isOnlyNewData: Boolean) {
     heartRate!!.subscribeCumulativeOperatingTimeEvent { estTimestamp, eventFlags, cumulativeOperatingTime ->
       if (isOnlyNewData && deviceData["cumulativeOperatingTime"] == cumulativeOperatingTime) {
@@ -116,6 +151,10 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
       map.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       antPlus.sendEvent(AntPlusEvent.heartRate, map)
     }
+  }
+
+  fun unsubscribeManufacturerAndSerialEvent() {
+    heartRate!!.subscribeManufacturerAndSerialEvent(null)
   }
 
   fun subscribeManufacturerAndSerialEvent(isOnlyNewData: Boolean) {
@@ -135,6 +174,10 @@ class AntPlusHeartRate(reactContext: ReactApplicationContext, antPlusModule: Ant
       map.putInt("serialNumber", serialNumber)
       antPlus.sendEvent(AntPlusEvent.heartRate, map)
     }
+  }
+
+  fun unsubscribeVersionAndModelEvent() {
+    heartRate!!.subscribeVersionAndModelEvent(null)
   }
 
   fun subscribeVersionAndModelEvent(isOnlyNewData: Boolean) {

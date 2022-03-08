@@ -9,10 +9,12 @@ import com.facebook.react.bridge.*
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import java.util.*
 
+
 class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
   private var context: ReactApplicationContext = context
   private var search: MultiDeviceSearch? = null
   private var isSearching = false
+  private val devicesRssi = mutableMapOf<Int, Int>()
 
   private val searchCallback: SearchCallbacks = object : SearchCallbacks {
     override fun onDeviceFound(deviceFound: MultiDeviceSearchResult) {
@@ -26,6 +28,10 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
       device.putBoolean("isAlreadyConnected", deviceFound.isAlreadyConnected)
       device.putBoolean("isPreferredDevice", deviceFound.isPreferredDevice)
       device.putBoolean("isUserRecognizedDevice", deviceFound.isUserRecognizedDevice)
+
+      if (devicesRssi[deviceFound.resultID] != null) {
+        devicesRssi[deviceFound.resultID]?.let { device.putInt("rssi", it) }
+      }
 
       antPlus.sendEvent(AntPlusEvent.foundDevice, device)
     }
@@ -60,6 +66,7 @@ class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
       map.putInt("rssi", rssi)
       map.putInt("resultID", resultId)
       antPlus.sendEvent(AntPlusEvent.rssi, map)
+      devicesRssi[resultId] = rssi
     }
   }
 

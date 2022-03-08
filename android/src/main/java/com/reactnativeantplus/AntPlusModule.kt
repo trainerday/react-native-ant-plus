@@ -30,8 +30,8 @@ class AntPlusModule(context: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  fun startSearch(deviceTypes: ReadableArray, searchSeconds: Int, allowRssi: Boolean, promise: Promise) {
-    antPlusSearch.startSearch(deviceTypes, searchSeconds, allowRssi, promise)
+  fun startSearch(deviceTypes: ReadableArray, scanSeconds: Int, allowRssi: Boolean, promise: Promise) {
+    antPlusSearch.startSearch(deviceTypes, scanSeconds, allowRssi, promise)
   }
 
   @ReactMethod
@@ -52,8 +52,29 @@ class AntPlusModule(context: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  fun subscribe(antDeviceNumber: Int, events: ReadableArray, isOnlyNewData: Boolean) {
-    devices[antDeviceNumber]?.subscribe(events, isOnlyNewData)
+  fun subscribe(antDeviceNumber: Int, events: ReadableArray, isOnlyNewData: Boolean, promise: Promise) {
+    try {
+      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]?.isConnected!!) {
+        throw Error("Device not connected")
+      }
+      devices[antDeviceNumber]?.subscribe(events, isOnlyNewData)
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
+  }
+
+  @ReactMethod
+  fun unsubscribe(antDeviceNumber: Int, events: ReadableArray, promise: Promise) {
+    try {
+      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]?.isConnected!!) {
+        throw Error("Device not connected")
+      }
+      devices[antDeviceNumber]?.unsubscribe(events)
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
   }
 
   @ReactMethod

@@ -15,6 +15,7 @@ class AntPlusDevice(
   private var antDeviceNumber = antDeviceNumber
   private var deviceType: DeviceType = DeviceType.getValueFromInt(deviceTypeNumber)
   private var device: Any? = null
+  var isConnected: Boolean = false
 
   fun connect(promise: Promise) {
     runOnUiThread {
@@ -24,6 +25,7 @@ class AntPlusDevice(
           (device as AntPlusHeartRate).init()
         }
       }
+      isConnected = true
     }
   }
 
@@ -43,6 +45,12 @@ class AntPlusDevice(
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     when (deviceType) {
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).subscribe(events, isOnlyNewData)
+    }
+  }
+
+  fun unsubscribe(events: ReadableArray) {
+    when (deviceType) {
+      DeviceType.HEARTRATE -> (device as AntPlusHeartRate).unsubscribe(events)
     }
   }
 }
