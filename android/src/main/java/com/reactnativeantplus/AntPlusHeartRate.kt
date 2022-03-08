@@ -145,7 +145,7 @@ class AntPlusHeartRate(
       deviceData["cumulativeOperatingTime"] = cumulativeOperatingTime
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusLegacyCommonEvents.CumulativeOperatingTime.toString())
+      map.putString("event", AntPlusHeartRateEvents.CumulativeOperatingTime.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
