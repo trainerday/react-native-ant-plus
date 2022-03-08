@@ -7,8 +7,8 @@ An Ant+ module for React Native
 
 >### Important
 >The library is in the early stages of development!
->
->
+
+
 ### At the moment devices supported:
 - HEARTRATE
 
