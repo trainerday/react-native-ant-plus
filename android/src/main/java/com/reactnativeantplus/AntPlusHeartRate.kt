@@ -10,7 +10,12 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 
-class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlusModule, val antDeviceNumber: Int, private val connectPromise: Promise) {
+class AntPlusHeartRate(
+  val context: ReactApplicationContext,
+  val antPlus: AntPlusModule,
+  val antDeviceNumber: Int,
+  private val connectPromise: Promise
+) {
   private var heartRate: AntPlusHeartRatePcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusHeartRatePcc>? = null
   private val deviceData = HashMap<String, Any>()
@@ -28,13 +33,13 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
       when (event) {
-        AntPlusHeartRateEvent.CalculatedRrInterval.toString() -> subscribeCalculatedRrIntervalEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.HeartRateData.toString() -> subscribeHeartRateDataEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.Page4AddtData.toString() -> subscribePage4AddtDataEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTimeEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerialEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.VersionAndModel.toString() -> subscribeVersionAndModelEvent(isOnlyNewData)
-        AntPlusHeartRateEvent.Rssi.toString() -> subscribeRssiEvent(isOnlyNewData)
+        AntPlusHeartRateEvent.CalculatedRrInterval.toString() -> subscribeCalculatedRrInterval(isOnlyNewData)
+        AntPlusHeartRateEvent.HeartRateData.toString() -> subscribeHeartRateData(isOnlyNewData)
+        AntPlusHeartRateEvent.Page4AddtData.toString() -> subscribePage4AddtData(isOnlyNewData)
+        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTime(isOnlyNewData)
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerial(isOnlyNewData)
+        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> subscribeVersionAndModel(isOnlyNewData)
+        AntPlusLegacyCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }
   }
@@ -42,22 +47,24 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
   fun unsubscribe(events: ReadableArray) {
     events.toArrayList().forEach { event ->
       when (event) {
-        AntPlusHeartRateEvent.CalculatedRrInterval.toString() -> unsubscribeCalculatedRrIntervalEvent()
-        AntPlusHeartRateEvent.HeartRateData.toString() -> unsubscribeHeartRateDataEvent()
-        AntPlusHeartRateEvent.Page4AddtData.toString() -> unsubscribePage4AddtDataEvent()
-        AntPlusHeartRateEvent.CumulativeOperatingTime.toString() -> unsubscribeCumulativeOperatingTimeEvent()
-        AntPlusHeartRateEvent.ManufacturerAndSerial.toString() -> unsubscribeManufacturerAndSerialEvent()
-        AntPlusHeartRateEvent.VersionAndModel.toString() -> unsubscribeVersionAndModelEvent()
-        AntPlusHeartRateEvent.Rssi.toString() -> unsubscribeRssiEvent()
+        AntPlusHeartRateEvent.CalculatedRrInterval.toString() -> unsubscribeCalculatedRrInterval()
+        AntPlusHeartRateEvent.HeartRateData.toString() -> unsubscribeHeartRateData()
+        AntPlusHeartRateEvent.Page4AddtData.toString() -> unsubscribePage4AddtData()
+        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> unsubscribeCumulativeOperatingTime()
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> unsubscribeManufacturerAndSerial()
+        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> unsubscribeVersionAndModel()
+        AntPlusLegacyCommonEvent.Rssi.toString() -> unsubscribeRssi()
       }
     }
   }
 
-  private fun unsubscribeCalculatedRrIntervalEvent() {
+  private fun unsubscribeCalculatedRrInterval() {
     heartRate!!.subscribeCalculatedRrIntervalEvent(null)
+    deviceData.remove("rrInterval")
+    deviceData.remove("rrFlag")
   }
 
-  private fun subscribeCalculatedRrIntervalEvent(isOnlyNewData: Boolean) {
+  private fun subscribeCalculatedRrInterval(isOnlyNewData: Boolean) {
     heartRate!!.subscribeCalculatedRrIntervalEvent { estTimestamp, eventFlags, rrInterval, flag ->
       if (isOnlyNewData && deviceData["rrInterval"] == rrInterval && deviceData["rrFlag"] == flag) {
         return@subscribeCalculatedRrIntervalEvent
@@ -77,11 +84,12 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
   }
 
 
-  private fun unsubscribeHeartRateDataEvent() {
+  private fun unsubscribeHeartRateData() {
     heartRate!!.subscribeHeartRateDataEvent(null)
+    deviceData.remove("heartRate")
   }
 
-  private fun subscribeHeartRateDataEvent(isOnlyNewData: Boolean) {
+  private fun subscribeHeartRateData(isOnlyNewData: Boolean) {
     heartRate!!.subscribeHeartRateDataEvent { estTimestamp, eventFlags, computedHeartRate, heartBeatCounter, heartBeatEventTime, dataState ->
       if (isOnlyNewData && deviceData["heartRate"] == computedHeartRate) {
         return@subscribeHeartRateDataEvent
@@ -100,11 +108,13 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun unsubscribePage4AddtDataEvent() {
+  private fun unsubscribePage4AddtData() {
     heartRate!!.subscribePage4AddtDataEvent(null)
+    deviceData.remove("manufacturerSpecificByte")
+    deviceData.remove("previousHeartBeatEventTime")
   }
 
-  private fun subscribePage4AddtDataEvent(isOnlyNewData: Boolean) {
+  private fun subscribePage4AddtData(isOnlyNewData: Boolean) {
     heartRate!!.subscribePage4AddtDataEvent { estTimestamp, eventFlags, manufacturerSpecificByte, previousHeartBeatEventTime ->
       if (isOnlyNewData && deviceData["manufacturerSpecificByte"] == manufacturerSpecificByte && deviceData["previousHeartBeatEventTime"] == previousHeartBeatEventTime) {
         return@subscribePage4AddtDataEvent
@@ -123,11 +133,12 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun unsubscribeCumulativeOperatingTimeEvent() {
+  private fun unsubscribeCumulativeOperatingTime() {
     heartRate!!.subscribeCumulativeOperatingTimeEvent(null)
+    deviceData.remove("cumulativeOperatingTime")
   }
 
-  private fun subscribeCumulativeOperatingTimeEvent(isOnlyNewData: Boolean) {
+  private fun subscribeCumulativeOperatingTime(isOnlyNewData: Boolean) {
     heartRate!!.subscribeCumulativeOperatingTimeEvent { estTimestamp, eventFlags, cumulativeOperatingTime ->
       if (isOnlyNewData && deviceData["cumulativeOperatingTime"] == cumulativeOperatingTime) {
         return@subscribeCumulativeOperatingTimeEvent
@@ -136,7 +147,7 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["cumulativeOperatingTime"] = cumulativeOperatingTime
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusHeartRateEvent.CumulativeOperatingTime.toString())
+      map.putString("event", AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
@@ -144,11 +155,13 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun unsubscribeManufacturerAndSerialEvent() {
+  private fun unsubscribeManufacturerAndSerial() {
     heartRate!!.subscribeManufacturerAndSerialEvent(null)
+    deviceData.remove("manufacturerID")
+    deviceData.remove("serialNumber")
   }
 
-  private fun subscribeManufacturerAndSerialEvent(isOnlyNewData: Boolean) {
+  private fun subscribeManufacturerAndSerial(isOnlyNewData: Boolean) {
     heartRate!!.subscribeManufacturerAndSerialEvent { estTimestamp, eventFlags, manufacturerID, serialNumber ->
       if (isOnlyNewData && deviceData["manufacturerID"] == manufacturerID && deviceData["serialNumber"] == serialNumber) {
         return@subscribeManufacturerAndSerialEvent
@@ -158,7 +171,7 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["serialNumber"] = serialNumber
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusHeartRateEvent.ManufacturerAndSerial.toString())
+      map.putString("event", AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("manufacturerID", manufacturerID)
@@ -167,11 +180,14 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun unsubscribeVersionAndModelEvent() {
+  private fun unsubscribeVersionAndModel() {
     heartRate!!.subscribeVersionAndModelEvent(null)
+    deviceData.remove("hardwareVersion")
+    deviceData.remove("softwareVersion")
+    deviceData.remove("modelNumber")
   }
 
-  private fun subscribeVersionAndModelEvent(isOnlyNewData: Boolean) {
+  private fun subscribeVersionAndModel(isOnlyNewData: Boolean) {
     heartRate!!.subscribeVersionAndModelEvent { estTimestamp, eventFlags, hardwareVersion, softwareVersion, modelNumber ->
       if (isOnlyNewData && deviceData["hardwareVersion"] == hardwareVersion && deviceData["softwareVersion"] == softwareVersion && deviceData["modelNumber"] == modelNumber) {
         return@subscribeVersionAndModelEvent
@@ -182,7 +198,7 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["modelNumber"] = modelNumber
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusHeartRateEvent.VersionAndModel.toString())
+      map.putString("event", AntPlusLegacyCommonEvent.VersionAndModel.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("hardwareVersion", hardwareVersion)
@@ -192,11 +208,12 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun unsubscribeRssiEvent() {
+  private fun unsubscribeRssi() {
     heartRate!!.subscribeRssiEvent(null)
+    deviceData.remove("rssi")
   }
 
-  private fun subscribeRssiEvent(isOnlyNewData: Boolean) {
+  private fun subscribeRssi(isOnlyNewData: Boolean) {
     heartRate!!.subscribeRssiEvent { estTimestamp, eventFlags, rssi ->
       if (isOnlyNewData && deviceData["rssi"] == rssi) {
         return@subscribeRssiEvent
@@ -205,7 +222,7 @@ class AntPlusHeartRate(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["rssi"] = rssi
 
       val map = Arguments.createMap()
-      map.putString("event", AntPlusHeartRateEvent.Rssi.toString())
+      map.putString("event", AntPlusLegacyCommonEvent.Rssi.toString())
       map.putString("eventFlags", eventFlags.toString())
       map.putInt("estTimestamp", estTimestamp.toInt())
       map.putInt("rssi", rssi)
