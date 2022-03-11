@@ -4,10 +4,10 @@ import androidx.annotation.Nullable
 import com.dsi.ant.plugins.antplus.pcc.defines.RequestAccessResult
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
+import kotlin.experimental.and
 
-class AntPlusModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  private var context: ReactApplicationContext = context
-  private var antPlusSearch = AntPlusSearch(context, this)
+class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
+  private val antPlusSearch = AntPlusSearch(context, this)
   private val devices = mutableMapOf<Int, AntPlusDevice>()
 
   override fun getName(): String {
@@ -85,5 +85,13 @@ class AntPlusModule(context: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun removeListeners(count: Int?) {
     // Remove upstream listeners, stop unnecessary background tasks
+  }
+
+  fun bytesToWritableArray(bytes: ByteArray): WritableArray? {
+    val data = Arguments.createArray()
+    for (i in bytes.indices) {
+      data.pushInt((bytes[i] and 0xFF.toByte()).toInt())
+    }
+    return data
   }
 }

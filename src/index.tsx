@@ -46,10 +46,14 @@ export enum AntPlusDevicesTypeName {
 }
 
 export enum AntPlusEvent {
-  rssi = 'rssi',
   searchStatus = 'searchStatus',
+  rssi = 'rssi',
   foundDevice = 'foundDevice',
+  devicesStateChange = 'devicesStateChange',
+
+  weightScale = 'weightScale',
   heartRate = 'heartRate',
+
   bikeCadence = 'bikeCadence',
   bikeSpeed = 'bikeSpeed',
   bikePower = 'bikePower',
@@ -67,13 +71,22 @@ export const RssiSignal = {
   satisfactory: -85,
 }
 
-export enum AntPlusHeartRateEvents {
+export enum AntPlusHeartRateEvent {
   CalculatedRrInterval = 'CalculatedRrInterval',
   HeartRateData = 'HeartRateData',
   Page4AddtData = 'Page4AddtData',
   CumulativeOperatingTime = 'CumulativeOperatingTime',
   ManufacturerAndSerial = 'ManufacturerAndSerial',
   VersionAndModel = 'VersionAndModel',
+  Rssi = 'Rssi',
+}
+
+export enum AntPlusWeightScaleEvent {
+  BodyWeightBroadcast = 'BodyWeightBroadcast',
+  BatteryStatus = 'BatteryStatus',
+  ManufacturerIdentification = 'ManufacturerIdentification',
+  ManufacturerSpecific = 'ManufacturerSpecific',
+  ProductInformation = 'ProductInformation',
   Rssi = 'Rssi',
 }
 
@@ -89,21 +102,6 @@ export interface AntPlusDevice {
   resultID: number
   rssi?: number
 }
-
-// class AntPlus {
-//   static async startSearch(antPlusDeviceTypes: AntPlusDeviceType[], seconds: number = 30, allowRssi: boolean = false): Promise<boolean> {
-//     return await AntPlusModule.startSearch(antPlusDeviceTypes, seconds, allowRssi)
-//   }
-//   static async stopSearch(): Promise<boolean> {
-//     return await AntPlusModule.stopSearch()
-//   }
-//   static addListener(eventType: string, listener: (...args: any[]) => any) {
-//     AntPlusEmitter.addListener(eventType, listener)
-//   }
-//   static removeListener(eventType: string, listener: (...args: any[]) => any) {
-//     AntPlusEmitter.removeListener(eventType, listener)
-//   }
-// }
 
 enum AntPlusRequestAccessResult {
   SUCCESS = 'SUCCESS',
@@ -131,13 +129,15 @@ export interface AntPlusConnect {
   code: AntPlusRequestAccessResult
 }
 
+type AntPlusSubscribeEvent = AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]
+
 interface AntPlus {
   startSearch: (antPlusDeviceTypes: AntPlusDeviceType[], seconds: number, allowRssi: boolean) => Promise<boolean>
   stopSearch: () => Promise<boolean>
   connect: (antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType) => Promise<AntPlusConnect>
   disconnect: (antDeviceNumber: number) => Promise<boolean>
-  subscribe: (antDeviceNumber: number, events: AntPlusHeartRateEvents, isOnlyNewData: boolean) => Promise<boolean>
-  unsubscribe: (antDeviceNumber: number, events: AntPlusHeartRateEvents) => Promise<boolean>
+  subscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent, isOnlyNewData: boolean) => Promise<boolean>
+  unsubscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent) => Promise<boolean>
 }
 
 export default AntPlusModule as AntPlus
