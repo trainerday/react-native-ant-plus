@@ -274,9 +274,9 @@ The rssi signal while the search is going on.
 AntPlusEmitter.addListener('rssi', arguments => {})
 ```
 
-### weightScale
+### bikeCadence
 
-Event listener for the Weight Scale service
+Event listener for the BikeCadence plugin service
 
 **Arguments**
 
@@ -284,11 +284,53 @@ Event listener for the Weight Scale service
 - `eventFlags` - `string` - Informational flags about the event.
 - `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
 
-BodyWeightBroadcast - subscription
+CalculatedCadence - event
+- `calculatedCadence` - `number` - The cadence calculated from the raw values in the sensor broadcast. Units: rpm.
+
+MotionAndCadence - event
+- `isPedallingStopped` - `boolean` - False indicates the user is pedalling, true indicates the user has stopped pedalling.
+
+RawCadence - event
+- `timestampOfLastEvent` - `number` - Sensor reported time counter value of last event (up to 1/1024s accuracy). Units: s. Rollover: Every ~46 quadrillion s (~1.5 billion years).
+- `cumulativeRevolutions` - `number` - Total number of revolutions since the sensor was connected. Note: If the subscriber is not the first PCC connected to the device the accumulation will probably already be at a value greater than 0 and the subscriber should save the first received value as a relative zero for itself. Units: revolutions. Rollover: Every ~9 quintillion revolutions.
+
+ManufacturerIdentification - event
+- `hardwareRevision` - `number` - Manufacturer defined. -1 = 'Not available'.
+- `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
+- `modelNumber` - `number` - Manufacturer defined. -1 = 'Not available'.
+
+ManufacturerSpecific - event
+- `rawDataBytes` - `number[]` - The raw eight bytes which make up the manufacturer specific page.
+
+ProductInformation - event
+- `softwareRevision` - `number` - Manufacturer defined main software revision.
+- `supplementaryRevision` - `number` - Manufacturer defined supplemental software revision. 0xFF = Invalid. -2 = Not supported by installed ANT+ Plugins Service version. @since 3.1.0; requires Plugin Service 3.1.0+
+- `serialNumber` - `number` - Serial number of the device.
+
+Rssi - event
+- `rssi` - `number` - rssi signal.
+
+**Example**
+
+```js
+AntPlusEmitter.addListener('weightScale', arguments => {})
+```
+
+### weightScale
+
+Event listener for the WeightScale plugin service
+
+**Arguments**
+
+- `event` - `string` - Name of the event to which the subscription
+- `eventFlags` - `string` - Informational flags about the event.
+- `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
+
+BodyWeightBroadcast - event
 - `bodyWeightStatus` - `string` -  The AntPlusWeightScalePcc.BodyWeightStatus of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is AntPlusWeightScalePcc.BodyWeightStatus.VALID.
 - `bodyWeight` - `number` -  Body weight value of current broadcast. Units: Kg.
 
-ManufacturerIdentification - subscription
+ManufacturerIdentification - event
 - `cumulativeOperatingTime` - `number` - The cumulative operating time since the battery was inserted. Units: seconds (resolution indicated by cumulativeOperatingTimeResolution]). Rollover: Every 16777215s*resolution. ie:~1.1yrs at 2s resolution, ~8.5yrs at 16s resolution.
 - `batteryVoltage` - `string` - Current battery voltage. Invalid = -1. Units: Volts (with 1/256V resolution).
 - `batteryStatus` - `string` - The current reported BatteryStatus.
@@ -296,20 +338,20 @@ ManufacturerIdentification - subscription
 - `numberOfBatteries` - `number` - Specifies how many batteries are available in the system. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
 - `batteryIdentifier` - `number` - Identifies the battery in system to which this battery status pertains. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
 
-ManufacturerIdentification - subscription
+ManufacturerIdentification - event
 - `hardwareRevision` - `number` - Manufacturer defined. -1 = 'Not available'.
 - `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
 - `modelNumber` - `number` - Manufacturer defined. -1 = 'Not available'.
 
-ManufacturerSpecific - subscription
+ManufacturerSpecific - event
 - `rawDataBytes` - `number[]` - The raw eight bytes which make up the manufacturer specific page.
 
-ProductInformation - subscription
+ProductInformation - event
 - `softwareRevision` - `number` - Manufacturer defined main software revision.
 - `supplementaryRevision` - `number` - Manufacturer defined supplemental software revision. 0xFF = Invalid. -2 = Not supported by installed ANT+ Plugins Service version. @since 3.1.0; requires Plugin Service 3.1.0+
 - `serialNumber` - `number` - Serial number of the device.
 
-Rssi - subscription
+Rssi - event
 - `rssi` - `number` - rssi signal.
 
 **Example**
@@ -328,33 +370,33 @@ Event listener for the HeartRate plugin service.
 - `eventFlags` - `string` - Informational flags about the event.
 - `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
 
-CalculatedRrInterval - subscription
+CalculatedRrInterval - event
 - `rrInterval` - `number` - Current R-R interval, calculated by the plugin. Units: ms. Invalid if value is negative.
 - `rrFlag` - `string` - Indicates how the RR interval was calculated.
 
-HeartRateData - subscription
+HeartRateData - event
 - `heartRate` - `number` - Current heart rate valid for display, computed by sensor. Units: BPM.
 - `heartBeatCount` - `number` - Heart beat count. Units: beats. Rollover: Every ~9 quintillion beats.
 - `heartBeatEventTime` - `number` - Sensor reported time counter value of last distance or speed computation (up to 1/1024s accuracy). Units: s. Rollover: Every ~9 quadrillion s.
 - `dataState` - `number` - The state of the data. If stale, app should indicate to the user that the device is not active. @since 2.1.7; supported on Plugin Service 2.2.8+. Earlier versions of the service will only send LIVE_DATA flag.
 
-Page4AddtData - subscription
+Page4AddtData - event
 - `manufacturerSpecificByte` - `number` - Defined by manufacturer. Receivers do not need to interpret this byte. Units: Defined by manufacturer.
 - `previousHeartBeatEventTime` - `number` - The time of the previous valid heart beat event (up to 1/1024s resolution). Units: s. Rollover: Every ~9 quadrillion s.
 
-CumulativeOperatingTime - subscription
+CumulativeOperatingTime - event
 - `cumulativeOperatingTime` - `number` - The cumulative operating time since the battery was inserted. Units: seconds (w/ 2s resolution). Rollover: Every 33554430s seconds (w/ 2s resolution) (388 days).
 
-ManufacturerAndSerial - subscription
+ManufacturerAndSerial - event
 - `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
 - `serialNumber` - `number` - This is the upper 16 bits of a 32 bit serial number.
 
-VersionAndModel - subscription
+VersionAndModel - event
 - `hardwareVersion` - `number` - Manufacturer defined.
 - `softwareVersion` - `number` - Manufacturer defined.
 - `modelNumber` - `number` - Manufacturer defined.
 
-Rssi - subscription
+Rssi - event
 - `rssi` - `number` - rssi signal.
 
 **Example**
