@@ -10,7 +10,23 @@ An Ant+ module for React Native
 
 
 ### At the moment devices supported:
-- HEARTRATE
+
+WEIGHT_SCALE (119) events:
+- BodyWeightBroadcast
+- BatteryStatus
+- ManufacturerIdentification
+- ManufacturerSpecific
+- ProductInformation
+- Rssi
+
+HEARTRATE (120) events:
+- CalculatedRrInterval
+- HeartRateData
+- Page4AddtData
+- CumulativeOperatingTime
+- ManufacturerAndSerial
+- VersionAndModel
+- Rssi
 
 ## Supported Platforms
 
@@ -180,10 +196,7 @@ Devices search status.
 **Example**
 
 ```js
-AntPlusEmitter.addListener('searchStatus', event => {
-  console.log(`searching: ${event.isSearching}`)
-  event?.reason && console.log(`reason stopping search: ${event.reason}`)
-})
+AntPlusEmitter.addListener('searchStatus', arguments => {})
 ```
 
 ### foundDevice
@@ -206,7 +219,7 @@ The searching find a new device.
 **Example**
 
 ```js
-AntPlusEmitter.addListener('foundDevice', device => {})
+AntPlusEmitter.addListener('foundDevice', arguments => {})
 ```
 
 ### rssi
@@ -221,7 +234,67 @@ The rssi signal while the search is going on.
 **Example**
 
 ```js
-AntPlusEmitter.addListener('rssi', device => {})
+AntPlusEmitter.addListener('rssi', arguments => {})
+```
+
+### devicesStateChange
+
+The rssi signal while the search is going on.
+
+**Arguments**
+
+- `event` - `string` - DeviceStateChangeReceiver
+- `antDeviceNumber` - `number` - the Ant device number.
+- `state` - `number` - DEAD | CLOSED | SEARCHING | TRACKING | PROCESSING_REQUEST | UNRECOGNIZED
+
+**Example**
+
+```js
+AntPlusEmitter.addListener('rssi', arguments => {})
+```
+
+### weightScale
+
+Event listener for the HeartRate device
+
+**Arguments**
+
+- `event` - `string` - Name of the event to which the subscription
+- `eventFlags` - `string` - Informational flags about the event.
+- `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
+
+BodyWeightBroadcast - subscription
+- `bodyWeightStatus` - `string` -  The AntPlusWeightScalePcc.BodyWeightStatus of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is AntPlusWeightScalePcc.BodyWeightStatus.VALID.
+- `bodyWeight` - `number` -  Body weight value of current broadcast. Units: Kg.
+
+ManufacturerIdentification - subscription
+- `cumulativeOperatingTime` - `number` - The cumulative operating time since the battery was inserted. Units: seconds (resolution indicated by cumulativeOperatingTimeResolution]). Rollover: Every 16777215s*resolution. ie:~1.1yrs at 2s resolution, ~8.5yrs at 16s resolution.
+- `batteryVoltage` - `string` - Current battery voltage. Invalid = -1. Units: Volts (with 1/256V resolution).
+- `batteryStatus` - `string` - The current reported BatteryStatus.
+- `cumulativeOperatingTimeResolution` - `number` - The resolution accuracy of the cumulativeOperatingTime. Units: seconds.
+- `numberOfBatteries` - `number` - Specifies how many batteries are available in the system. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
+- `batteryIdentifier` - `number` - Identifies the battery in system to which this battery status pertains. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
+
+ManufacturerIdentification - subscription
+- `hardwareRevision` - `number` - Manufacturer defined. -1 = 'Not available'.
+- `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
+- `modelNumber` - `number` - Manufacturer defined. -1 = 'Not available'.
+
+ManufacturerSpecific - subscription
+- `rawDataBytes` - `number[]` - The raw eight bytes which make up the manufacturer specific page.
+
+ProductInformation - subscription
+- `softwareRevision` - `number` - Manufacturer defined main software revision.
+- `supplementaryRevision` - `number` - Manufacturer defined supplemental software revision. 0xFF = Invalid. -2 = Not supported by installed ANT+ Plugins Service version. @since 3.1.0; requires Plugin Service 3.1.0+
+- `serialNumber` - `number` - Serial number of the device.
+
+Rssi - subscription
+- `rssi` - `number` - rssi signal.
+
+**Example**
+
+```js
+AntPlusEmitter.addListener('weightScale', arguments => {})
 ```
 
 ### heartRate
@@ -266,7 +339,7 @@ Rssi - subscription
 **Example**
 
 ```js
-AntPlusEmitter.addListener('heartRate', device => {})
+AntPlusEmitter.addListener('heartRate', arguments => {})
 ```
 
 ## Contributing

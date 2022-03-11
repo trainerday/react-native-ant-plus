@@ -1,3 +1,4 @@
+"use strict"
 import {NativeEventEmitter, NativeModules} from 'react-native'
 
 const AntPlusModule = NativeModules.AntPlusModule ? NativeModules.AntPlusModule : null
