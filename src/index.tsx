@@ -60,12 +60,12 @@ export enum AntPlusEvent {
   error = 'error',
 }
 
-export interface RssiEvent {
+export interface AntPlusRssiEvent {
   rssi: number
   resultID: AntPlusDevice['resultID']
 }
 
-export const RssiSignal = {
+export const AntPlusRssiSignal = {
   perfect: -65,
   good: -75,
   satisfactory: -85,
@@ -127,6 +127,12 @@ export interface AntPlusConnect {
   state: AntPlusDeviceState
   connected: boolean
   code: AntPlusRequestAccessResult
+}
+
+export interface AntPlusDeviceStateChange {
+  event: AntPlusDeviceState
+  antDeviceNumber: boolean
+  state: 'DEAD' | 'CLOSED'| 'SEARCHING'| 'TRACKING'| 'PROCESSING_REQUEST'| 'UNRECOGNIZED'
 }
 
 type AntPlusSubscribeEvent = AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]

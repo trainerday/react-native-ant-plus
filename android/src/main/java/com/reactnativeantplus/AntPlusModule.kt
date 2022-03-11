@@ -41,14 +41,31 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
 
   @ReactMethod
   fun connect(antDeviceNumber: Int, deviceTypeNumber: Int, promise: Promise) {
-    devices[antDeviceNumber] = AntPlusDevice(context, this, antDeviceNumber, deviceTypeNumber)
-    devices[antDeviceNumber]?.connect(promise)
+    try {
+      if (devices[antDeviceNumber] != null && devices[antDeviceNumber]!!.isConnected) {
+        throw Error("The device is already connected")
+        return
+      }
+
+      devices[antDeviceNumber] = AntPlusDevice(context, this, antDeviceNumber, deviceTypeNumber)
+      devices[antDeviceNumber]?.connect(promise)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
   }
 
   @ReactMethod
   fun disconnect(antDeviceNumber: Int, promise: Promise) {
-    devices[antDeviceNumber]?.disconnect(promise)
-    devices.remove(antDeviceNumber)
+    try {
+      if (devices[antDeviceNumber] == null) {
+        throw Error("Device not found")
+      }
+
+      devices[antDeviceNumber]?.disconnect(promise)
+      devices.remove(antDeviceNumber)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
   }
 
   @ReactMethod

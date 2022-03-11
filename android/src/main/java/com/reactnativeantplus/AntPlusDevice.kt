@@ -37,6 +37,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
         DeviceType.HEARTRATE -> (device as AntPlusHeartRate).disconnect(promise)
       }
     }
+    isConnected = false
   }
 
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
