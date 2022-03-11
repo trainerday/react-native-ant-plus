@@ -71,14 +71,17 @@ export const AntPlusRssiSignal = {
   satisfactory: -85,
 }
 
-export enum AntPlusHeartRateEvent {
-  CalculatedRrInterval = 'CalculatedRrInterval',
-  HeartRateData = 'HeartRateData',
-  Page4AddtData = 'Page4AddtData',
+enum AntPlusLegacyCommonEvent {
   CumulativeOperatingTime = 'CumulativeOperatingTime',
   ManufacturerAndSerial = 'ManufacturerAndSerial',
   VersionAndModel = 'VersionAndModel',
   Rssi = 'Rssi',
+}
+
+export enum AntPlusHeartRateEvent {
+  CalculatedRrInterval = 'CalculatedRrInterval',
+  HeartRateData = 'HeartRateData',
+  Page4AddtData = 'Page4AddtData',
 }
 
 export enum AntPlusWeightScaleEvent {
@@ -148,7 +151,7 @@ export interface AntPlusDeviceStateChange {
   state: 'DEAD' | 'CLOSED' | 'SEARCHING' | 'TRACKING' | 'PROCESSING_REQUEST' | 'UNRECOGNIZED'
 }
 
-type AntPlusSubscribeEvent = AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]
+type AntPlusSubscribeEvent = AntPlusLegacyCommonEvent[] | AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]
 type AntPlusRequest = {
   antDeviceNumber: number,
   requestName: AntPlusWeightScaleRequest.BasicMeasurement,
