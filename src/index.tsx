@@ -78,6 +78,12 @@ enum AntPlusLegacyCommonEvent {
   Rssi = 'Rssi',
 }
 
+export enum AntPlusBikeCadence {
+  CalculatedCadence = 'CalculatedCadence',
+  MotionAndCadence = 'MotionAndCadence',
+  RawCadence = 'RawCadence',
+}
+
 export enum AntPlusHeartRateEvent {
   CalculatedRrInterval = 'CalculatedRrInterval',
   HeartRateData = 'HeartRateData',
@@ -151,7 +157,7 @@ export interface AntPlusDeviceStateChange {
   state: 'DEAD' | 'CLOSED' | 'SEARCHING' | 'TRACKING' | 'PROCESSING_REQUEST' | 'UNRECOGNIZED'
 }
 
-type AntPlusSubscribeEvent = AntPlusLegacyCommonEvent[] | AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]
+type AntPlusSubscribeEvent = AntPlusLegacyCommonEvent[] | AntPlusHeartRateEvent[] | AntPlusBikeCadence[] | AntPlusWeightScaleEvent[]
 type AntPlusRequest = {
   antDeviceNumber: number,
   requestName: AntPlusWeightScaleRequest.BasicMeasurement,

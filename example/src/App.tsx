@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {Button, ScrollView, StyleSheet, Text, View} from 'react-native'
 import AntPlus, {
+  AntPlusBikeCadence,
   AntPlusDevice,
   AntPlusDeviceStateChange,
   AntPlusDeviceType,
@@ -16,10 +17,11 @@ export default function App() {
   const [devices, setDevices] = useState<AntPlusDevice[]>(() => [])
   const [statusSearch, setStatusSearch] = useState(false)
   const [bpm, setBpm] = useState(0)
+  const [rpm, setRpm] = useState(0)
 
   const startSearch = async () => {
     try {
-      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE], 20, true)
+      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE, AntPlusDeviceType.BIKE_CADENCE], 20, true)
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
@@ -53,6 +55,10 @@ export default function App() {
     data.heartRate && setBpm(data.heartRate)
   }
 
+  const bikeCadenceChange = (data: any) => {
+    data.calculatedCadence && setRpm(data.calculatedCadence)
+  }
+
   useEffect(() => {
     if (AntPlus) {
       startSearch()
@@ -63,6 +69,7 @@ export default function App() {
     AntPlusEmitter.addListener(AntPlusEvent.rssi, rssi)
     AntPlusEmitter.addListener(AntPlusEvent.devicesStateChange, devicesStateChange)
     AntPlusEmitter.addListener(AntPlusEvent.heartRate, heartRateChange)
+    AntPlusEmitter.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
 
     return () => {
       AntPlusEmitter.removeListener(AntPlusEvent.searchStatus, searchStatus)
@@ -70,12 +77,14 @@ export default function App() {
       AntPlusEmitter.removeListener(AntPlusEvent.rssi, rssi)
       AntPlusEmitter.removeListener(AntPlusEvent.devicesStateChange, devicesStateChange)
       AntPlusEmitter.removeListener(AntPlusEvent.heartRate, heartRateChange)
+      AntPlusEmitter.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
     }
   }, [])
 
   return (
     <View style={styles.container}>
       <Text>BPM: {bpm}</Text>
+      <Text>RPM: {rpm}</Text>
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView>
@@ -87,7 +96,14 @@ export default function App() {
 
               if (!result.connected) return
 
-              AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
+              switch (device.antPlusDeviceType) {
+                case AntPlusDeviceType.BIKE_CADENCE:
+                  AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikeCadence.CalculatedCadence], true)
+                  break
+                case AntPlusDeviceType.HEARTRATE:
+                  AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
+                  break
+              }
             } catch (error) {
               console.log('connect error', error)
             }
