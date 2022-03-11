@@ -1,5 +1,5 @@
-"use strict"
-import {NativeEventEmitter, NativeModules} from 'react-native'
+'use strict'
+import { NativeEventEmitter, NativeModules } from 'react-native'
 
 const AntPlusModule = NativeModules.AntPlusModule ? NativeModules.AntPlusModule : null
 export const AntPlusEmitter = new NativeEventEmitter(AntPlusModule)
@@ -132,7 +132,7 @@ export interface AntPlusConnect {
 export interface AntPlusDeviceStateChange {
   event: AntPlusDeviceState
   antDeviceNumber: boolean
-  state: 'DEAD' | 'CLOSED'| 'SEARCHING'| 'TRACKING'| 'PROCESSING_REQUEST'| 'UNRECOGNIZED'
+  state: 'DEAD' | 'CLOSED' | 'SEARCHING' | 'TRACKING' | 'PROCESSING_REQUEST' | 'UNRECOGNIZED'
 }
 
 type AntPlusSubscribeEvent = AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]

@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
-import {Button, ScrollView, StyleSheet, Text, View} from 'react-native'
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native'
 import AntPlus, {
   AntPlusDevice,
   AntPlusDeviceStateChange,
@@ -13,9 +13,9 @@ import AntPlus, {
 } from 'react-native-ant-plus'
 
 export default function App() {
-  const [devices, setDevices] = useState<AntPlusDevice[]>(() => ([]));
-  const [statusSearch, setStatusSearch] = useState(false);
-  const [bpm, setBpm] = useState(0);
+  const [devices, setDevices] = useState<AntPlusDevice[]>(() => [])
+  const [statusSearch, setStatusSearch] = useState(false)
+  const [bpm, setBpm] = useState(0)
 
   const startSearch = async () => {
     try {
@@ -33,8 +33,8 @@ export default function App() {
 
   const foundDevice = (device: AntPlusDevice) => {
     console.log(device)
-    setDevices(prev => {
-      if (prev.some(unit => unit.antDeviceNumber === device.antDeviceNumber)) {
+    setDevices((prev) => {
+      if (prev.some((unit) => unit.antDeviceNumber === device.antDeviceNumber)) {
         return prev
       }
       return [...prev, device]
@@ -71,7 +71,7 @@ export default function App() {
       AntPlusEmitter.removeListener(AntPlusEvent.devicesStateChange, devicesStateChange)
       AntPlusEmitter.removeListener(AntPlusEvent.heartRate, heartRateChange)
     }
-  }, []);
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -79,7 +79,7 @@ export default function App() {
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView>
-        {devices.map(device => {
+        {devices.map((device) => {
           const handlePressConnect = async () => {
             try {
               const result = await AntPlus.connect(device.antDeviceNumber, device.antPlusDeviceType)
@@ -106,14 +106,14 @@ export default function App() {
             <View key={device.antDeviceNumber} style={styles.device}>
               <Text>{device.antPlusDeviceTypeName} </Text>
               <Button onPress={handlePressConnect} title="Connect" />
-              <Text>{' '}</Text>
+              <Text> </Text>
               <Button onPress={handlePressDisconnect} title="Disconnect" />
             </View>
           )
         })}
       </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
   },
   device: {
     flexDirection: 'row',
-    alignItems: 'center'
-  }
-});
-
+    alignItems: 'center',
+  },
+})
