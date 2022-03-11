@@ -44,7 +44,6 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
     try {
       if (devices[antDeviceNumber] != null && devices[antDeviceNumber]!!.isConnected) {
         throw Error("The device is already connected")
-        return
       }
 
       devices[antDeviceNumber] = AntPlusDevice(context, this, antDeviceNumber, deviceTypeNumber)
