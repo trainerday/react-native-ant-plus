@@ -182,6 +182,27 @@ AntPlus.unsubscribe(antDeviceNumber, events).then(isUnsubscribed => {
 })
 ```
 
+>### request(antDeviceNumber, requestName, args) [Experimental]
+>
+>Send a request to a plugin service.
+>Returns a `Promise` object.
+>
+>**Arguments**
+>
+>- `antDeviceNumber` - `Integer` - the Ant device number.
+>- `requestName` - `String` - Name of request.
+>- `args` - `ReadableMap` - Arguments for the request.
+>
+>**Example**
+>
+>```js
+>const antDeviceNumber = 012345
+>const requestName = 'BasicMeasurement'
+>const args = {}
+>
+>AntPlus.request(antDeviceNumber, requestName, args)
+>```
+
 ## Events
 
 ### searchStatus
@@ -255,7 +276,7 @@ AntPlusEmitter.addListener('rssi', arguments => {})
 
 ### weightScale
 
-Event listener for the HeartRate device
+Event listener for the Weight Scale service
 
 **Arguments**
 
@@ -299,7 +320,7 @@ AntPlusEmitter.addListener('weightScale', arguments => {})
 
 ### heartRate
 
-Event listener for the HeartRate device
+Event listener for the HeartRate plugin service.
 
 **Arguments**
 

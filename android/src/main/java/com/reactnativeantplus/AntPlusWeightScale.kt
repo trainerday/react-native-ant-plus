@@ -2,16 +2,18 @@ package com.reactnativeantplus
 
 import android.util.Log
 import com.dsi.ant.plugins.antplus.pcc.AntPlusWeightScalePcc
-import com.dsi.ant.plugins.antplus.pcc.AntPlusWeightScalePcc.requestAccess
+import com.dsi.ant.plugins.antplus.pcc.AntPlusWeightScalePcc.*
 import com.dsi.ant.plugins.antplus.pcc.defines.RequestAccessResult
 import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc.IPluginAccessResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import com.facebook.react.bridge.*
 
+
 class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntPlusModule, val antDeviceNumber: Int, private val connectPromise: Promise) {
   private var weightScale: AntPlusWeightScalePcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusWeightScalePcc>? = null
   private val deviceData = HashMap<String, Any>()
+  private val userProfile = UserProfile()
 
   fun init() {
     releaseHandle = requestAccess(
@@ -25,26 +27,26 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
-      when (event) {
-        AntPlusWeightScaleEvent.BodyWeightBroadcast.toString() -> subscribeBodyWeightBroadcastEvent(isOnlyNewData)
-        AntPlusWeightScaleEvent.BatteryStatus.toString() -> subscribeBatteryStatusEvent(isOnlyNewData)
-        AntPlusWeightScaleEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentificationEvent(isOnlyNewData)
-        AntPlusWeightScaleEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificDataEvent(isOnlyNewData)
-        AntPlusWeightScaleEvent.ProductInformation.toString() -> subscribeProductInformationEvent(isOnlyNewData)
-        AntPlusWeightScaleEvent.Rssi.toString() -> subscribeRssiEvent(isOnlyNewData)
+      when (AntPlusWeightScaleEvent.valueOf(event as String)) {
+        AntPlusWeightScaleEvent.BodyWeightBroadcast -> subscribeBodyWeightBroadcastEvent(isOnlyNewData)
+        AntPlusWeightScaleEvent.BatteryStatus -> subscribeBatteryStatusEvent(isOnlyNewData)
+        AntPlusWeightScaleEvent.ManufacturerIdentification -> subscribeManufacturerIdentificationEvent(isOnlyNewData)
+        AntPlusWeightScaleEvent.ManufacturerSpecific -> subscribeManufacturerSpecificDataEvent(isOnlyNewData)
+        AntPlusWeightScaleEvent.ProductInformation -> subscribeProductInformationEvent(isOnlyNewData)
+        AntPlusWeightScaleEvent.Rssi -> subscribeRssiEvent(isOnlyNewData)
       }
     }
   }
 
   fun unsubscribe(events: ReadableArray) {
     events.toArrayList().forEach { event ->
-      when (event) {
-        AntPlusWeightScaleEvent.BodyWeightBroadcast.toString() -> unsubscribeBodyWeightBroadcastEvent()
-        AntPlusWeightScaleEvent.BatteryStatus.toString() -> unsubscribeBatteryStatusEvent()
-        AntPlusWeightScaleEvent.ManufacturerIdentification.toString() -> unsubscribeManufacturerIdentificationEvent()
-        AntPlusWeightScaleEvent.ManufacturerSpecific.toString() -> unsubscribeManufacturerSpecificDataEvent()
-        AntPlusWeightScaleEvent.ProductInformation.toString() -> unsubscribeProductInformationEvent()
-        AntPlusWeightScaleEvent.Rssi.toString() -> unsubscribeRssiEvent()
+      when (AntPlusWeightScaleEvent.valueOf(event as String)) {
+        AntPlusWeightScaleEvent.BodyWeightBroadcast -> unsubscribeBodyWeightBroadcastEvent()
+        AntPlusWeightScaleEvent.BatteryStatus -> unsubscribeBatteryStatusEvent()
+        AntPlusWeightScaleEvent.ManufacturerIdentification -> unsubscribeManufacturerIdentificationEvent()
+        AntPlusWeightScaleEvent.ManufacturerSpecific -> unsubscribeManufacturerSpecificDataEvent()
+        AntPlusWeightScaleEvent.ProductInformation -> unsubscribeProductInformationEvent()
+        AntPlusWeightScaleEvent.Rssi -> unsubscribeRssiEvent()
       }
     }
   }
@@ -211,6 +213,122 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       antPlus.sendEvent(AntPlusEvent.weightScale, eventData)
     }
   }
+
+  fun request(requestName: String, args: ReadableMap, promise: Promise) {
+    when (AntPlusWeightScaleRequest.valueOf(requestName)) {
+      AntPlusWeightScaleRequest.AdvancedMeasurement -> requestAdvancedMeasurement(args, promise)
+      AntPlusWeightScaleRequest.BasicMeasurement -> requestBasicMeasurement(promise)
+      AntPlusWeightScaleRequest.Capabilities -> requestCapabilities(promise)
+      AntPlusWeightScaleRequest.DownloadAllHistory -> requestDownloadAllHistory(promise)
+    }
+  }
+
+  private fun requestAdvancedMeasurement(userData: ReadableMap, promise: Promise) {
+    userProfile.gender = if (userData.getInt("gender") == 1) Gender.MALE else Gender.FEMALE
+    userProfile.age = userData.getInt("age")
+    userProfile.height = userData.getInt("height")
+    userProfile.activityLevel = userData.getInt("activityLevel")
+    userProfile.lifetimeAthlete = userData.getBoolean("athlete")
+
+    weightScale!!.requestAdvancedMeasurement({ estTimestamp, eventFlags, status, measurement ->
+      if (status === WeightScaleRequestStatus.SUCCESS) {
+        val requestData = Arguments.createMap()
+
+        requestData.putString("event", "AdvancedMeasurement")
+        requestData.putString("eventFlags", eventFlags.toString())
+        requestData.putInt("estTimestamp", estTimestamp.toInt())
+
+        val measurementData = Arguments.createMap()
+
+        measurementData.putDouble("bodyWeight", measurement.bodyWeight.toDouble())
+        measurementData.putDouble("hydrationPercentage", measurement.hydrationPercentage.toDouble())
+        measurementData.putDouble("bodyFatPercentage", measurement.bodyFatPercentage.toDouble())
+        measurementData.putDouble("muscleMass", measurement.muscleMass.toDouble())
+        measurementData.putDouble("boneMass", measurement.boneMass.toDouble())
+        measurementData.putDouble("activeMetabolicRate", measurement.activeMetabolicRate.toDouble())
+        measurementData.putDouble("basalMetabolicRate", measurement.basalMetabolicRate.toDouble())
+
+        requestData.putMap("measurement", measurementData)
+
+        promise.resolve(requestData)
+
+//                `bodyWeight` - `number` -  Body weight value, -1 = 'Invalid'. Units: Kg.
+//                `hydrationPercentage` - `number` - Hydration percentage, -1 = 'Invalid'. Units: %.
+//                `bodyFatPercentage` - `number` - Body fat percentage, -1 = 'Invalid'. Units: %.
+//                `muscleMass` - `number` - Muscle mass, -1 = 'Invalid'. Units: Kg.
+//                `boneMass` - `number` - Bone mass, -1 = 'Invalid'. Units: Kg.
+//                `activeMetabolicRate` - `number` - Active metabolic rate: total amount of energy required daily by the body to maintain the user's current weight at the current activity level, -1 = 'Invalid'. Units: kcal.
+//                `basalMetabolicRate` - `number` - Basal metabolic rate: daily amount of energy needed by the body in its resting state, -1 = 'Invalid'. Units: kcal.
+
+      }
+    }, userProfile)
+  }
+
+  private fun requestBasicMeasurement(promise: Promise) {
+    weightScale!!.requestBasicMeasurement { estTimestamp, eventFlags, status, bodyWeight ->
+      if (status === WeightScaleRequestStatus.SUCCESS) {
+        val requestData = Arguments.createMap()
+
+        requestData.putString("event", "BasicMeasurement")
+        requestData.putString("eventFlags", eventFlags.toString())
+        requestData.putInt("estTimestamp", estTimestamp.toInt())
+        requestData.putString("status", status.toString())
+        requestData.putDouble("bodyWeight", bodyWeight.toDouble())
+
+        promise.resolve(requestData)
+//                `status` - `string` - The AntPlusWeightScalePcc.WeightScaleRequestStatus defining the result of the measurement task.
+//                `bodyWeight` - `number` - Body weight value, -1 = 'Invalid', null if request was unsuccessful. Units: Kg.
+      }
+    }
+  }
+
+  //  Requests the capabilities of weight scale and the identifier of the currently 'selected' user profile, if any.
+  private fun requestCapabilities(promise: Promise) {
+    weightScale!!.requestCapabilities { estTimestamp, eventFlags, status, userProfileID, historySupport, userProfileExchangeSupport, userProfileSelected ->
+      if (status === WeightScaleRequestStatus.SUCCESS) {
+        val requestData = Arguments.createMap()
+
+        requestData.putString("event", "BasicMeasurement")
+        requestData.putString("eventFlags", eventFlags.toString())
+        requestData.putInt("estTimestamp", estTimestamp.toInt())
+        requestData.putString("status", status.toString())
+        requestData.putInt("userProfileID", userProfileID)
+        requestData.putBoolean("historySupport", historySupport)
+        requestData.putBoolean("userProfileExchangeSupport", userProfileExchangeSupport)
+        requestData.putBoolean("userProfileSelected", userProfileSelected)
+
+        promise.resolve(requestData)
+//                `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
+//                `eventFlags` - `number` - Informational flags about the event.
+//                `status` - `number` - The AntPlusWeightScalePcc.WeightScaleRequestStatus defining the result of the request.
+//                `userProfileID` - `number` - the user identifier of the scale's currently 'selected' user profile, -1 = 'Unassigned'.
+//                `historySupport` - `number` - Indicates if scale supports storage and download of measurement history.
+//                `userProfileExchangeSupport` - `number` - Indicates if scale supports receiving a user profile.
+//                `userProfileSelected` - `number` - Indicates if a user profile has been 'selected' on the scale. The 'selected' profile is used to calculate advanced body measurements in the absence of an application-provided profile.
+      }
+    }
+  }
+
+  //  Requests a download of all of the history data from the device.
+  private fun requestDownloadAllHistory(promise: Promise) {
+    weightScale!!.requestDownloadAllHistory(
+      { status ->
+
+//                `status` - The AntFsRequestStatus indicating the result of the request.
+      },
+      { downloadedFitFile ->
+
+//                `downloadedFitFile` - The FIT file downloaded.
+      }, { state, transferredBytes, totalBytes ->
+
+//                `state` - The current ANT-FS state.
+//                `transferredBytes` - The number of bytes transferred. Note: There are cases in the process of retrying a download that this number can restart at a lower value. This number is always the progress towards the total, not a count of total number of bytes sent over the connection.
+//                `totalBytes` - The total number of bytes to be transferred.
+    }
+    )
+  }
+
+
 
   private val resultReceiver =
     IPluginAccessResultReceiver<AntPlusWeightScalePcc> { result, resultCode, initialDeviceState ->

@@ -90,6 +90,19 @@ export enum AntPlusWeightScaleEvent {
   Rssi = 'Rssi',
 }
 
+export enum AntPlusWeightScaleRequest {
+  BasicMeasurement = 'BasicMeasurement',
+  AdvancedMeasurement = 'AdvancedMeasurement',
+}
+
+interface AntPlusWeightScaleRequestAdvancedMeasurement {
+  gender: number
+  age: number
+  height: number
+  activityLevel: number
+  lifetimeAthlete: boolean
+}
+
 export interface AntPlusDevice {
   antDeviceNumber: number
   antPlusDeviceType: AntPlusDeviceType
@@ -136,6 +149,15 @@ export interface AntPlusDeviceStateChange {
 }
 
 type AntPlusSubscribeEvent = AntPlusHeartRateEvent[] | AntPlusWeightScaleEvent[]
+type AntPlusRequest = {
+  antDeviceNumber: number,
+  requestName: AntPlusWeightScaleRequest.BasicMeasurement,
+  args: {}
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusWeightScaleRequest.AdvancedMeasurement,
+  args: AntPlusWeightScaleRequestAdvancedMeasurement
+}
 
 interface AntPlus {
   startSearch: (antPlusDeviceTypes: AntPlusDeviceType[], seconds: number, allowRssi: boolean) => Promise<boolean>
@@ -144,6 +166,7 @@ interface AntPlus {
   disconnect: (antDeviceNumber: number) => Promise<boolean>
   subscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent, isOnlyNewData: boolean) => Promise<boolean>
   unsubscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent) => Promise<boolean>
+  request: <T extends AntPlusRequest>(antDeviceNumber: T['antDeviceNumber'], requestName: T['requestName'], args: T['args']) => Promise<boolean>
 }
 
 export default AntPlusModule as AntPlus

@@ -94,6 +94,18 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
+  fun request(antDeviceNumber: Int, requestName: String, args: ReadableMap, promise: Promise) {
+    try {
+      if (devices[antDeviceNumber] != null || !devices[antDeviceNumber]!!.isConnected) {
+        throw Error("Device not connected")
+      }
+      devices[antDeviceNumber]?.request(requestName, args, promise)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
+  }
+
+  @ReactMethod
   fun addListener(eventName: String?) {
     // Set up any upstream listeners or background tasks as necessary
   }

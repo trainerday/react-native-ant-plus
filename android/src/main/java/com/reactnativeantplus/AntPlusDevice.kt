@@ -53,4 +53,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).unsubscribe(events)
     }
   }
+
+  fun request(requestName: String, args: ReadableMap, promise: Promise) {
+    when (deviceType) {
+      DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).request(requestName, args, promise)
+    }
+  }
 }
