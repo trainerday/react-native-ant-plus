@@ -51,12 +51,14 @@ export enum AntPlusEvent {
   foundDevice = 'foundDevice',
   devicesStateChange = 'devicesStateChange',
 
+  bikeCadence = 'bikeCadence',
+  bikePower = 'bikePower',
+  bikeSpeedDistance = 'bikeSpeedDistance',
+  bikeSpeedAndCadence = 'bikeSpeedAndCadence',
+  environment = 'environment',
   weightScale = 'weightScale',
   heartRate = 'heartRate',
 
-  bikeCadence = 'bikeCadence',
-  bikeSpeed = 'bikeSpeed',
-  bikePower = 'bikePower',
   error = 'error',
 }
 
@@ -153,6 +155,21 @@ export interface AntPlusBikePowerRequestSetCustomCalibrationParametersArguments 
   manufacturerSpecificParameters: number[]
 }
 
+export enum AntPlusSpeedDistanceEvent {
+  CalculatedAccumulatedDistance = 'CalculatedAccumulatedDistance',
+  CalculatedSpeed = 'CalculatedSpeed',
+  MotionAndSpeedData = 'MotionAndSpeedData',
+  RawSpeedAndDistanceData = 'RawSpeedAndDistanceData',
+}
+
+export enum AntPlusSpeedAndCadenceEvent {
+  BatteryStatus = 'BatteryStatus',
+}
+
+export enum AntPlusEnvironmentEvent {
+  TemperatureData = 'TemperatureData',
+}
+
 export enum AntPlusHeartRateEvent {
   CalculatedRrInterval = 'CalculatedRrInterval',
   HeartRateData = 'HeartRateData',
@@ -230,6 +247,9 @@ type AntPlusSubscribeEvent =
   AntPlusLegacyCommonEvent[]
   | AntPlusBikeCadenceEvent[]
   | AntPlusBikePowerEvent[]
+  | AntPlusSpeedDistanceEvent[]
+  | AntPlusSpeedAndCadenceEvent[]
+  | AntPlusEnvironmentEvent[]
   | AntPlusHeartRateEvent[]
   | AntPlusWeightScaleEvent[]
 
