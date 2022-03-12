@@ -122,4 +122,12 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
     }
     return data
   }
+
+  fun writableArrayToBytes(array: ReadableArray): ByteArray {
+    val bytes = ByteArray(array.size())
+    for (i in 0 until array.size()) {
+      bytes[i] = array.getInt(i).toByte()
+    }
+    return bytes
+  }
 }

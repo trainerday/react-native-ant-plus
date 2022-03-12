@@ -18,6 +18,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
           device = AntPlusBikeCadence(context, antPlus, antDeviceNumber, promise)
           (device as AntPlusBikeCadence).init()
         }
+        DeviceType.BIKE_POWER -> {
+          device = AntPlusBikePower(context, antPlus, antDeviceNumber, promise)
+          (device as AntPlusBikePower).init()
+        }
         DeviceType.WEIGHT_SCALE -> {
           device = AntPlusWeightScale(context, antPlus, antDeviceNumber, promise)
           (device as AntPlusWeightScale).init()
@@ -43,6 +47,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
     runOnUiThread {
       when (deviceType) {
         DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).disconnect(promise)
+        DeviceType.BIKE_POWER -> (device as AntPlusBikePower).disconnect(promise)
         DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).disconnect(promise)
         DeviceType.HEARTRATE -> (device as AntPlusHeartRate).disconnect(promise)
         else -> promise.reject(Error("Device is not supported"))
@@ -54,6 +59,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     when (deviceType) {
       DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).subscribe(events, isOnlyNewData)
+      DeviceType.BIKE_POWER -> (device as AntPlusBikePower).subscribe(events, isOnlyNewData)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).subscribe(events, isOnlyNewData)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).subscribe(events, isOnlyNewData)
       else -> Log.e("subscribe", "Device is not supported")
@@ -63,6 +69,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
   fun unsubscribe(events: ReadableArray) {
     when (deviceType) {
       DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).unsubscribe(events)
+      DeviceType.BIKE_POWER -> (device as AntPlusBikePower).unsubscribe(events)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).unsubscribe(events)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).unsubscribe(events)
       else -> Log.e("unsubscribe", "Device is not supported")
@@ -71,6 +78,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
 
   fun request(requestName: String, args: ReadableMap, promise: Promise) {
     when (deviceType) {
+      DeviceType.BIKE_POWER -> (device as AntPlusBikePower).request(requestName, args, promise)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).request(requestName, args, promise)
       else -> promise.reject(Error("Device is not supported"))
     }

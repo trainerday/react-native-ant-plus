@@ -1,5 +1,5 @@
 'use strict'
-import { NativeEventEmitter, NativeModules } from 'react-native'
+import {NativeEventEmitter, NativeModules} from 'react-native'
 
 const AntPlusModule = NativeModules.AntPlusModule ? NativeModules.AntPlusModule : null
 export const AntPlusEmitter = new NativeEventEmitter(AntPlusModule)
@@ -71,17 +71,86 @@ export const AntPlusRssiSignal = {
   satisfactory: -85,
 }
 
-enum AntPlusLegacyCommonEvent {
+export enum AntPlusLegacyCommonEvent {
   CumulativeOperatingTime = 'CumulativeOperatingTime',
   ManufacturerAndSerial = 'ManufacturerAndSerial',
   VersionAndModel = 'VersionAndModel',
   Rssi = 'Rssi',
 }
 
-export enum AntPlusBikeCadence {
+export enum AntPlusCommonEvent {
+  BatteryStatus = 'BatteryStatus',
+  ManufacturerIdentification = 'ManufacturerIdentification',
+  ManufacturerSpecific = 'ManufacturerSpecific',
+  ProductInformation = 'ProductInformation',
+  Rssi = 'Rssi'
+}
+
+export enum AntPlusBikeCadenceEvent {
   CalculatedCadence = 'CalculatedCadence',
   MotionAndCadence = 'MotionAndCadence',
   RawCadence = 'RawCadence',
+}
+
+export enum AntPlusBikePowerEvent {
+  AutoZeroStatus = 'AutoZeroStatus',
+  CalculatedCrankCadence = 'CalculatedCrankCadence',
+  CalculatedPower = 'CalculatedPower',
+  CalculatedTorque = 'CalculatedTorque',
+  CalculatedWheelDistance = 'CalculatedWheelDistance',
+  CalculatedWheelSpeed = 'CalculatedWheelSpeed',
+  CalibrationMessage = 'CalibrationMessage',
+  CrankParameters = 'CrankParameters',
+  InstantaneousCadence = 'InstantaneousCadence',
+  MeasurementOutputData = 'MeasurementOutputData',
+  PedalPowerBalance = 'PedalPowerBalance',
+  PedalSmoothness = 'PedalSmoothness',
+  RawCrankTorqueData = 'RawCrankTorqueData',
+  RawCtfData = 'RawCtfData',
+  RawPowerOnlyData = 'RawPowerOnlyData',
+  RawWheelTorqueData = 'RawWheelTorqueData',
+  TorqueEffectiveness = 'TorqueEffectiveness'
+}
+
+export enum AntPlusBikePowerRequest {
+  CommandBurst = 'CommandBurst',
+  CrankParameters = 'CrankParameters',
+  CustomCalibrationParameters = 'CustomCalibrationParameters',
+  ManualCalibration = 'ManualCalibration',
+  SetAutoZero = 'SetAutoZero',
+  SetCrankParameters = 'SetCrankParameters',
+  SetCtfSlope = 'SetCtfSlope',
+  SetCustomCalibrationParameters = 'SetCustomCalibrationParameters'
+}
+
+export interface AntPlusBikePowerRequestCommandBurstArguments {
+  requestedCommandId: number
+  commandData: number[]
+}
+
+export interface AntPlusBikePowerRequestCustomCalibrationParametersArguments {
+  manufacturerSpecificParameters: number[]
+}
+
+export interface AntPlusBikePowerRequestSetAutoZeroArguments {
+  autoZeroEnable: boolean
+}
+
+export interface AntPlusBikePowerRequestSetCrankParametersArguments {
+  crankLengthSetting: string
+  fullCrankLength: number
+}
+
+export interface AntPlusBikePowerRequestSetCtfSlopeArguments {
+  slope: number
+}
+
+export interface AntPlusBikePowerRequestSetCustomCalibrationParametersArguments {
+  manufacturerSpecificParameters: number[]
+}
+
+export interface AntPlusBikePowerRequestSetCustomCalibrationParametersArguments {
+  manufacturerSpecificParameters: number[]
 }
 
 export enum AntPlusHeartRateEvent {
@@ -157,10 +226,40 @@ export interface AntPlusDeviceStateChange {
   state: 'DEAD' | 'CLOSED' | 'SEARCHING' | 'TRACKING' | 'PROCESSING_REQUEST' | 'UNRECOGNIZED'
 }
 
-type AntPlusSubscribeEvent = AntPlusLegacyCommonEvent[] | AntPlusHeartRateEvent[] | AntPlusBikeCadence[] | AntPlusWeightScaleEvent[]
+type AntPlusSubscribeEvent =
+  AntPlusLegacyCommonEvent[]
+  | AntPlusBikeCadenceEvent[]
+  | AntPlusBikePowerEvent[]
+  | AntPlusHeartRateEvent[]
+  | AntPlusWeightScaleEvent[]
+
 type AntPlusRequest = {
   antDeviceNumber: number,
-  requestName: AntPlusWeightScaleRequest.BasicMeasurement,
+  requestName: AntPlusBikePowerRequest.CommandBurst,
+  args: AntPlusBikePowerRequestCommandBurstArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.CustomCalibrationParameters,
+  args: AntPlusBikePowerRequestCustomCalibrationParametersArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.SetAutoZero,
+  args: AntPlusBikePowerRequestSetAutoZeroArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.SetCrankParameters,
+  args: AntPlusBikePowerRequestSetCrankParametersArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.SetCtfSlope,
+  args: AntPlusBikePowerRequestSetCtfSlopeArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.SetCustomCalibrationParameters,
+  args: AntPlusBikePowerRequestSetCustomCalibrationParametersArguments
+} | {
+  antDeviceNumber: number,
+  requestName: AntPlusBikePowerRequest.CrankParameters | AntPlusBikePowerRequest.ManualCalibration | AntPlusWeightScaleRequest.BasicMeasurement,
   args: {}
 } | {
   antDeviceNumber: number,
