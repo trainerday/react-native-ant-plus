@@ -11,22 +11,10 @@ An Ant+ module for React Native
 
 ### At the moment devices supported:
 
-WEIGHT_SCALE (119) events:
-- BodyWeightBroadcast
-- BatteryStatus
-- ManufacturerIdentification
-- ManufacturerSpecific
-- ProductInformation
-- Rssi
-
-HEARTRATE (120) events:
-- CalculatedRrInterval
-- HeartRateData
-- Page4AddtData
-- CumulativeOperatingTime
-- ManufacturerAndSerial
-- VersionAndModel
-- Rssi
+- BIKE_CADENCE (122)
+- BIKE_POWER (11)
+- WEIGHT_SCALE (119)
+- HEARTRATE (120)
 
 ## Supported Platforms
 
