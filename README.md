@@ -440,7 +440,7 @@ Event listener for the WeightScale plugin service
 - `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
 
 BodyWeightBroadcast - event
-- `bodyWeightStatus` - `string` -  The [BodyWeightStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusWeightScalePcc.BodyWeightStatus.html) of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is AntPlusWeightScalePcc.BodyWeightStatus.VALID.
+- `bodyWeightStatus` - `string` -  The [BodyWeightStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusWeightScalePcc.BodyWeightStatus.html) of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is VALID.
 - `bodyWeight` - `number` -  Body weight value of current broadcast. Units: Kg.
 
 ManufacturerIdentification - event
