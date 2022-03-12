@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react'
 
 import {Button, ScrollView, StyleSheet, Text, View} from 'react-native'
 import AntPlus, {
-  AntPlusBikeCadence,
+  AntPlusBikeCadenceEvent,
+  AntPlusBikePowerEvent,
   AntPlusDevice,
   AntPlusDeviceStateChange,
   AntPlusDeviceType,
@@ -18,10 +19,15 @@ export default function App() {
   const [statusSearch, setStatusSearch] = useState(false)
   const [bpm, setBpm] = useState(0)
   const [rpm, setRpm] = useState(0)
+  const [power, setPower] = useState(0)
 
   const startSearch = async () => {
     try {
-      const result = await AntPlus?.startSearch([AntPlusDeviceType.HEARTRATE, AntPlusDeviceType.BIKE_CADENCE], 20, true)
+      const result = await AntPlus?.startSearch([
+        AntPlusDeviceType.HEARTRATE,
+        AntPlusDeviceType.BIKE_CADENCE,
+        AntPlusDeviceType.BIKE_POWER,
+      ], 20, true)
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
@@ -59,6 +65,10 @@ export default function App() {
     data.calculatedCadence && setRpm(data.calculatedCadence)
   }
 
+  const bikePowerChange = (data: any) => {
+    data.calculatedPower && setPower(data.calculatedPower)
+  }
+
   useEffect(() => {
     if (AntPlus) {
       startSearch()
@@ -70,6 +80,7 @@ export default function App() {
     AntPlusEmitter.addListener(AntPlusEvent.devicesStateChange, devicesStateChange)
     AntPlusEmitter.addListener(AntPlusEvent.heartRate, heartRateChange)
     AntPlusEmitter.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
+    AntPlusEmitter.addListener(AntPlusEvent.bikePower, bikePowerChange)
 
     return () => {
       AntPlusEmitter.removeListener(AntPlusEvent.searchStatus, searchStatus)
@@ -78,6 +89,7 @@ export default function App() {
       AntPlusEmitter.removeListener(AntPlusEvent.devicesStateChange, devicesStateChange)
       AntPlusEmitter.removeListener(AntPlusEvent.heartRate, heartRateChange)
       AntPlusEmitter.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
+      AntPlusEmitter.removeListener(AntPlusEvent.bikePower, bikePowerChange)
     }
   }, [])
 
@@ -85,6 +97,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>BPM: {bpm}</Text>
       <Text>RPM: {rpm}</Text>
+      <Text>POWER: {power}</Text>
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView>
@@ -97,12 +110,15 @@ export default function App() {
               if (!result.connected) return
 
               switch (device.antPlusDeviceType) {
-                case AntPlusDeviceType.BIKE_CADENCE:
-                  AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikeCadence.CalculatedCadence], true)
-                  break
-                case AntPlusDeviceType.HEARTRATE:
-                  AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
-                  break
+              case AntPlusDeviceType.BIKE_CADENCE:
+                AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikeCadenceEvent.CalculatedCadence], true)
+                break
+              case AntPlusDeviceType.BIKE_POWER:
+                AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikePowerEvent.CalculatedPower], true)
+                break
+              case AntPlusDeviceType.HEARTRATE:
+                AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
+                break
               }
             } catch (error) {
               console.log('connect error', error)
@@ -121,9 +137,10 @@ export default function App() {
           return (
             <View key={device.antDeviceNumber} style={styles.device}>
               <Text>{device.antPlusDeviceTypeName} </Text>
-              <Button onPress={handlePressConnect} title="Connect" />
-              <Text> </Text>
-              <Button onPress={handlePressDisconnect} title="Disconnect" />
+              <View style={styles.controls}>
+                <Button onPress={handlePressConnect} title="Connect"/>
+                <Button onPress={handlePressDisconnect} title="Disconnect"/>
+              </View>
             </View>
           )
         })}
@@ -144,7 +161,12 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   device: {
-    flexDirection: 'row',
     alignItems: 'center',
+  },
+  controls: {
+    flexDirection: 'row',
+  },
+  button: {
+    marginHorizontal: 2,
   },
 })
