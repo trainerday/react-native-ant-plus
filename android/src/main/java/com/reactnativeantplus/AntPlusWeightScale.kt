@@ -27,32 +27,34 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
-      when (AntPlusWeightScaleEvent.valueOf(event as String)) {
-        AntPlusWeightScaleEvent.BodyWeightBroadcast -> subscribeBodyWeightBroadcast(isOnlyNewData)
-        AntPlusWeightScaleEvent.BatteryStatus -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusWeightScaleEvent.ManufacturerIdentification -> subscribeManufacturerIdentification(isOnlyNewData)
-        AntPlusWeightScaleEvent.ManufacturerSpecific -> subscribeManufacturerSpecificData(isOnlyNewData)
-        AntPlusWeightScaleEvent.ProductInformation -> subscribeProductInformation(isOnlyNewData)
-        AntPlusWeightScaleEvent.Rssi -> subscribeRssi(isOnlyNewData)
+      when (event) {
+        AntPlusWeightScaleEvent.BodyWeightBroadcast.toString() -> subscribeBodyWeightBroadcast(isOnlyNewData)
+        AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
+        AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }
   }
 
   fun unsubscribe(events: ReadableArray) {
     events.toArrayList().forEach { event ->
-      when (AntPlusWeightScaleEvent.valueOf(event as String)) {
-        AntPlusWeightScaleEvent.BodyWeightBroadcast -> unsubscribeBodyWeightBroadcast()
-        AntPlusWeightScaleEvent.BatteryStatus -> unsubscribeBatteryStatus()
-        AntPlusWeightScaleEvent.ManufacturerIdentification -> unsubscribeManufacturerIdentification()
-        AntPlusWeightScaleEvent.ManufacturerSpecific -> unsubscribeManufacturerSpecificData()
-        AntPlusWeightScaleEvent.ProductInformation -> unsubscribeProductInformation()
-        AntPlusWeightScaleEvent.Rssi -> unsubscribeRssi()
+      when (event) {
+        AntPlusWeightScaleEvent.BodyWeightBroadcast.toString() -> unsubscribeBodyWeightBroadcast()
+        AntPlusCommonEvent.BatteryStatus.toString() -> unsubscribeBatteryStatus()
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> unsubscribeManufacturerIdentification()
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> unsubscribeManufacturerSpecificData()
+        AntPlusCommonEvent.ProductInformation.toString() -> unsubscribeProductInformation()
+        AntPlusCommonEvent.Rssi.toString() -> unsubscribeRssi()
       }
     }
   }
 
   private fun unsubscribeBodyWeightBroadcast() {
     weightScale!!.subscribeBodyWeightBroadcastEvent(null)
+    deviceData.remove("bodyWeightStatus")
+    deviceData.remove("bodyWeight")
   }
 
   private fun subscribeBodyWeightBroadcast(isOnlyNewData: Boolean) {
@@ -76,6 +78,12 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   private fun unsubscribeBatteryStatus() {
     weightScale!!.subscribeBatteryStatusEvent(null)
+    deviceData.remove("cumulativeOperatingTime")
+    deviceData.remove("batteryVoltage")
+    deviceData.remove("batteryStatus")
+    deviceData.remove("cumulativeOperatingTimeResolution")
+    deviceData.remove("numberOfBatteries")
+    deviceData.remove("batteryIdentifier")
   }
 
   private fun subscribeBatteryStatus(isOnlyNewData: Boolean) {
@@ -100,7 +108,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["batteryIdentifier"] = batteryIdentifier
 
       val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusWeightScaleEvent.BatteryStatus.toString())
+      eventData.putString("event", AntPlusCommonEvent.BatteryStatus.toString())
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       eventData.putString("eventFlags", eventFlags.toString())
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
@@ -116,6 +124,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   private fun unsubscribeManufacturerIdentification() {
     weightScale!!.subscribeManufacturerIdentificationEvent(null)
+    deviceData.remove("hardwareRevision")
+    deviceData.remove("manufacturerID")
+    deviceData.remove("modelNumber")
+
   }
 
   private fun subscribeManufacturerIdentification(isOnlyNewData: Boolean) {
@@ -129,10 +141,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["modelNumber"] = modelNumber
 
       val eventData = Arguments.createMap()
-      eventData.putString(
-        "event",
-        AntPlusWeightScaleEvent.ManufacturerIdentification.toString()
-      )
+      eventData.putString("event", AntPlusCommonEvent.ManufacturerIdentification.toString())
       eventData.putString("eventFlags", eventFlags.toString())
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       eventData.putInt("hardwareRevision", hardwareRevision)
@@ -145,6 +154,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   private fun unsubscribeManufacturerSpecificData() {
     weightScale!!.subscribeManufacturerSpecificDataEvent(null)
+    deviceData.remove("rawDataBytes")
   }
 
   private fun subscribeManufacturerSpecificData(isOnlyNewData: Boolean) {
@@ -156,7 +166,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["rawDataBytes"] = rawDataBytes
 
       val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusWeightScaleEvent.ManufacturerSpecific.toString())
+      eventData.putString("event", AntPlusCommonEvent.ManufacturerSpecific.toString())
       eventData.putString("eventFlags", eventFlags.toString())
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       try {
@@ -170,6 +180,9 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   private fun unsubscribeProductInformation() {
     weightScale!!.subscribeProductInformationEvent(null)
+    deviceData.remove("softwareRevision")
+    deviceData.remove("supplementaryRevision")
+    deviceData.remove("serialNumber")
   }
 
   private fun subscribeProductInformation(isOnlyNewData: Boolean) {
@@ -183,7 +196,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["serialNumber"] = serialNumber
 
       val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusWeightScaleEvent.ProductInformation.toString())
+      eventData.putString("event", AntPlusCommonEvent.ProductInformation.toString())
       eventData.putString("eventFlags", eventFlags.toString())
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       eventData.putInt("softwareRevision", softwareRevision)
@@ -195,6 +208,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
   private fun unsubscribeRssi() {
     weightScale!!.subscribeRssiEvent(null)
+    deviceData.remove("rssi")
   }
 
   private fun subscribeRssi(isOnlyNewData: Boolean) {
@@ -206,7 +220,7 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["rssi"] = rssi
 
       val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusWeightScaleEvent.Rssi.toString())
+      eventData.putString("event", AntPlusCommonEvent.Rssi.toString())
       eventData.putString("eventFlags", eventFlags.toString())
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       eventData.putInt("rssi", rssi)
