@@ -892,7 +892,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-
   protected var resultReceiver =
     IPluginAccessResultReceiver<AntPlusBikePowerPcc> { result, resultCode, initialDeviceState ->
       val status = Arguments.createMap()
