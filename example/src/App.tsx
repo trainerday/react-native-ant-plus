@@ -134,12 +134,22 @@ export default function App() {
             }
           }
 
+          const handlePressSet = async () => {
+            try {
+              const result = await AntPlus.setVariables(device.antDeviceNumber, {wheelCircumferenceInMeters: 2.06})
+              console.log('set', result)
+            } catch (error) {
+              console.log('set error', error)
+            }
+          }
+
           return (
             <View key={device.antDeviceNumber} style={styles.device}>
               <Text>{device.antPlusDeviceTypeName} </Text>
               <View style={styles.controls}>
                 <Button onPress={handlePressConnect} title="Connect"/>
                 <Button onPress={handlePressDisconnect} title="Disconnect"/>
+                <Button onPress={handlePressSet} title="SET"/>
               </View>
             </View>
           )
