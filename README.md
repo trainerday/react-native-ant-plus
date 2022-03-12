@@ -34,7 +34,6 @@ import AntPlus from "react-native-ant-plus"
 
 You can take a look at an [example](https://github.com/trainerday/react-native-ant-plus/tree/master/example) to get a better understanding of how to use it.
 
-
 ## Methods
 
 ### startSearch(antPlusDeviceTypes, seconds, allowRssi)
@@ -315,26 +314,26 @@ Event listener for the BikePower plugin service
 - `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
 
 AutoZeroStatus - event
-- `autoZeroStatus` - `string` - The AntPlusBikePowerPcc.AutoZeroStatus currently known for the power meter, aggregated from multiple calibration page types.
+- `autoZeroStatus` - `string` - The [AutoZeroStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.AutoZeroStatus.html) currently known for the power meter, aggregated from multiple calibration page types.
 
 CalculatedCrankCadence - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
 - `calculatedCrankCadence` - `number` - The average crank cadence calculated from sensor data. Units: RPM.
 
 CalculatedPower - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
 - `calculatedPower` - `number` - The average power calculated from sensor data. Units: W.
 
 CalculatedTorque - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
 - `calculatedTorque` - `number` - The average torque calculated from sensor data. Units: Nm.
 
 CalculatedWheelDistance - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
 - `calculatedWheelDistance` - `string` - The accumulated distance calculated from sensor data. Units: m.
 
 CalculatedWheelSpeed - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which type of data was used for calculation or if this is a new starting average value. A new starting value could be indicated when starting the plugin, or if reception is lost for too long to guarantee accurate data. If using a new starting value to record data, please use this event as a new starting point in time.
 - `calculatedWheelSpeed` - `number` - The average speed calculated from sensor data. Units: km/h.
 
 CalibrationMessage - event
@@ -344,16 +343,16 @@ CalibrationMessage - event
 - `manufacturerSpecificData` - `number[]` - The 6 manufacturer specific bytes sent by the power sensor
 
 CrankParameters - event
-- `crankParameters` - `object` - fullCrankLength, crankLengthStatus, sensorSoftwareMismatchStatus, sensorAvailabilityStatus, customCalibrationStatus, isAutoCrankLengthSupported
+- `crankParameters` - `object` - `fullCrankLength`, `crankLengthStatus`, `sensorSoftwareMismatchStatus`, `sensorAvailabilityStatus`, `customCalibrationStatus`, `isAutoCrankLengthSupported`
 - `fullCrankLength` - `string` - The crank length value set in the power meter (up to 0.5mm resolution). Units: mm.
-- `crankLengthStatus` - `string` - The AntPlusBikePowerPcc.CrankLengthStatus of the power meter.
-- `sensorSoftwareMismatchStatus` - `string` - The AntPlusBikePowerPcc.SensorSoftwareMismatchStatus of the power meter.
+- `crankLengthStatus` - `string` - The [CrankLengthStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.CrankLengthStatus.html)  of the power meter.
+- `sensorSoftwareMismatchStatus` - `string` - The [SensorSoftwareMismatchStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.SensorSoftwareMismatchStatus.html) of the power meter.
 - `sensorAvailabilityStatus` - `string` - The AntPlusBikePowerPcc.SensorAvailabilityStatus of the power meter.
 - `customCalibrationStatus` - `string` - The AntPlusBikePowerPcc.CustomCalibrationStatus of the power meter, indicating if custom calibration is required.
 - `isAutoCrankLengthSupported` - `boolean` - Indicates if the power meter is capable of automatically determining crank length.
 
 InstantaneousCadence - event
-- `dataSource` - `string` - The AntPlusBikePowerPcc.DataSource indicating which data page type this field was generated from.
+- `dataSource` - `string` - The [DataSource](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusBikePowerPcc.DataSource.html) indicating which data page type this field was generated from.
 - `instantaneousCadence` - `number` - Instantaneous cadence valid for display, computed by sensor (up to 1RPM resolution). '-1' = Invalid data. Units: RPM.
 
 MeasurementOutputData - event
@@ -441,7 +440,7 @@ Event listener for the WeightScale plugin service
 - `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
 
 BodyWeightBroadcast - event
-- `bodyWeightStatus` - `string` -  The AntPlusWeightScalePcc.BodyWeightStatus of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is AntPlusWeightScalePcc.BodyWeightStatus.VALID.
+- `bodyWeightStatus` - `string` -  The [BodyWeightStatus](https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/AntPlusWeightScalePcc.BodyWeightStatus.html) of the current broadcast. The bodyWeight parameter will only be non-null if this parameter is AntPlusWeightScalePcc.BodyWeightStatus.VALID.
 - `bodyWeight` - `number` -  Body weight value of current broadcast. Units: Kg.
 
 ManufacturerIdentification - event
