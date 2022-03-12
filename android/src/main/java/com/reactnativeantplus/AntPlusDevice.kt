@@ -14,13 +14,21 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
     runOnUiThread {
       isConnected = true
       when (deviceType) {
-        DeviceType.BIKE_CADENCE -> {
-          device = AntPlusBikeCadence(context, antPlus, antDeviceNumber, promise)
-          (device as AntPlusBikeCadence).init()
-        }
         DeviceType.BIKE_POWER -> {
           device = AntPlusBikePower(context, antPlus, antDeviceNumber, promise)
           (device as AntPlusBikePower).init()
+        }
+        DeviceType.BIKE_CADENCE -> {
+          device = AntPlusBikeSpeedAndCadence(context, antPlus, antDeviceNumber, promise)
+          (device as AntPlusBikeSpeedAndCadence).init(deviceType)
+        }
+        DeviceType.BIKE_SPDCAD -> {
+          device = AntPlusBikeSpeedAndCadence(context, antPlus, antDeviceNumber, promise)
+          (device as AntPlusBikeSpeedAndCadence).init(deviceType)
+        }
+        DeviceType.BIKE_SPD -> {
+          device = AntPlusBikeSpeedAndCadence(context, antPlus, antDeviceNumber, promise)
+          (device as AntPlusBikeSpeedAndCadence).init(deviceType)
         }
         DeviceType.WEIGHT_SCALE -> {
           device = AntPlusWeightScale(context, antPlus, antDeviceNumber, promise)
@@ -46,8 +54,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
 
     runOnUiThread {
       when (deviceType) {
-        DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).disconnect(promise)
         DeviceType.BIKE_POWER -> (device as AntPlusBikePower).disconnect(promise)
+        DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
+        DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
+        DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
         DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).disconnect(promise)
         DeviceType.HEARTRATE -> (device as AntPlusHeartRate).disconnect(promise)
         else -> promise.reject(Error("Device is not supported"))
@@ -58,8 +68,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
 
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     when (deviceType) {
-      DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).subscribe(events, isOnlyNewData)
       DeviceType.BIKE_POWER -> (device as AntPlusBikePower).subscribe(events, isOnlyNewData)
+      DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
+      DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
+      DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).subscribe(events, isOnlyNewData)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).subscribe(events, isOnlyNewData)
       else -> Log.e("subscribe", "Device is not supported")
@@ -68,8 +80,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
 
   fun unsubscribe(events: ReadableArray) {
     when (deviceType) {
-      DeviceType.BIKE_CADENCE -> (device as AntPlusBikeCadence).unsubscribe(events)
       DeviceType.BIKE_POWER -> (device as AntPlusBikePower).unsubscribe(events)
+      DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
+      DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
+      DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).unsubscribe(events)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).unsubscribe(events)
       else -> Log.e("unsubscribe", "Device is not supported")
@@ -79,6 +93,8 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
   fun setVariables(variables: ReadableMap, promise: Promise) {
     when (deviceType) {
       DeviceType.BIKE_POWER -> (device as AntPlusBikePower).setVariables(variables, promise)
+      DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).setVariables(variables, promise)
+      DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).setVariables(variables, promise)
       else -> promise.reject(Error("Device is not supported"))
     }
   }

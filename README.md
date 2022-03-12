@@ -11,8 +11,10 @@ An Ant+ module for React Native
 
 ### At the moment devices supported:
 
-- BIKE_CADENCE (122)
 - BIKE_POWER (11)
+- BIKE_SPDCAD = (121),
+- BIKE_CADENCE (122)
+- BIKE_SPD (123)
 - WEIGHT_SCALE (119)
 - HEARTRATE (120)
 
@@ -316,6 +318,10 @@ ProductInformation - event
 Rssi - event
 - `rssi` - `number` - rssi signal.
 
+BatteryStatus - Event
+- `batteryVoltage` - `number` - Current battery voltage. Units: Volts (with 1/256V resolution).
+- `batteryStatus` - `string` - The current reported BatteryStatus.
+
 **Example**
 
 ```js
@@ -446,6 +452,67 @@ Rssi - event
 
 ```js
 AntPlusEmitter.addListener('bikePower', arguments => {})
+```
+
+### bikeSpeedDistance
+
+Event listener for the BikeSpeedDistance plugin service
+
+**Arguments**
+
+- `event` - `string` - Name of the event to which the subscription
+- `eventFlags` - `string` - Informational flags about the event.
+- `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
+
+CalculatedAccumulatedDistance - Event
+- `calculatedAccumulatedDistance` - 'number' - The accumulated distance calculated from the raw values in the sensor broadcast since the sensor was first connected, based on this classes' set wheel circumference passed to the constructor.
+
+CalculatedSpeed - Event
+- `calculatedSpeed` - `number` - The speed calculated from the raw values in the sensor broadcast, based on this classes' set wheel circumference passed to the constructor. Units: m/s.
+
+MotionAndSpeedData - event
+- `isBikeStopped` - `boolean` - False indicates the bike is moving, true indicates the bike has stopped.
+
+RawSpeedAndDistanceData - event
+- `timestampOfLastEvent` - `number` - Sensor reported time counter value of last distance or speed computation (up to 1/200s accuracy). Units: s. Rollover: Every ~46 quadrillion s (~1.5 billion years).
+- `cumulativeRevolutions` - `number` - Total number of revolutions since the sensor was first connected. Note: If the subscriber is not the first PCC connected to the device the accumulation will probably already be at a value greater than 0 and the subscriber should save the first received value as a relative zero for itself. Units: revolutions. Rollover: Every ~9 quintillion revolutions.
+
+ManufacturerIdentification - event
+- `hardwareRevision` - `number` - Manufacturer defined. -1 = 'Not available'.
+- `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
+- `modelNumber` - `number` - Manufacturer defined. -1 = 'Not available'.
+
+ManufacturerSpecific - event
+- `rawDataBytes` - `number[]` - The raw eight bytes which make up the manufacturer specific page.
+
+ProductInformation - event
+- `softwareRevision` - `number` - Manufacturer defined main software revision.
+- `supplementaryRevision` - `number` - Manufacturer defined supplemental software revision. 0xFF = Invalid. -2 = Not supported by installed ANT+ Plugins Service version. @since 3.1.0; requires Plugin Service 3.1.0+
+- `serialNumber` - `number` - Serial number of the device.
+
+Rssi - event
+- `rssi` - `number` - rssi signal.
+
+BatteryStatus - Event
+- `batteryVoltage` - `number` - Current battery voltage. Units: Volts (with 1/256V resolution).
+- `batteryStatus` - `string` - The current reported BatteryStatus.
+
+**Example**
+
+```js
+AntPlusEmitter.addListener('bikeSpeedDistance', arguments => {})
+```
+
+### bikeSpeedAndCadence
+
+Event listener for the bikeSpeedAndCadence
+
+**Example**
+
+- Inherits all arguments and events [bikeCadence](#bikeCadence) and [bikeSpeedDistance](#bikeSpeedDistance)
+
+```js
+AntPlusEmitter.addListener('bikeSpeedAndCadence', arguments => {})
 ```
 
 ### weightScale

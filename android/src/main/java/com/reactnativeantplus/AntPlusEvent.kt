@@ -6,13 +6,13 @@ enum class AntPlusEvent(val event: String) {
   foundDevice("foundDevice"),
   devicesStateChange("devicesStateChange"),
 
+  bikeCadence("bikeCadence"),
+  bikePower("bikePower"),
+  bikeSpeedDistance("bikeSpeedDistance"),
+  bikeSpeedAndCadence("bikeSpeedAndCadence"),
   weightScale("weightScale"),
   heartRate("heartRate"),
 
-  bikeCadence("bikeCadence"),
-  bikeSpeedDistance("bikeSpeedDistance"),
-  bikeSpeed("bikeSpeed"),
-  bikePower("bikePower"),
   strideSdm("strideSdm"),
   environment("environment"),
   fitnessEquipment("fitnessEquipment"),
