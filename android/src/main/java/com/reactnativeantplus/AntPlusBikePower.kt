@@ -19,6 +19,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
   private var bikePower: AntPlusBikePowerPcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusBikePowerPcc>? = null
   private val deviceData = HashMap<String, Any>()
+  private val wheelCircumferenceInMeters = BigDecimal("2.07")
 
   fun init() {
     releaseHandle = requestAccess(
@@ -28,6 +29,19 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       resultReceiver,
       AntPlusPlugin.stateReceiver(antPlus, antDeviceNumber)
     )
+  }
+
+  fun setVariables(variables: ReadableMap, promise: Promise) {
+    val keys = variables.keySetIterator()
+
+    while (keys.hasNextKey()) {
+      when (val key = keys.nextKey()) {
+        "wheelCircumferenceInMeters" -> wheelCircumferenceInMeters = BigDecimal(variables.getDouble(key))
+        else -> promise.reject(Error("Variable $key not found"))
+      }
+    }
+
+    promise.resolve(true)
   }
 
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
@@ -207,8 +221,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   //    TODO: Нужно добавить метод указания колеса
   private fun subscribeCalculatedWheelDistance(isOnlyNewData: Boolean) {
-    val wheelCircumferenceInMeters = BigDecimal("2.07")
-
     bikePower!!.subscribeCalculatedWheelDistanceEvent(object : CalculatedWheelDistanceReceiver(
       wheelCircumferenceInMeters
     ) {
@@ -249,8 +261,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   //    TODO: Нужно добавить метод указания колеса
   private fun subscribeCalculatedWheelSpeed(isOnlyNewData: Boolean) {
-    val wheelCircumferenceInMeters = BigDecimal(2.07)
-
     bikePower!!.subscribeCalculatedWheelSpeedEvent(object : CalculatedWheelSpeedReceiver(wheelCircumferenceInMeters) {
       override fun onNewCalculatedWheelSpeed(
         estTimestamp: Long,

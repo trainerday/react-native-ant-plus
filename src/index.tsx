@@ -234,35 +234,27 @@ type AntPlusSubscribeEvent =
   | AntPlusWeightScaleEvent[]
 
 type AntPlusRequest = {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.CommandBurst,
   args: AntPlusBikePowerRequestCommandBurstArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.CustomCalibrationParameters,
   args: AntPlusBikePowerRequestCustomCalibrationParametersArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.SetAutoZero,
   args: AntPlusBikePowerRequestSetAutoZeroArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.SetCrankParameters,
   args: AntPlusBikePowerRequestSetCrankParametersArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.SetCtfSlope,
   args: AntPlusBikePowerRequestSetCtfSlopeArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.SetCustomCalibrationParameters,
   args: AntPlusBikePowerRequestSetCustomCalibrationParametersArguments
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusBikePowerRequest.CrankParameters | AntPlusBikePowerRequest.ManualCalibration | AntPlusWeightScaleRequest.BasicMeasurement,
   args: {}
 } | {
-  antDeviceNumber: number,
   requestName: AntPlusWeightScaleRequest.AdvancedMeasurement,
   args: AntPlusWeightScaleRequestAdvancedMeasurement
 }
@@ -274,7 +266,8 @@ interface AntPlus {
   disconnect: (antDeviceNumber: number) => Promise<boolean>
   subscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent, isOnlyNewData: boolean) => Promise<boolean>
   unsubscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent) => Promise<boolean>
-  request: <T extends AntPlusRequest>(antDeviceNumber: T['antDeviceNumber'], requestName: T['requestName'], args: T['args']) => Promise<boolean>
+  setVariables: (antDeviceNumber: number, variables: {[key: string]: any}) => Promise<boolean>
+  request: <T extends AntPlusRequest>(antDeviceNumber: number, requestName: T['requestName'], args: T['args']) => Promise<boolean>
 }
 
 export default AntPlusModule as AntPlus

@@ -94,6 +94,18 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
+  fun setVariables(antDeviceNumber: Int, variables: ReadableMap, promise: Promise) {
+    try {
+      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
+        throw Error("Device not connected")
+      }
+      devices[antDeviceNumber]?.setVariables(variables, promise)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
+  }
+
+  @ReactMethod
   fun request(antDeviceNumber: Int, requestName: String, args: ReadableMap, promise: Promise) {
     try {
       if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {

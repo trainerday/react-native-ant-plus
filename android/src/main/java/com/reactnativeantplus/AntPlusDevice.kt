@@ -76,6 +76,13 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
     }
   }
 
+  fun setVariables(variables: ReadableMap, promise: Promise) {
+    when (deviceType) {
+      DeviceType.BIKE_POWER -> (device as AntPlusBikePower).setVariables(variables, promise)
+      else -> promise.reject(Error("Device is not supported"))
+    }
+  }
+
   fun request(requestName: String, args: ReadableMap, promise: Promise) {
     when (deviceType) {
       DeviceType.BIKE_POWER -> (device as AntPlusBikePower).request(requestName, args, promise)
