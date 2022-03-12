@@ -30,6 +30,10 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
           device = AntPlusBikeSpeedAndCadence(context, antPlus, antDeviceNumber, promise)
           (device as AntPlusBikeSpeedAndCadence).init(deviceType)
         }
+        DeviceType.ENVIRONMENT -> {
+          device = AntPlusEnvironment(context, antPlus, antDeviceNumber, promise)
+          (device as AntPlusEnvironment).init()
+        }
         DeviceType.WEIGHT_SCALE -> {
           device = AntPlusWeightScale(context, antPlus, antDeviceNumber, promise)
           (device as AntPlusWeightScale).init()
@@ -58,6 +62,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
         DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
         DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
         DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).disconnect(promise)
+        DeviceType.ENVIRONMENT -> (device as AntPlusEnvironment).disconnect(promise)
         DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).disconnect(promise)
         DeviceType.HEARTRATE -> (device as AntPlusHeartRate).disconnect(promise)
         else -> promise.reject(Error("Device is not supported"))
@@ -72,6 +77,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
       DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
       DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
       DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).subscribe(events, isOnlyNewData)
+      DeviceType.ENVIRONMENT -> (device as AntPlusEnvironment).subscribe(events, isOnlyNewData)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).subscribe(events, isOnlyNewData)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).subscribe(events, isOnlyNewData)
       else -> Log.e("subscribe", "Device is not supported")
@@ -84,6 +90,7 @@ class AntPlusDevice (val context: ReactApplicationContext, val antPlus: AntPlusM
       DeviceType.BIKE_CADENCE -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
       DeviceType.BIKE_SPD -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
       DeviceType.BIKE_SPDCAD -> (device as AntPlusBikeSpeedAndCadence).unsubscribe(events)
+      DeviceType.ENVIRONMENT -> (device as AntPlusEnvironment).unsubscribe(events)
       DeviceType.WEIGHT_SCALE -> (device as AntPlusWeightScale).unsubscribe(events)
       DeviceType.HEARTRATE -> (device as AntPlusHeartRate).unsubscribe(events)
       else -> Log.e("unsubscribe", "Device is not supported")

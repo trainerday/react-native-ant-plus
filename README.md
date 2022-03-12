@@ -515,6 +515,50 @@ Event listener for the bikeSpeedAndCadence
 AntPlusEmitter.addListener('bikeSpeedAndCadence', arguments => {})
 ```
 
+### environment
+
+Event listener for the Environment plugin service
+
+**Example**
+
+- `event` - `string` - Name of the event to which the subscription
+- `eventFlags` - `string` - Informational flags about the event.
+- `estTimestamp` - `number` - The estimated timestamp of when this event was triggered. Useful for correlating multiple events and determining when data was sent for more accurate data records.
+
+TemperatureData - event
+- `currentTemperature` - `number` - The most recent temperature reading of the sensor (up to 0.01*C accuracy). Units: Degrees Celsius.
+- `eventCount` - `number` - Incremented every measurement. Rollover: Every ~9 quintillion N/A.
+- `lowLast24Hours` - `number` - Lowest temperature recorded over the last 24 hours (up to 0.1*C accuracy). Units: Degrees Celsius.
+- `highLast24Hours` - `number` - Highest temperature recorded over the last 24 hours (up to 0.1*C accuracy). Units: Degrees Celsius.
+
+ManufacturerIdentification - event
+- `cumulativeOperatingTime` - `number` - The cumulative operating time since the battery was inserted. Units: seconds (resolution indicated by cumulativeOperatingTimeResolution]). Rollover: Every 16777215s*resolution. ie:~1.1yrs at 2s resolution, ~8.5yrs at 16s resolution.
+- `batteryVoltage` - `string` - Current battery voltage. Invalid = -1. Units: Volts (with 1/256V resolution).
+- `batteryStatus` - `string` - The current reported BatteryStatus.
+- `cumulativeOperatingTimeResolution` - `number` - The resolution accuracy of the cumulativeOperatingTime. Units: seconds.
+- `numberOfBatteries` - `number` - Specifies how many batteries are available in the system. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
+- `batteryIdentifier` - `number` - Identifies the battery in system to which this battery status pertains. Invalid = -1. Unsupported, requires upgrade to ANT+ Plugin Service Version 2.3.0 or newer = -2. @since 2.1.7; requires Plugin Service 2.2.8+
+
+ManufacturerIdentification - event
+- `hardwareRevision` - `number` - Manufacturer defined. -1 = 'Not available'.
+- `manufacturerID` - `number` - ANT+ Alliance managed manufacturer identifier.
+- `modelNumber` - `number` - Manufacturer defined. -1 = 'Not available'.
+
+ManufacturerSpecific - event
+- `rawDataBytes` - `number[]` - The raw eight bytes which make up the manufacturer specific page.
+
+ProductInformation - event
+- `softwareRevision` - `number` - Manufacturer defined main software revision.
+- `supplementaryRevision` - `number` - Manufacturer defined supplemental software revision. 0xFF = Invalid. -2 = Not supported by installed ANT+ Plugins Service version. @since 3.1.0; requires Plugin Service 3.1.0+
+- `serialNumber` - `number` - Serial number of the device.
+
+Rssi - event
+- `rssi` - `number` - rssi signal.
+
+```js
+AntPlusEmitter.addListener('environment', arguments => {})
+```
+
 ### weightScale
 
 Event listener for the WeightScale plugin service
