@@ -19,7 +19,8 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
   private var bikePower: AntPlusBikePowerPcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusBikePowerPcc>? = null
   private val deviceData = HashMap<String, Any>()
-  private val wheelCircumferenceInMeters = BigDecimal("2.07")
+
+  private var wheelCircumferenceInMeters = BigDecimal("2.07")
 
   fun init() {
     releaseHandle = requestAccess(
@@ -219,7 +220,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     deviceData.remove("calculatedWheelDistance")
   }
 
-  //    TODO: Нужно добавить метод указания колеса
   private fun subscribeCalculatedWheelDistance(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCalculatedWheelDistanceEvent(object : CalculatedWheelDistanceReceiver(
       wheelCircumferenceInMeters
@@ -259,8 +259,9 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   }
 
-  //    TODO: Нужно добавить метод указания колеса
   private fun subscribeCalculatedWheelSpeed(isOnlyNewData: Boolean) {
+    val wheelCircumferenceInMeters = BigDecimal(2.07)
+
     bikePower!!.subscribeCalculatedWheelSpeedEvent(object : CalculatedWheelSpeedReceiver(wheelCircumferenceInMeters) {
       override fun onNewCalculatedWheelSpeed(
         estTimestamp: Long,
@@ -901,6 +902,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       promise.resolve(requestStatus.toString())
     }
   }
+
 
   protected var resultReceiver =
     IPluginAccessResultReceiver<AntPlusBikePowerPcc> { result, resultCode, initialDeviceState ->
