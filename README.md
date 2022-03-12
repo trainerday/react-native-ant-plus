@@ -277,7 +277,7 @@ The rssi signal while the search is going on.
 **Example**
 
 ```js
-AntPlusEmitter.addListener('rssi', arguments => {})
+AntPlusEmitter.addListener('devicesStateChange', arguments => {})
 ```
 
 ### bikeCadence
@@ -319,7 +319,7 @@ Rssi - event
 **Example**
 
 ```js
-AntPlusEmitter.addListener('weightScale', arguments => {})
+AntPlusEmitter.addListener('bikeCadence', arguments => {})
 ```
 
 ### bikePower
@@ -445,7 +445,7 @@ Rssi - event
 **Example**
 
 ```js
-AntPlusEmitter.addListener('weightScale', arguments => {})
+AntPlusEmitter.addListener('bikePower', arguments => {})
 ```
 
 ### weightScale
