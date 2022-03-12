@@ -190,6 +190,25 @@ AntPlus.unsubscribe(antDeviceNumber, events).then(isUnsubscribed => {
 >AntPlus.request(antDeviceNumber, requestName, args)
 >```
 
+>### setVariables(antDeviceNumber, variables) [Experimental]
+>
+>Change a variable in the plugin.
+>Returns a `Promise` object.
+>
+>**Arguments**
+>
+>- `antDeviceNumber` - `Integer` - the Ant device number.
+>- `variables` - `ReadableMap` - Variables you want to change.
+>
+>**Example**
+>
+>```js
+>const antDeviceNumber = 012345
+>const variables = {wheelCircumferenceInMeters: 2.06}
+>
+>AntPlus.setVariables(antDeviceNumber, variables)
+>```
+
 ## Events
 
 ### searchStatus
