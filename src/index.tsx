@@ -56,6 +56,7 @@ export enum AntPlusEvent {
   bikeSpeedDistance = 'bikeSpeedDistance',
   bikeSpeedAndCadence = 'bikeSpeedAndCadence',
   environment = 'environment',
+  fitnessEquipment = 'fitnessEquipment',
   weightScale = 'weightScale',
   heartRate = 'heartRate',
 
@@ -170,6 +171,83 @@ export enum AntPlusEnvironmentEvent {
   TemperatureData = 'TemperatureData',
 }
 
+export enum AntPlusFitnessEquipmentEvent {
+  CalibrationInProgress = 'CalibrationInProgress',
+  CalibrationResponse = 'CalibrationResponse',
+  Capabilities = 'Capabilities',
+  GeneralFitnessEquipmentData = 'GeneralFitnessEquipmentData',
+  GeneralMetabolicData = 'GeneralMetabolicData',
+  GeneralSettings = 'GeneralSettings',
+  LapOccured = 'LapOccured',
+  UserConfiguration = 'UserConfiguration',
+  Treadmill = 'Treadmill',
+  ClimberData = 'ClimberData',
+  EllipticalData = 'EllipticalData',
+  NordicSkierData = 'NordicSkierData',
+  RowerData = 'RowerData',
+  BikeData = 'BikeData',
+  BasicResistance = 'BasicResistance',
+  CalculatedTrainerDistance = 'CalculatedTrainerDistance',
+  CalculatedTrainerPower = 'CalculatedTrainerPower',
+  CalculatedTrainerSpeed = 'CalculatedTrainerSpeed',
+  CommandStatus = 'CommandStatus',
+  RawTrainerData = 'RawTrainerData',
+  RawTrainerTorqueData = 'RawTrainerTorqueData',
+  TargetPower = 'TargetPower',
+  TrackResistance = 'TrackResistance',
+  TrainerStatus = 'TrainerStatus',
+  WindResistance = 'WindResistance',
+}
+
+export enum AntPlusFitnessEquipmentRequest {
+  SetUserConfiguration = 'SetUserConfiguration',
+  SpinDownCalibration = 'SpinDownCalibration',
+  UserConfiguration = 'UserConfiguration',
+  ZeroOffsetCalibration = 'ZeroOffsetCalibration',
+  SetTargetPower = 'SetTargetPower',
+  BasicResistance = 'BasicResistance',
+  CommandStatus = 'CommandStatus',
+  SetBasicResistance = 'SetBasicResistance',
+  SetTrackResistance = 'SetTrackResistance',
+  SetWindResistance = 'SetWindResistance',
+  TargetPower = 'TargetPower',
+  TrackResistance = 'TrackResistance',
+  WindResistance = 'WindResistance',
+}
+
+export interface AntPlusFitnessEquipmentRequestSetUserConfiguration {
+  bicycleWeight: number
+  gearRatio: number
+  bicycleWheelDiameter: number
+  userWeight: number
+}
+
+export interface AntPlusFitnessEquipmentRequestSetTargetPower {
+  target: number
+}
+
+export interface AntPlusFitnessEquipmentRequestSetBasicResistance {
+  totalResistance: number
+
+}
+
+export interface AntPlusFitnessEquipmentRequestSetTrackResistance {
+  grade: number
+  rollingResistanceCoefficient: number
+}
+
+export type AntPlusFitnessEquipmentRequestSetWindResistance = {
+  windSpeed: number
+  draftingFactor: number
+  windResistanceCoefficient: number
+} | {
+  windSpeed: number
+  draftingFactor: number
+  frontalSurfaceArea: number
+  dragCoefficient: number
+  airDensity: number
+}
+
 export enum AntPlusHeartRateEvent {
   CalculatedRrInterval = 'CalculatedRrInterval',
   HeartRateData = 'HeartRateData',
@@ -250,6 +328,7 @@ type AntPlusSubscribeEvent =
   | AntPlusSpeedDistanceEvent[]
   | AntPlusSpeedAndCadenceEvent[]
   | AntPlusEnvironmentEvent[]
+  | AntPlusFitnessEquipmentEvent[]
   | AntPlusHeartRateEvent[]
   | AntPlusWeightScaleEvent[]
 
@@ -272,7 +351,33 @@ type AntPlusRequest = {
   requestName: AntPlusBikePowerRequest.SetCustomCalibrationParameters,
   args: AntPlusBikePowerRequestSetCustomCalibrationParametersArguments
 } | {
-  requestName: AntPlusBikePowerRequest.CrankParameters | AntPlusBikePowerRequest.ManualCalibration | AntPlusWeightScaleRequest.BasicMeasurement,
+  requestName: AntPlusFitnessEquipmentRequest.SetUserConfiguration,
+  args: AntPlusFitnessEquipmentRequestSetUserConfiguration,
+} | {
+  requestName: AntPlusFitnessEquipmentRequest.SetTargetPower,
+  args: AntPlusFitnessEquipmentRequestSetTargetPower,
+} | {
+  requestName: AntPlusFitnessEquipmentRequest.SetBasicResistance,
+  args: AntPlusFitnessEquipmentRequestSetBasicResistance,
+} | {
+  requestName: AntPlusFitnessEquipmentRequest.SetTrackResistance,
+  args: AntPlusFitnessEquipmentRequestSetTrackResistance,
+} | {
+  requestName: AntPlusFitnessEquipmentRequest.SetWindResistance,
+  args: AntPlusFitnessEquipmentRequestSetWindResistance,
+} | {
+  requestName:
+    AntPlusBikePowerRequest.CrankParameters |
+    AntPlusBikePowerRequest.ManualCalibration |
+    AntPlusFitnessEquipmentRequest.SpinDownCalibration |
+    AntPlusFitnessEquipmentRequest.UserConfiguration |
+    AntPlusFitnessEquipmentRequest.ZeroOffsetCalibration |
+    AntPlusFitnessEquipmentRequest.BasicResistance |
+    AntPlusFitnessEquipmentRequest.CommandStatus |
+    AntPlusFitnessEquipmentRequest.TargetPower |
+    AntPlusFitnessEquipmentRequest.TrackResistance |
+    AntPlusFitnessEquipmentRequest.WindResistance |
+    AntPlusWeightScaleRequest.BasicMeasurement,
   args: {}
 } | {
   requestName: AntPlusWeightScaleRequest.AdvancedMeasurement,
@@ -287,7 +392,8 @@ interface AntPlus {
   subscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent, isOnlyNewData: boolean) => Promise<boolean>
   unsubscribe: (antDeviceNumber: number, events: AntPlusSubscribeEvent) => Promise<boolean>
   setVariables: (antDeviceNumber: number, variables: {[key: string]: any}) => Promise<boolean>
-  request: <T extends AntPlusRequest>(antDeviceNumber: number, requestName: T['requestName'], args: T['args']) => Promise<boolean>
+  getVariables: (antDeviceNumber: number, variables: {[key: string]: any}) => Promise<any>
+  request: <T extends AntPlusRequest>(antDeviceNumber: number, requestName: T['requestName'], args: T['args']) => Promise<any>
 }
 
 export default AntPlusModule as AntPlus
