@@ -1,5 +1,11 @@
 package com.reactnativeantplus
 
+/**
+ * Implementing the MultiDeviceSearch
+ * https://www.thisisant.com/APIassets/Android_ANT_plus_plugins_API/com/dsi/ant/plugins/antplus/pcc/MultiDeviceSearch.html
+ */
+
+import com.reactnativeantplus.events.AntPlusEvent
 import com.dsi.ant.plugins.antplus.pcc.MultiDeviceSearch
 import com.dsi.ant.plugins.antplus.pcc.MultiDeviceSearch.*
 import com.dsi.ant.plugins.antplus.pcc.defines.DeviceType
@@ -9,9 +15,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import java.util.*
 
-
-class AntPlusSearch(context: ReactApplicationContext, antPlus: AntPlusModule) {
-  private var context: ReactApplicationContext = context
+class AntPlusSearch(val context: ReactApplicationContext, val antPlus: AntPlusModule) {
   private var search: MultiDeviceSearch? = null
   private var isSearching = false
   private val devicesRssi = mutableMapOf<Int, Int>()
