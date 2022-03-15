@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 
-import {Button, ScrollView, StyleSheet, Text, View} from 'react-native'
+import {Alert, Button, ScrollView, StyleSheet, Text, View} from 'react-native'
 import AntPlus, {
   AntPlusBikeCadenceEvent,
   AntPlusBikePowerEvent,
@@ -9,6 +9,8 @@ import AntPlus, {
   AntPlusDeviceType,
   AntPlusEmitter,
   AntPlusEvent,
+  AntPlusFitnessEquipmentEvent,
+  AntPlusFitnessEquipmentRequest,
   AntPlusHeartRateEvent,
   AntPlusRssiEvent,
   AntPlusSearchStatus,
@@ -27,6 +29,7 @@ export default function App() {
         AntPlusDeviceType.HEARTRATE,
         AntPlusDeviceType.BIKE_CADENCE,
         AntPlusDeviceType.BIKE_POWER,
+        AntPlusDeviceType.FITNESS_EQUIPMENT,
       ], 20, true)
       console.log(result, 'result')
     } catch (error) {
@@ -69,6 +72,16 @@ export default function App() {
     data.calculatedPower && setPower(data.calculatedPower)
   }
 
+  const fitnessEquipmentChange = (data: any) => {
+    if (data.event === 'Testing') {
+      Alert.alert(data.type)
+    }
+    if (data.event === AntPlusFitnessEquipmentEvent.CalculatedTrainerPower) {
+      setPower(data.calculatedPower)
+    }
+    console.log(data)
+  }
+
   useEffect(() => {
     if (AntPlus) {
       startSearch()
@@ -81,6 +94,7 @@ export default function App() {
     AntPlusEmitter.addListener(AntPlusEvent.heartRate, heartRateChange)
     AntPlusEmitter.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
     AntPlusEmitter.addListener(AntPlusEvent.bikePower, bikePowerChange)
+    AntPlusEmitter.addListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
 
     return () => {
       AntPlusEmitter.removeListener(AntPlusEvent.searchStatus, searchStatus)
@@ -90,14 +104,46 @@ export default function App() {
       AntPlusEmitter.removeListener(AntPlusEvent.heartRate, heartRateChange)
       AntPlusEmitter.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
       AntPlusEmitter.removeListener(AntPlusEvent.bikePower, bikePowerChange)
+      AntPlusEmitter.removeListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
     }
   }, [])
 
+  const [antDeviceNumber, setAntDeviceNumber] = useState(-1)
+  const [target, setTarget] = useState(50)
+
+  const handlePressTargetUp = () => {
+    setTarget(target => target + 10)
+  }
+
+  const handlePressTargetDown = () => {
+    if (target < 9) {
+      return
+    }
+    setTarget(target => target - 10)
+  }
+
+  useEffect(() => {
+    if (antDeviceNumber === -1) {
+      return
+    }
+
+    AntPlus.request(antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, {target}).then(result => {
+      console.log('target', result)
+    }).catch(error => {
+      console.log('target error', error)
+    })
+  }, [target, antDeviceNumber])
+
   return (
     <View style={styles.container}>
+      <View style={styles.controls}>
+        <Button onPress={handlePressTargetUp} title="TargetUp"/>
+        <Button onPress={handlePressTargetDown} title="TargetDown"/>
+      </View>
       <Text>BPM: {bpm}</Text>
       <Text>RPM: {rpm}</Text>
       <Text>POWER: {power}</Text>
+      <Text>Target: {target}</Text>
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView>
@@ -115,6 +161,10 @@ export default function App() {
                 break
               case AntPlusDeviceType.BIKE_POWER:
                 AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikePowerEvent.CalculatedPower], true)
+                break
+              case AntPlusDeviceType.FITNESS_EQUIPMENT:
+                setAntDeviceNumber(device.antDeviceNumber)
+                AntPlus.subscribe(device.antDeviceNumber, [AntPlusFitnessEquipmentEvent.CalculatedTrainerPower], true)
                 break
               case AntPlusDeviceType.HEARTRATE:
                 AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
@@ -134,22 +184,12 @@ export default function App() {
             }
           }
 
-          const handlePressSet = async () => {
-            try {
-              const result = await AntPlus.setVariables(device.antDeviceNumber, {wheelCircumferenceInMeters: 2.06})
-              console.log('set', result)
-            } catch (error) {
-              console.log('set error', error)
-            }
-          }
-
           return (
             <View key={device.antDeviceNumber} style={styles.device}>
               <Text>{device.antPlusDeviceTypeName} </Text>
               <View style={styles.controls}>
                 <Button onPress={handlePressConnect} title="Connect"/>
                 <Button onPress={handlePressDisconnect} title="Disconnect"/>
-                <Button onPress={handlePressSet} title="SET"/>
               </View>
             </View>
           )
