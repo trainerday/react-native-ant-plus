@@ -14,5 +14,6 @@ enum class AntPlusEvent(val event: String) {
   fitnessEquipment("fitnessEquipment"),
   weightScale("weightScale"),
   heartRate("heartRate"),
-  strideSdm("strideSdm"),
+  strideSdm("strideSdm")
+}
 
