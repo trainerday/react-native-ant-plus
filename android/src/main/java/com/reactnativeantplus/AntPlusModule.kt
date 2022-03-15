@@ -1,6 +1,7 @@
 package com.reactnativeantplus
 
 import androidx.annotation.Nullable
+import com.reactnativeantplus.events.AntPlusEvent
 import com.dsi.ant.plugins.antplus.pcc.defines.RequestAccessResult
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
@@ -106,6 +107,18 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
+  fun getVariables(antDeviceNumber: Int, variables: ReadableMap, promise: Promise) {
+    try {
+      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
+        throw Error("Device not connected")
+      }
+      devices[antDeviceNumber]?.getVariables(variables, promise)
+    } catch (throwable: Throwable) {
+      promise.reject(throwable)
+    }
+  }
+
+  @ReactMethod
   fun request(antDeviceNumber: Int, requestName: String, args: ReadableMap, promise: Promise) {
     try {
       if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
@@ -127,19 +140,21 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
     // Remove upstream listeners, stop unnecessary background tasks
   }
 
-  fun bytesToWritableArray(bytes: ByteArray): WritableArray? {
-    val data = Arguments.createArray()
-    for (i in bytes.indices) {
-      data.pushInt((bytes[i] and 0xFF.toByte()).toInt())
+  companion object {
+    fun bytesToWritableArray(bytes: ByteArray): WritableArray? {
+      val data = Arguments.createArray()
+      for (i in bytes.indices) {
+        data.pushInt((bytes[i] and 0xFF.toByte()).toInt())
+      }
+      return data
     }
-    return data
-  }
 
-  fun writableArrayToBytes(array: ReadableArray): ByteArray {
-    val bytes = ByteArray(array.size())
-    for (i in 0 until array.size()) {
-      bytes[i] = array.getInt(i).toByte()
+    fun writableArrayToBytes(array: ReadableArray): ByteArray {
+      val bytes = ByteArray(array.size())
+      for (i in 0 until array.size()) {
+        bytes[i] = array.getInt(i).toByte()
+      }
+      return bytes
     }
-    return bytes
   }
 }
