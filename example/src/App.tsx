@@ -1,20 +1,15 @@
 import React, {useEffect, useState} from 'react'
 
-import {Alert, Button, ScrollView, StyleSheet, Text, View} from 'react-native'
+import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native'
 import AntPlus, {
-  AntPlusBikeCadenceEvent,
-  AntPlusBikePowerEvent,
   AntPlusDevice,
   AntPlusDeviceStateChange,
   AntPlusDeviceType,
-  AntPlusEmitter,
   AntPlusEvent,
   AntPlusFitnessEquipmentEvent,
-  AntPlusFitnessEquipmentRequest,
-  AntPlusHeartRateEvent,
-  AntPlusRssiEvent,
   AntPlusSearchStatus,
 } from 'react-native-ant-plus'
+import Device from './Device'
 
 export default function App() {
   const [devices, setDevices] = useState<AntPlusDevice[]>(() => [])
@@ -25,19 +20,21 @@ export default function App() {
 
   const startSearch = async () => {
     try {
+      const searchSeconds = 60
+
       const result = await AntPlus?.startSearch([
         AntPlusDeviceType.HEARTRATE,
         AntPlusDeviceType.BIKE_CADENCE,
         AntPlusDeviceType.BIKE_POWER,
         AntPlusDeviceType.FITNESS_EQUIPMENT,
-      ], 20, true)
+      ], searchSeconds, true)
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
     }
   }
 
-  const searchStatus = (status: AntPlusSearchStatus) => {
+  const searchStatus = (status: AntPlusSearchStatus): void => {
     console.log('searchStatus', status)
     setStatusSearch(status.isSearching)
   }
@@ -45,15 +42,15 @@ export default function App() {
   const foundDevice = (device: AntPlusDevice) => {
     console.log(device)
     setDevices((prev) => {
-      if (prev.some((unit) => unit.antDeviceNumber === device.antDeviceNumber)) {
+      if (prev.some((unit) => unit.resultID === device.resultID)) {
         return prev
       }
       return [...prev, device]
     })
   }
 
-  const rssi = (event: AntPlusRssiEvent) => {
-    console.log('rssi', event)
+  const rssi = (event: {rssi: number, resultID: number}): void => {
+    console.log('rssi', event.rssi)
   }
 
   const devicesStateChange = (event: AntPlusDeviceStateChange) => {
@@ -87,113 +84,36 @@ export default function App() {
       startSearch()
     }
 
-    AntPlusEmitter.addListener(AntPlusEvent.searchStatus, searchStatus)
-    AntPlusEmitter.addListener(AntPlusEvent.foundDevice, foundDevice)
-    AntPlusEmitter.addListener(AntPlusEvent.rssi, rssi)
-    AntPlusEmitter.addListener(AntPlusEvent.devicesStateChange, devicesStateChange)
-    AntPlusEmitter.addListener(AntPlusEvent.heartRate, heartRateChange)
-    AntPlusEmitter.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
-    AntPlusEmitter.addListener(AntPlusEvent.bikePower, bikePowerChange)
-    AntPlusEmitter.addListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
+    AntPlus.addListener(AntPlusEvent.searchStatus, searchStatus)
+    AntPlus.addListener(AntPlusEvent.foundDevice, foundDevice)
+    AntPlus.addListener(AntPlusEvent.rssi, rssi)
+    AntPlus.addListener(AntPlusEvent.devicesStateChange, devicesStateChange)
+    AntPlus.addListener(AntPlusEvent.heartRate, heartRateChange)
+    AntPlus.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
+    AntPlus.addListener(AntPlusEvent.bikePower, bikePowerChange)
+    AntPlus.addListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
 
     return () => {
-      AntPlusEmitter.removeListener(AntPlusEvent.searchStatus, searchStatus)
-      AntPlusEmitter.removeListener(AntPlusEvent.foundDevice, foundDevice)
-      AntPlusEmitter.removeListener(AntPlusEvent.rssi, rssi)
-      AntPlusEmitter.removeListener(AntPlusEvent.devicesStateChange, devicesStateChange)
-      AntPlusEmitter.removeListener(AntPlusEvent.heartRate, heartRateChange)
-      AntPlusEmitter.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
-      AntPlusEmitter.removeListener(AntPlusEvent.bikePower, bikePowerChange)
-      AntPlusEmitter.removeListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
+      AntPlus.removeListener(AntPlusEvent.searchStatus, searchStatus)
+      AntPlus.removeListener(AntPlusEvent.foundDevice, foundDevice)
+      AntPlus.removeListener(AntPlusEvent.rssi, rssi)
+      AntPlus.removeListener(AntPlusEvent.devicesStateChange, devicesStateChange)
+      AntPlus.removeListener(AntPlusEvent.heartRate, heartRateChange)
+      AntPlus.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
+      AntPlus.removeListener(AntPlusEvent.bikePower, bikePowerChange)
+      AntPlus.removeListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
     }
   }, [])
 
-  const [antDeviceNumber, setAntDeviceNumber] = useState(-1)
-  const [target, setTarget] = useState(50)
-
-  const handlePressTargetUp = () => {
-    setTarget(target => target + 10)
-  }
-
-  const handlePressTargetDown = () => {
-    if (target < 9) {
-      return
-    }
-    setTarget(target => target - 10)
-  }
-
-  useEffect(() => {
-    if (antDeviceNumber === -1) {
-      return
-    }
-
-    AntPlus.request(antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, {target}).then(result => {
-      console.log('target', result)
-    }).catch(error => {
-      console.log('target error', error)
-    })
-  }, [target, antDeviceNumber])
-
   return (
     <View style={styles.container}>
-      <View style={styles.controls}>
-        <Button onPress={handlePressTargetUp} title="TargetUp"/>
-        <Button onPress={handlePressTargetDown} title="TargetDown"/>
-      </View>
       <Text>BPM: {bpm}</Text>
       <Text>RPM: {rpm}</Text>
       <Text>POWER: {power}</Text>
-      <Text>Target: {target}</Text>
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
-      <ScrollView>
-        {devices.map((device) => {
-          const handlePressConnect = async () => {
-            try {
-              const result = await AntPlus.connect(device.antDeviceNumber, device.antPlusDeviceType)
-              console.log('connect', result)
-
-              if (!result.connected) return
-
-              switch (device.antPlusDeviceType) {
-              case AntPlusDeviceType.BIKE_CADENCE:
-                AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikeCadenceEvent.CalculatedCadence], true)
-                break
-              case AntPlusDeviceType.BIKE_POWER:
-                AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikePowerEvent.CalculatedPower], true)
-                break
-              case AntPlusDeviceType.FITNESS_EQUIPMENT:
-                setAntDeviceNumber(device.antDeviceNumber)
-                AntPlus.subscribe(device.antDeviceNumber, [AntPlusFitnessEquipmentEvent.CalculatedTrainerPower], true)
-                break
-              case AntPlusDeviceType.HEARTRATE:
-                AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
-                break
-              }
-            } catch (error) {
-              console.log('connect error', error)
-            }
-          }
-
-          const handlePressDisconnect = async () => {
-            try {
-              const result = await AntPlus.disconnect(device.antDeviceNumber)
-              console.log('disconnect', result)
-            } catch (error) {
-              console.log('disconnect error', error)
-            }
-          }
-
-          return (
-            <View key={device.antDeviceNumber} style={styles.device}>
-              <Text>{device.antPlusDeviceTypeName} </Text>
-              <View style={styles.controls}>
-                <Button onPress={handlePressConnect} title="Connect"/>
-                <Button onPress={handlePressDisconnect} title="Disconnect"/>
-              </View>
-            </View>
-          )
-        })}
+      <ScrollView style={styles.devices}>
+        {devices.map((device) => <Device {...device} key={device.antPlusDeviceTypeName + device.resultID} />)}
       </ScrollView>
     </View>
   )
@@ -204,6 +124,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  devices: {
+    width: '100%',
   },
   box: {
     width: 60,
