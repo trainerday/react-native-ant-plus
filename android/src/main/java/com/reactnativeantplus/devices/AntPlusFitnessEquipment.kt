@@ -1444,7 +1444,7 @@ class AntPlusFitnessEquipment(
 
   private var fitnessEquipmentStateReceiver =
     IFitnessEquipmentStateReceiver { estTimestamp, eventFlags, type, equipmentState ->
-      if (subscriptionsDone || equipmentType == EquipmentType.UNKNOWN || equipmentType == EquipmentType.UNRECOGNIZED) {
+      if (subscriptionsDone || type == EquipmentType.UNKNOWN || type == EquipmentType.UNRECOGNIZED) {
         return@IFitnessEquipmentStateReceiver
       }
 
