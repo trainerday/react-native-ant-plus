@@ -131,6 +131,11 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
+  fun isConnected(antDeviceNumber: Int, promise: Promise) {
+    promise.resolve(devices[antDeviceNumber]?.isConnected)
+  }
+
+  @ReactMethod
   fun addListener(eventName: String?) {
     // Set up any upstream listeners or background tasks as necessary
   }

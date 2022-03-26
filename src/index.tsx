@@ -475,6 +475,10 @@ class AntPlus {
     return await AntPlusModule.stopSearch()
   }
 
+  static async isConnected(antDeviceNumber: number): Promise<boolean | undefined> {
+    return await AntPlusModule.isConnected(antDeviceNumber)
+  }
+
   static async connect(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType): Promise<AntPlusConnect> {
     return await AntPlusModule.connect(antDeviceNumber, antPlusDeviceType)
   }
