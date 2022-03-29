@@ -1,7 +1,7 @@
 import AntPlus, {
-  AntPlusDeviceType,
   AntPlusBikeCadenceEvent,
   AntPlusBikePowerEvent,
+  AntPlusDeviceType,
   AntPlusFitnessEquipmentEvent,
   AntPlusHeartRateEvent,
 } from 'react-native-ant-plus'
@@ -19,7 +19,7 @@ export default async (device) => {
       AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikePowerEvent.CalculatedPower], true)
       break
     case AntPlusDeviceType.FITNESS_EQUIPMENT:
-      AntPlus.subscribe(device.antDeviceNumber, [AntPlusFitnessEquipmentEvent.CalculatedTrainerPower], true)
+      AntPlus.subscribe(device.antDeviceNumber, [AntPlusFitnessEquipmentEvent.CalculatedTrainerPower, AntPlusFitnessEquipmentEvent.Capabilities], true)
       break
     case AntPlusDeviceType.HEARTRATE:
       AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
