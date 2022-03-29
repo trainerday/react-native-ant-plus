@@ -22,7 +22,12 @@ import java.math.BigDecimal
 import java.util.*
 
 
-class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlusModule, val antDeviceNumber: Int, private val connectPromise: Promise) {
+class AntPlusBikePower(
+  val context: ReactApplicationContext,
+  val antPlus: AntPlusModule,
+  val antDeviceNumber: Int,
+  private val connectPromise: Promise
+) {
   private var bikePower: AntPlusBikePowerPcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusBikePowerPcc>? = null
   private val deviceData = HashMap<String, Any>()
@@ -139,11 +144,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
       deviceData["autoZeroStatus"] = autoZeroStatus
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.AutoZeroStatus.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.AutoZeroStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("autoZeroStatus", autoZeroStatus.toString())
 
@@ -153,24 +159,24 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeCalculatedCrankCadence() {
     bikePower!!.subscribeCalculatedCrankCadenceEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("calculatedCrankCadence")
 
   }
+
   private fun subscribeCalculatedCrankCadence(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCalculatedCrankCadenceEvent { estTimestamp, eventFlags, dataSource, calculatedCrankCadence ->
-      if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["calculatedCrankCadence"] == calculatedCrankCadence) {
+      if (isOnlyNewData && deviceData["calculatedCrankCadence"] == calculatedCrankCadence) {
         return@subscribeCalculatedCrankCadenceEvent
       }
 
-      deviceData["dataSource"] = dataSource
       deviceData["calculatedCrankCadence"] = calculatedCrankCadence
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalculatedCrankCadence.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalculatedCrankCadence.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("dataSource", dataSource.toString())
       eventData.putDouble("calculatedCrankCadence", calculatedCrankCadence.toDouble())
@@ -181,24 +187,23 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeCalculatedPower() {
     bikePower!!.subscribeCalculatedPowerEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("calculatedPower")
   }
 
   private fun subscribeCalculatedPower(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCalculatedPowerEvent { estTimestamp, eventFlags, dataSource, calculatedPower ->
-      if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["calculatedPower"] == calculatedPower) {
+      if (isOnlyNewData && deviceData["calculatedPower"] == calculatedPower) {
         return@subscribeCalculatedPowerEvent
       }
 
-      deviceData["dataSource"] = dataSource
       deviceData["calculatedPower"] = calculatedPower
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalculatedPower.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalculatedPower.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("dataSource", dataSource.toString())
       eventData.putDouble("calculatedPower", calculatedPower.toDouble())
@@ -209,24 +214,23 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeCalculatedTorque() {
     bikePower!!.subscribeCalculatedTorqueEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("calculatedTorque")
 
   }
 
   private fun subscribeCalculatedTorque(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCalculatedTorqueEvent { estTimestamp, eventFlags, dataSource, calculatedTorque ->
-      if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["calculatedTorque"] == calculatedTorque) {
+      if (isOnlyNewData && deviceData["calculatedTorque"] == calculatedTorque) {
         return@subscribeCalculatedTorqueEvent
       }
-      deviceData["dataSource"] = dataSource
       deviceData["calculatedTorque"] = calculatedTorque
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalculatedTorque.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalculatedTorque.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("dataSource", dataSource.toString())
       eventData.putDouble("calculatedTorque", calculatedTorque.toDouble())
@@ -237,7 +241,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeCalculatedWheelDistance() {
     bikePower!!.subscribeCalculatedWheelDistanceEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("calculatedWheelDistance")
   }
 
@@ -246,23 +249,23 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       wheelCircumference
     ) {
       override fun onNewCalculatedWheelDistance(
-        estTimestamp: Long, eventFlags: EnumSet<EventFlag?>?,
+        estTimestamp: Long, eventFlags: EnumSet<EventFlag>,
         dataSource: DataSource,
         calculatedWheelDistance: BigDecimal
       ) {
         runOnUiThread {
-          if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["calculatedWheelDistance"] == calculatedWheelDistance) {
+          if (isOnlyNewData && deviceData["calculatedWheelDistance"] == calculatedWheelDistance) {
             return@runOnUiThread
           }
 
-          deviceData["dataSource"] = dataSource
           deviceData["calculatedWheelDistance"] = calculatedWheelDistance
 
-          val eventData = Arguments.createMap()
-
-          eventData.putString("event", Event.CalculatedWheelDistance.toString())
-          eventData.putInt("estTimestamp", estTimestamp.toInt())
-          eventData.putString("eventFlags", eventFlags.toString())
+          val eventData = AntPlusPlugin.createEventDataMap(
+            Event.CalculatedWheelDistance.toString(),
+            estTimestamp,
+            eventFlags,
+            antDeviceNumber
+          )
 
           eventData.putString("dataSource", dataSource.toString())
           eventData.putDouble("calculatedWheelDistance", calculatedWheelDistance.toDouble())
@@ -275,7 +278,6 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeCalculatedWheelSpeed() {
     bikePower!!.subscribeCalculatedWheelSpeedEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("calculatedWheelSpeed")
 
   }
@@ -289,17 +291,17 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
         calculatedWheelSpeed: BigDecimal
       ) {
         runOnUiThread {
-          if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["calculatedWheelSpeed"] == calculatedWheelSpeed) {
+          if (isOnlyNewData && deviceData["calculatedWheelSpeed"] == calculatedWheelSpeed) {
             return@runOnUiThread
           }
-          deviceData["dataSource"] = dataSource
           deviceData["calculatedWheelSpeed"] = calculatedWheelSpeed
 
-          val eventData = Arguments.createMap()
-
-          eventData.putString("event", Event.CalculatedWheelSpeed.toString())
-          eventData.putInt("estTimestamp", estTimestamp.toInt())
-          eventData.putString("eventFlags", eventFlags.toString())
+          val eventData = AntPlusPlugin.createEventDataMap(
+            Event.CalculatedWheelSpeed.toString(),
+            estTimestamp,
+            eventFlags,
+            antDeviceNumber
+          )
 
           eventData.putString("dataSource", dataSource.toString())
           eventData.putDouble("calculatedWheelSpeed", calculatedWheelSpeed.toDouble())
@@ -313,8 +315,8 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
   private fun unsubscribeCalibrationMessage() {
     bikePower!!.subscribeCalibrationMessageEvent(null)
     deviceData.remove("calibrationMessage")
-
   }
+
   private fun subscribeCalibrationMessage(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCalibrationMessageEvent { estTimestamp, eventFlags, calibrationMessage ->
       if (isOnlyNewData && deviceData["calibrationMessage"] == calibrationMessage) {
@@ -322,11 +324,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       }
       deviceData["calibrationMessage"] = calibrationMessage
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalibrationMessage.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalibrationMessage.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val message = Arguments.createMap()
 
@@ -334,7 +337,10 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       message.putInt("calibrationData", calibrationMessage.calibrationData)
       message.putInt("ctfOffset", calibrationMessage.ctfOffset)
       try {
-        message.putArray("manufacturerSpecificData", AntPlusModule.bytesToWritableArray(calibrationMessage.manufacturerSpecificData))
+        message.putArray(
+          "manufacturerSpecificData",
+          AntPlusModule.bytesToWritableArray(calibrationMessage.manufacturerSpecificData)
+        )
       } catch (throwable: Throwable) {
         Log.e("ManufacturerSpecific", "bytesToWritableArray", throwable)
       }
@@ -350,6 +356,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     deviceData.remove("crankParameters")
 
   }
+
   private fun subscribeCrankParameters(isOnlyNewData: Boolean) {
     bikePower!!.subscribeCrankParametersEvent { estTimestamp, eventFlags, crankParameters ->
       if (isOnlyNewData && deviceData["crankParameters"] == crankParameters) {
@@ -358,11 +365,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
       deviceData["crankParameters"] = crankParameters
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CrankParameters.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CrankParameters.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val parameters = Arguments.createMap()
 
@@ -381,24 +389,23 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
   private fun unsubscribeInstantaneousCadence() {
     bikePower!!.subscribeInstantaneousCadenceEvent(null)
-    deviceData.remove("dataSource")
     deviceData.remove("instantaneousCadence")
   }
 
   private fun subscribeInstantaneousCadence(isOnlyNewData: Boolean) {
     bikePower!!.subscribeInstantaneousCadenceEvent { estTimestamp, eventFlags, dataSource, instantaneousCadence ->
-      if (isOnlyNewData && deviceData["dataSource"] == dataSource && deviceData["instantaneousCadence"] == instantaneousCadence) {
+      if (isOnlyNewData && deviceData["instantaneousCadence"] == instantaneousCadence) {
         return@subscribeInstantaneousCadenceEvent
       }
 
-      deviceData["dataSource"] = dataSource
       deviceData["instantaneousCadence"] = instantaneousCadence
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", "InstantaneousCadence")
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.InstantaneousCadence.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("dataSource", dataSource.toString())
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -414,9 +421,10 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     deviceData.remove("measurementValue")
 
   }
+
   private fun subscribeMeasurementOutputData(isOnlyNewData: Boolean) {
     bikePower!!.subscribeMeasurementOutputDataEvent { estTimestamp, eventFlags, numOfDataTypes, dataType, timeStamp, measurementValue ->
-      if (isOnlyNewData  && deviceData["numOfDataTypes"] == numOfDataTypes && deviceData["dataType"] == dataType && deviceData["timeStamp"] == timeStamp && deviceData["measurementValue"] == measurementValue) {
+      if (isOnlyNewData && deviceData["numOfDataTypes"] == numOfDataTypes && deviceData["dataType"] == dataType && deviceData["timeStamp"] == timeStamp && deviceData["measurementValue"] == measurementValue) {
         return@subscribeMeasurementOutputDataEvent
       }
 
@@ -425,11 +433,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["timeStamp"] = timeStamp
       deviceData["measurementValue"] = measurementValue
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.MeasurementOutputData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.MeasurementOutputData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("numOfDataTypes", numOfDataTypes)
       eventData.putInt("dataType", dataType)
@@ -446,6 +455,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     deviceData.remove("pedalPowerPercentage")
 
   }
+
   private fun subscribePedalPowerBalance(isOnlyNewData: Boolean) {
     bikePower!!.subscribePedalPowerBalanceEvent { estTimestamp, eventFlags, rightPedalIndicator, pedalPowerPercentage ->
       if (isOnlyNewData && deviceData["rightPedalIndicator"] == rightPedalIndicator && deviceData["pedalPowerPercentage"] == pedalPowerPercentage) {
@@ -454,11 +464,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["rightPedalIndicator"] = rightPedalIndicator
       deviceData["pedalPowerPercentage"] = pedalPowerPercentage
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.PedalPowerBalance.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.PedalPowerBalance.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putBoolean("rightPedalIndicator", rightPedalIndicator)
       eventData.putInt("pedalPowerPercentage", pedalPowerPercentage)
@@ -491,11 +502,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["leftOrCombinedPedalSmoothness"] = leftOrCombinedPedalSmoothness
       deviceData["rightPedalSmoothness"] = rightPedalSmoothness
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.PedalSmoothness.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.PedalSmoothness.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("powerOnlyUpdateEventCount", powerOnlyUpdateEventCount.toInt())
       eventData.putBoolean("separatePedalSmoothnessSupport", separatePedalSmoothnessSupport)
@@ -515,13 +527,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
   }
 
   private fun subscribeRawCrankTorqueData(isOnlyNewData: Boolean) {
-    bikePower!!.subscribeRawCrankTorqueDataEvent {
-      estTimestamp,
-      eventFlags,
-      crankTorqueUpdateEventCount,
-      accumulatedCrankTicks,
-      accumulatedCrankPeriod,
-      accumulatedCrankTorque ->
+    bikePower!!.subscribeRawCrankTorqueDataEvent { estTimestamp,
+                                                   eventFlags,
+                                                   crankTorqueUpdateEventCount,
+                                                   accumulatedCrankTicks,
+                                                   accumulatedCrankPeriod,
+                                                   accumulatedCrankTorque ->
       if (
         isOnlyNewData &&
         deviceData["crankTorqueUpdateEventCount"] == crankTorqueUpdateEventCount &&
@@ -536,11 +547,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["accumulatedCrankPeriod"] = accumulatedCrankPeriod
       deviceData["accumulatedCrankTorque"] = accumulatedCrankTorque
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.RawCrankTorqueData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.RawCrankTorqueData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("crankTorqueUpdateEventCount", crankTorqueUpdateEventCount.toInt())
       eventData.putInt("accumulatedCrankTicks", accumulatedCrankTicks.toInt())
@@ -579,11 +591,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["accumulatedTimeStamp"] = accumulatedTimeStamp
       deviceData["accumulatedTorqueTicksStamp"] = accumulatedTorqueTicksStamp
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.RawCtfData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.RawCtfData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("ctfUpdateEventCount", ctfUpdateEventCount.toInt())
       eventData.putDouble("instantaneousSlope", instantaneousSlope.toDouble())
@@ -611,12 +624,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["instantaneousPower"] = instantaneousPower
       deviceData["accumulatedPower"] = accumulatedPower
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", Event.RawPowerOnlyData.toString())
-
-      eventData.putString("event", Event.RawWheelTorqueData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.RawPowerOnlyData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("powerOnlyUpdateEventCount", powerOnlyUpdateEventCount.toInt())
       eventData.putInt("instantaneousPower", instantaneousPower)
@@ -634,6 +647,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     deviceData.remove("accumulatedWheelTorque")
 
   }
+
   private fun subscribeRawWheelTorqueData(isOnlyNewData: Boolean) {
     bikePower!!.subscribeRawWheelTorqueDataEvent { estTimestamp, eventFlags,
                                                    wheelTorqueUpdateEventCount,
@@ -655,11 +669,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["accumulatedWheelPeriod"] = accumulatedWheelPeriod
       deviceData["accumulatedWheelTorque"] = accumulatedWheelTorque
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.RawWheelTorqueData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.RawWheelTorqueData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("wheelTorqueUpdateEventCount", wheelTorqueUpdateEventCount.toInt())
       eventData.putInt("accumulatedWheelTicks", accumulatedWheelTicks.toInt())
@@ -686,11 +701,12 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["leftTorqueEffectiveness"] = leftTorqueEffectiveness
       deviceData["rightTorqueEffectiveness"] = rightTorqueEffectiveness
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.TorqueEffectiveness.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.TorqueEffectiveness.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("powerOnlyUpdateEventCount", powerOnlyUpdateEventCount.toInt())
       eventData.putDouble("leftTorqueEffectiveness", leftTorqueEffectiveness.toDouble())
@@ -731,10 +747,13 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["numberOfBatteries"] = numberOfBatteries
       deviceData["batteryIdentifier"] = batteryIdentifier
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.BatteryStatus.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.BatteryStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())
       eventData.putString("batteryStatus", batteryStatus.toString())
@@ -764,10 +783,13 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["manufacturerID"] = manufacturerID
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ManufacturerIdentification.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerIdentification.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("hardwareRevision", hardwareRevision)
       eventData.putInt("manufacturerID", manufacturerID)
       eventData.putInt("modelNumber", modelNumber)
@@ -789,10 +811,13 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
       deviceData["rawDataBytes"] = rawDataBytes
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ManufacturerSpecific.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerSpecific.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       try {
         eventData.putArray("rawDataBytes", AntPlusModule.bytesToWritableArray(rawDataBytes))
       } catch (throwable: Throwable) {
@@ -819,10 +844,13 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
       deviceData["supplementaryRevision"] = supplementaryRevision
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ProductInformation.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ProductInformation.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("softwareRevision", softwareRevision)
       eventData.putInt("supplementaryRevision", supplementaryRevision)
       eventData.putInt("serialNumber", serialNumber.toInt())
@@ -843,10 +871,13 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
 
       deviceData["rssi"] = rssi
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.Rssi.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.Rssi.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("rssi", rssi)
       antPlus.sendEvent(AntPlusEvent.bikePower, eventData)
     }
@@ -874,7 +905,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun	requestCrankParameters(promise: Promise) {
+  private fun requestCrankParameters(promise: Promise) {
     bikePower!!.requestCrankParameters(null) { estTimestamp, eventFlags, crankParameters ->
       val parameters = Arguments.createMap()
 
@@ -889,28 +920,29 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun	requestCustomCalibrationParameters(args: ReadableMap, promise: Promise) {
-    val manufacturerSpecificParameters = args.getArray("manufacturerSpecificParameters")?.let { AntPlusModule.writableArrayToBytes(it) }
+  private fun requestCustomCalibrationParameters(args: ReadableMap, promise: Promise) {
+    val manufacturerSpecificParameters =
+      args.getArray("manufacturerSpecificParameters")?.let { AntPlusModule.writableArrayToBytes(it) }
 
     bikePower!!.requestCustomCalibrationParameters(manufacturerSpecificParameters) { requestStatus ->
       promise.resolve(requestStatus.toString())
     }
   }
 
-  private fun	requestManualCalibration(promise: Promise) {
+  private fun requestManualCalibration(promise: Promise) {
     bikePower!!.requestManualCalibration { requestStatus ->
       promise.resolve(requestStatus.toString())
     }
   }
 
-  private fun	requestSetAutoZero(args: ReadableMap, promise: Promise) {
+  private fun requestSetAutoZero(args: ReadableMap, promise: Promise) {
     val autoZeroEnable = args.getBoolean("autoZeroEnable")
     bikePower!!.requestSetAutoZero(autoZeroEnable) { requestStatus ->
       promise.resolve(requestStatus.toString())
     }
   }
 
-  private fun	requestSetCrankParameters(args: ReadableMap, promise: Promise) {
+  private fun requestSetCrankParameters(args: ReadableMap, promise: Promise) {
     val crankLengthSetting = args.getString("crankLengthSetting")
       ?.let { CrankLengthSetting.valueOf(it) }
     val fullCrankLength = BigDecimal(args.getDouble("fullCrankLength"))
@@ -920,7 +952,7 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun	requestSetCtfSlope(args: ReadableMap, promise: Promise) {
+  private fun requestSetCtfSlope(args: ReadableMap, promise: Promise) {
     val slope = BigDecimal(args.getDouble("slope"))
 
     bikePower!!.requestSetCtfSlope(slope) { requestStatus ->
@@ -928,10 +960,11 @@ class AntPlusBikePower(val context: ReactApplicationContext, val antPlus: AntPlu
     }
   }
 
-  private fun	requestSetCustomCalibrationParameters(args: ReadableMap, promise: Promise) {
-    val manufacturerSpecificParameters = args.getArray("manufacturerSpecificParameters")?.let { AntPlusModule.writableArrayToBytes(it) }
+  private fun requestSetCustomCalibrationParameters(args: ReadableMap, promise: Promise) {
+    val manufacturerSpecificParameters =
+      args.getArray("manufacturerSpecificParameters")?.let { AntPlusModule.writableArrayToBytes(it) }
 
-    bikePower!!.requestSetCustomCalibrationParameters(manufacturerSpecificParameters)  { requestStatus ->
+    bikePower!!.requestSetCustomCalibrationParameters(manufacturerSpecificParameters) { requestStatus ->
       promise.resolve(requestStatus.toString())
     }
   }

@@ -22,6 +22,7 @@ const Device: FC<AntPlusDevice> = device => {
 
     console.log(result, 'Connected ------')
     if (result?.connected) {
+      console.log('Get capabilities ------')
       const data = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
       console.log(data, 'Capabilities ------')
     }
@@ -32,6 +33,12 @@ const Device: FC<AntPlusDevice> = device => {
     await disconnect(device.antDeviceNumber)
     setConnected(false)
     setWaiting(false)
+  }
+
+  const CommandStatus = async () => {
+    console.log('CommandStatus')
+    const result = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.CommandStatus, {})
+    console.log('CommandStatus', result)
   }
 
   const onChangeTarget = async () => {
@@ -79,6 +86,9 @@ const Device: FC<AntPlusDevice> = device => {
             </TouchableOpacity>
             <TouchableOpacity onPress={onChangeSlope} style={styles.button}>
               <Text>slope 2%</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={CommandStatus} style={styles.button}>
+              <Text>CommandStatus</Text>
             </TouchableOpacity>
           </View>
         </>

@@ -103,7 +103,8 @@ class AntPlusEnvironment(
       val eventData = AntPlusPlugin.createEventDataMap(
         Event.TemperatureData.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putDouble("eventCount", eventCount.toDouble())
@@ -146,7 +147,12 @@ class AntPlusEnvironment(
       deviceData["numberOfBatteries"] = numberOfBatteries
       deviceData["batteryIdentifier"] = batteryIdentifier
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.BatteryStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.BatteryStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())
@@ -177,7 +183,12 @@ class AntPlusEnvironment(
       deviceData["manufacturerID"] = manufacturerID
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerIdentification.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerIdentification.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("hardwareRevision", hardwareRevision)
       eventData.putInt("manufacturerID", manufacturerID)
@@ -200,7 +211,12 @@ class AntPlusEnvironment(
 
       deviceData["rawDataBytes"] = rawDataBytes
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerSpecific.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerSpecific.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
       try {
         eventData.putArray("rawDataBytes", AntPlusModule.bytesToWritableArray(rawDataBytes))
       } catch (throwable: Throwable) {
@@ -227,7 +243,12 @@ class AntPlusEnvironment(
       deviceData["supplementaryRevision"] = supplementaryRevision
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ProductInformation.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ProductInformation.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("softwareRevision", softwareRevision)
       eventData.putInt("supplementaryRevision", supplementaryRevision)
@@ -250,7 +271,12 @@ class AntPlusEnvironment(
 
       deviceData["rssi"] = rssi
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.Rssi.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.Rssi.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("rssi", rssi)
 

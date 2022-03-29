@@ -178,7 +178,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         CadenceEvent.CalculatedCadence.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putInt("calculatedCadence", calculatedCadence.toInt())
 
@@ -202,7 +203,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         CadenceEvent.MotionAndCadenceData.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putBoolean("isPedallingStopped", isPedallingStopped)
 
@@ -228,7 +230,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         CadenceEvent.RawCadenceData.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putDouble("timestampOfLastEvent", timestampOfLastEvent.toDouble())
       eventData.putInt("cumulativeRevolutions", cumulativeRevolutions.toInt())
@@ -260,8 +263,10 @@ class AntPlusBikeSpeedAndCadence(
         val eventData = AntPlusPlugin.createEventDataMap(
           SpeedDistanceEvent.CalculatedAccumulatedDistance.toString(),
           estTimestamp,
-          eventFlags
+          eventFlags,
+          antDeviceNumber
         )
+
         eventData.putDouble(
           "calculatedAccumulatedDistance",
           calculatedAccumulatedDistance.toDouble()
@@ -294,8 +299,10 @@ class AntPlusBikeSpeedAndCadence(
         val eventData = AntPlusPlugin.createEventDataMap(
           SpeedDistanceEvent.CalculatedSpeed.toString(),
           estTimestamp,
-          eventFlags
+          eventFlags,
+          antDeviceNumber
         )
+
         eventData.putDouble("calculatedSpeed", calculatedSpeed.toDouble())
 
         antPlus.sendEvent(eventName, eventData)
@@ -317,7 +324,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         SpeedDistanceEvent.MotionAndSpeedData.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putBoolean("isBikeStopped", isBikeStopped)
 
@@ -343,7 +351,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         SpeedDistanceEvent.RawSpeedAndDistanceData.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putDouble("timestampOfLastEvent", timestampOfLastEvent.toDouble())
       eventData.putInt("cumulativeRevolutions", cumulativeRevolutions.toInt())
@@ -373,7 +382,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime)
 
@@ -414,7 +424,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         CadenceEvent.CalculatedCadence.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putString("event", AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString())
@@ -461,7 +472,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         AntPlusLegacyCommonEvent.VersionAndModel.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putInt("hardwareVersion", hardwareVersion)
@@ -499,7 +511,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         AntPlusLegacyCommonEvent.Rssi.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putInt("rssi", rssi)
@@ -533,7 +546,8 @@ class AntPlusBikeSpeedAndCadence(
       val eventData = AntPlusPlugin.createEventDataMap(
         SpeedAndCadenceEvent.BatteryStatus.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())

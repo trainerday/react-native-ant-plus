@@ -15,7 +15,6 @@ class AntPlusPlugin {
     ): IDeviceStateChangeReceiver {
       return IDeviceStateChangeReceiver { deviceState ->
         val state = Arguments.createMap()
-        state.putString("event", "DeviceStateChangeReceiver")
         state.putInt("antDeviceNumber", antDeviceNumber)
         state.putString("state", deviceState.toString())
         antPlus.sendEvent(AntPlusEvent.devicesStateChange, state)
@@ -25,13 +24,15 @@ class AntPlusPlugin {
     fun createEventDataMap(
       event: String,
       estTimestamp: Long,
-      eventFlags: EnumSet<EventFlag>
+      eventFlags: EnumSet<EventFlag>,
+      antDeviceNumber: Int
     ): WritableMap {
       val eventData = Arguments.createMap()
 
       eventData.putString("event", event)
       eventData.putInt("estTimestamp", estTimestamp.toInt())
       eventData.putString("eventFlags", eventFlags.toString())
+      eventData.putInt("antDeviceNumber", antDeviceNumber)
 
       return eventData
     }

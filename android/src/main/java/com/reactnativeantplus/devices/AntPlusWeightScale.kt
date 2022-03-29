@@ -18,7 +18,12 @@ import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import com.facebook.react.bridge.*
 
 
-class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntPlusModule, val antDeviceNumber: Int, private val connectPromise: Promise) {
+class AntPlusWeightScale(
+  val context: ReactApplicationContext,
+  val antPlus: AntPlusModule,
+  val antDeviceNumber: Int,
+  private val connectPromise: Promise
+) {
   private var weightScale: AntPlusWeightScalePcc? = null
   private var releaseHandle: PccReleaseHandle<AntPlusWeightScalePcc>? = null
   private val deviceData = HashMap<String, Any>()
@@ -40,9 +45,15 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
         Event.BodyWeightBroadcast.toString() -> subscribeBodyWeightBroadcast(isOnlyNewData)
 
         AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
-        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(
+          isOnlyNewData
+        )
         AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }
@@ -77,7 +88,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["bodyWeightStatus"] = bodyWeightStatus
       deviceData["bodyWeight"] = bodyWeight
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.BodyWeightBroadcast.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.BodyWeightBroadcast.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putString("bodyWeightStatus", bodyWeightStatus.toString())
       eventData.putDouble("bodyWeight", bodyWeight.toDouble())
       antPlus.sendEvent(AntPlusEvent.weightScale, eventData)
@@ -115,7 +129,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["numberOfBatteries"] = numberOfBatteries
       deviceData["batteryIdentifier"] = batteryIdentifier
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.BatteryStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.BatteryStatus.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())
@@ -146,7 +163,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["manufacturerID"] = manufacturerID
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerIdentification.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerIdentification.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("hardwareRevision", hardwareRevision)
       eventData.putInt("manufacturerID", manufacturerID)
@@ -169,7 +189,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
       deviceData["rawDataBytes"] = rawDataBytes
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerSpecific.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerSpecific.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       try {
         eventData.putArray("rawDataBytes", AntPlusModule.bytesToWritableArray(rawDataBytes))
@@ -197,7 +220,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
       deviceData["supplementaryRevision"] = supplementaryRevision
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ProductInformation.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ProductInformation.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("softwareRevision", softwareRevision)
       eventData.putInt("supplementaryRevision", supplementaryRevision)
@@ -219,7 +245,10 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
 
       deviceData["rssi"] = rssi
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.Rssi.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.Rssi.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("rssi", rssi)
       antPlus.sendEvent(AntPlusEvent.weightScale, eventData)
@@ -249,12 +278,24 @@ class AntPlusWeightScale(val context: ReactApplicationContext, val antPlus: AntP
         val measurementData = Arguments.createMap()
 
         measurementData.putDouble("bodyWeight", measurement.bodyWeight.toDouble())
-        measurementData.putDouble("hydrationPercentage", measurement.hydrationPercentage.toDouble())
-        measurementData.putDouble("bodyFatPercentage", measurement.bodyFatPercentage.toDouble())
+        measurementData.putDouble(
+          "hydrationPercentage",
+          measurement.hydrationPercentage.toDouble()
+        )
+        measurementData.putDouble(
+          "bodyFatPercentage",
+          measurement.bodyFatPercentage.toDouble()
+        )
         measurementData.putDouble("muscleMass", measurement.muscleMass.toDouble())
         measurementData.putDouble("boneMass", measurement.boneMass.toDouble())
-        measurementData.putDouble("activeMetabolicRate", measurement.activeMetabolicRate.toDouble())
-        measurementData.putDouble("basalMetabolicRate", measurement.basalMetabolicRate.toDouble())
+        measurementData.putDouble(
+          "activeMetabolicRate",
+          measurement.activeMetabolicRate.toDouble()
+        )
+        measurementData.putDouble(
+          "basalMetabolicRate",
+          measurement.basalMetabolicRate.toDouble()
+        )
 
         requestData.putMap("measurement", measurementData)
 

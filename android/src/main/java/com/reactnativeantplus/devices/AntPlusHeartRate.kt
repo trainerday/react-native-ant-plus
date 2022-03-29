@@ -46,9 +46,15 @@ class AntPlusHeartRate(
         Event.HeartRateData.toString() -> subscribeHeartRateData(isOnlyNewData)
         Event.Page4AddtData.toString() -> subscribePage4AddtData(isOnlyNewData)
 
-        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTime(isOnlyNewData)
-        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerial(isOnlyNewData)
-        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> subscribeVersionAndModel(isOnlyNewData)
+        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTime(
+          isOnlyNewData
+        )
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerial(
+          isOnlyNewData
+        )
+        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> subscribeVersionAndModel(
+          isOnlyNewData
+        )
         AntPlusLegacyCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }
@@ -84,7 +90,10 @@ class AntPlusHeartRate(
       deviceData["rrInterval"] = rrInterval
       deviceData["rrFlag"] = flag
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.CalculatedRrInterval.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalculatedRrInterval.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("rrInterval", rrInterval.toDouble())
       eventData.putString("rrFlag", flag.toString())
       antPlus.sendEvent(AntPlusEvent.heartRate, eventData)
@@ -105,7 +114,10 @@ class AntPlusHeartRate(
 
       deviceData["heartRate"] = computedHeartRate
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.HeartRateData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.HeartRateData.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("heartRate", computedHeartRate)
       eventData.putInt("heartBeatCount", heartBeatCounter.toInt())
@@ -130,7 +142,10 @@ class AntPlusHeartRate(
       deviceData["manufacturerSpecificByte"] = manufacturerSpecificByte
       deviceData["previousHeartBeatEventTime"] = previousHeartBeatEventTime
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.Page4AddtData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.Page4AddtData.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("manufacturerSpecificByte", manufacturerSpecificByte)
       eventData.putInt("previousHeartBeatEventTime", previousHeartBeatEventTime.toInt())
@@ -151,7 +166,12 @@ class AntPlusHeartRate(
 
       deviceData["cumulativeOperatingTime"] = cumulativeOperatingTime
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       antPlus.sendEvent(AntPlusEvent.heartRate, eventData)
@@ -173,7 +193,10 @@ class AntPlusHeartRate(
       deviceData["manufacturerID"] = manufacturerID
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("manufacturerID", manufacturerID)
       eventData.putInt("serialNumber", serialNumber)
@@ -198,7 +221,10 @@ class AntPlusHeartRate(
       deviceData["softwareVersion"] = softwareVersion
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusLegacyCommonEvent.VersionAndModel.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusLegacyCommonEvent.VersionAndModel.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("hardwareVersion", hardwareVersion)
       eventData.putInt("softwareVersion", softwareVersion)
@@ -220,7 +246,10 @@ class AntPlusHeartRate(
 
       deviceData["rssi"] = rssi
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusLegacyCommonEvent.Rssi.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusLegacyCommonEvent.Rssi.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putInt("rssi", rssi)
       antPlus.sendEvent(AntPlusEvent.heartRate, eventData)
     }

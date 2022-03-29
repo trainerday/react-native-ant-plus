@@ -53,9 +53,15 @@ class AntPlusStrideSdm(
         Event.StrideCount.toString() -> subscribeStrideCount(isOnlyNewData)
 
         AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
-        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(
+          isOnlyNewData
+        )
         AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }
@@ -88,14 +94,17 @@ class AntPlusStrideSdm(
   }
 
   private fun subscribeCalorieData(isOnlyNewData: Boolean) {
-    strideSdm!!.subscribeCalorieDataEvent { estTimestamp, eventFlags, cumulativeCalories->
+    strideSdm!!.subscribeCalorieDataEvent { estTimestamp, eventFlags, cumulativeCalories ->
       if (isOnlyNewData && deviceData["cumulativeCalories"] == cumulativeCalories) {
         return@subscribeCalorieDataEvent
       }
 
       deviceData["cumulativeCalories"] = cumulativeCalories
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.CalorieData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalorieData.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeCalories", cumulativeCalories.toInt())
 
@@ -116,7 +125,10 @@ class AntPlusStrideSdm(
 
       deviceData["timestampOfLastComputation"] = timestampOfLastComputation
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.ComputationTimestamp.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.ComputationTimestamp.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("timestampOfLastComputation", timestampOfLastComputation.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -136,7 +148,10 @@ class AntPlusStrideSdm(
 
       deviceData["updateLatency"] = updateLatency
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.DataLatency.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.DataLatency.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("updateLatency", updateLatency.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -156,7 +171,10 @@ class AntPlusStrideSdm(
 
       deviceData["cumulativeDistance"] = cumulativeDistance
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.Distance.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.Distance.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("cumulativeDistance", cumulativeDistance.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -176,7 +194,10 @@ class AntPlusStrideSdm(
 
       deviceData["instantaneousCadence"] = instantaneousCadence
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.InstantaneousCadence.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.InstantaneousCadence.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("instantaneousCadence", instantaneousCadence.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -196,7 +217,10 @@ class AntPlusStrideSdm(
 
       deviceData["instantaneousSpeed"] = instantaneousSpeed
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.InstantaneousSpeed.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.InstantaneousSpeed.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("instantaneousSpeed", instantaneousSpeed.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -228,7 +252,10 @@ class AntPlusStrideSdm(
       deviceData["sensorHealth"] = sensorHealth
       deviceData["useState"] = useState
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.SensorStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.SensorStatus.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putString("sensorLocation", sensorLocation.toString())
       eventData.putString("batteryStatus", batteryStatus.toString())
@@ -252,7 +279,10 @@ class AntPlusStrideSdm(
 
       deviceData["cumulativeStrides"] = cumulativeStrides
 
-      val eventData = AntPlusPlugin.createEventDataMap(Event.StrideCount.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.StrideCount.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
       eventData.putInt("cumulativeStrides", cumulativeStrides.toInt())
 
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
@@ -290,7 +320,10 @@ class AntPlusStrideSdm(
       deviceData["numberOfBatteries"] = numberOfBatteries
       deviceData["batteryIdentifier"] = batteryIdentifier
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.BatteryStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.BatteryStatus.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())
@@ -321,7 +354,10 @@ class AntPlusStrideSdm(
       deviceData["manufacturerID"] = manufacturerID
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerIdentification.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerIdentification.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("hardwareRevision", hardwareRevision)
       eventData.putInt("manufacturerID", manufacturerID)
@@ -344,7 +380,10 @@ class AntPlusStrideSdm(
 
       deviceData["rawDataBytes"] = rawDataBytes
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ManufacturerSpecific.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerSpecific.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       try {
         eventData.putArray("rawDataBytes", AntPlusModule.bytesToWritableArray(rawDataBytes))
@@ -372,7 +411,10 @@ class AntPlusStrideSdm(
       deviceData["supplementaryRevision"] = supplementaryRevision
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.ProductInformation.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ProductInformation.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("softwareRevision", softwareRevision)
       eventData.putInt("supplementaryRevision", supplementaryRevision)
@@ -394,7 +436,10 @@ class AntPlusStrideSdm(
 
       deviceData["rssi"] = rssi
 
-      val eventData = AntPlusPlugin.createEventDataMap(AntPlusCommonEvent.Rssi.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.Rssi.toString(), estTimestamp, eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("rssi", rssi)
       antPlus.sendEvent(AntPlusEvent.strideSdm, eventData)
