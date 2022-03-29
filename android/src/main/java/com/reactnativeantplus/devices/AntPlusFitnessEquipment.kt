@@ -33,7 +33,6 @@ class AntPlusFitnessEquipment(
   private val deviceData = HashMap<String, Any>()
   private var equipmentType: EquipmentType? = null
 
-  private var subscriptionsDone = false
   private var wheelCircumference = BigDecimal("0.7")
 
   fun init() {
@@ -66,7 +65,10 @@ class AntPlusFitnessEquipment(
 
     while (keys.hasNextKey()) {
       when (val key = keys.nextKey()) {
-        "wheelCircumference" -> data.putDouble("wheelCircumference", variables.getDouble(key))
+        "wheelCircumference" -> data.putDouble(
+          "wheelCircumference",
+          variables.getDouble(key)
+        )
         else -> data.putNull(key)
       }
     }
@@ -77,10 +79,14 @@ class AntPlusFitnessEquipment(
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
       when (event) {
-        Event.CalibrationInProgress.toString() -> subscribeCalibrationInProgress(isOnlyNewData)
+        Event.CalibrationInProgress.toString() -> subscribeCalibrationInProgress(
+          isOnlyNewData
+        )
         Event.CalibrationResponse.toString() -> subscribeCalibrationResponse(isOnlyNewData)
         Event.Capabilities.toString() -> subscribeCapabilities(isOnlyNewData)
-        Event.GeneralFitnessEquipmentData.toString() -> subscribeGeneralFitnessEquipmentData(isOnlyNewData)
+        Event.GeneralFitnessEquipmentData.toString() -> subscribeGeneralFitnessEquipmentData(
+          isOnlyNewData
+        )
         Event.GeneralMetabolicData.toString() -> subscribeGeneralMetabolicData(isOnlyNewData)
         Event.GeneralSettings.toString() -> subscribeGeneralSettings(isOnlyNewData)
         Event.LapOccured.toString() -> subscribeLapOccured(isOnlyNewData)
@@ -92,28 +98,44 @@ class AntPlusFitnessEquipment(
 
         EllipticalEvent.EllipticalData.toString() -> subscribeEllipticalData(isOnlyNewData)
 
-        NordicSkierEvent.NordicSkierData.toString() -> subscribeNordicSkierData(isOnlyNewData)
+        NordicSkierEvent.NordicSkierData.toString() -> subscribeNordicSkierData(
+          isOnlyNewData
+        )
 
         RowerEvent.RowerData.toString() -> subscribeRowerData(isOnlyNewData)
 
         BikeEvent.BikeData.toString() -> subscribeBikeData(isOnlyNewData)
 
         TrainerEvent.BasicResistance.toString() -> subscribeBasicResistance(isOnlyNewData)
-        TrainerEvent.CalculatedTrainerDistance.toString() -> subscribeCalculatedTrainerDistance(isOnlyNewData)
-        TrainerEvent.CalculatedTrainerPower.toString() -> subscribeCalculatedTrainerPower(isOnlyNewData)
-        TrainerEvent.CalculatedTrainerSpeed.toString() -> subscribeCalculatedTrainerSpeed(isOnlyNewData)
+        TrainerEvent.CalculatedTrainerDistance.toString() -> subscribeCalculatedTrainerDistance(
+          isOnlyNewData
+        )
+        TrainerEvent.CalculatedTrainerPower.toString() -> subscribeCalculatedTrainerPower(
+          isOnlyNewData
+        )
+        TrainerEvent.CalculatedTrainerSpeed.toString() -> subscribeCalculatedTrainerSpeed(
+          isOnlyNewData
+        )
         TrainerEvent.CommandStatus.toString() -> subscribeCommandStatus(isOnlyNewData)
         TrainerEvent.RawTrainerData.toString() -> subscribeRawTrainerData(isOnlyNewData)
-        TrainerEvent.RawTrainerTorqueData.toString() -> subscribeRawTrainerTorqueData(isOnlyNewData)
+        TrainerEvent.RawTrainerTorqueData.toString() -> subscribeRawTrainerTorqueData(
+          isOnlyNewData
+        )
         TrainerEvent.TargetPower.toString() -> subscribeTargetPower(isOnlyNewData)
         TrainerEvent.TrackResistance.toString() -> subscribeTrackResistance(isOnlyNewData)
         TrainerEvent.TrainerStatus.toString() -> subscribeTrainerStatus(isOnlyNewData)
         TrainerEvent.WindResistance.toString() -> subscribeWindResistance(isOnlyNewData)
 
         AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
-        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(
+          isOnlyNewData
+        )
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(
+          isOnlyNewData
+        )
         AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
 
         else -> Log.d("subscribe", "Event not found")
@@ -180,21 +202,43 @@ class AntPlusFitnessEquipment(
 
       deviceData["calibrationInProgress"] = calibrationInProgress
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalibrationInProgress.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalibrationInProgress.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val calibrationInProgressData = Arguments.createMap()
 
-      calibrationInProgressData.putDouble("currentTemperature", calibrationInProgress.currentTemperature.toDouble())
-      calibrationInProgressData.putString("speedCondition", calibrationInProgress.speedCondition.toString())
-      calibrationInProgressData.putBoolean("spinDownCalibrationPending", calibrationInProgress.spinDownCalibrationPending)
-      calibrationInProgressData.putDouble("targetSpeed", calibrationInProgress.targetSpeed.toDouble())
-      calibrationInProgressData.putInt("targetSpinDownTime", calibrationInProgress.targetSpinDownTime)
-      calibrationInProgressData.putString("temperatureCondition", calibrationInProgress.temperatureCondition.toString())
-      calibrationInProgressData.putBoolean("zeroOffsetCalibrationPending", calibrationInProgress.zeroOffsetCalibrationPending)
+      calibrationInProgressData.putDouble(
+        "currentTemperature",
+        calibrationInProgress.currentTemperature.toDouble()
+      )
+      calibrationInProgressData.putString(
+        "speedCondition",
+        calibrationInProgress.speedCondition.toString()
+      )
+      calibrationInProgressData.putBoolean(
+        "spinDownCalibrationPending",
+        calibrationInProgress.spinDownCalibrationPending
+      )
+      calibrationInProgressData.putDouble(
+        "targetSpeed",
+        calibrationInProgress.targetSpeed.toDouble()
+      )
+      calibrationInProgressData.putInt(
+        "targetSpinDownTime",
+        calibrationInProgress.targetSpinDownTime
+      )
+      calibrationInProgressData.putString(
+        "temperatureCondition",
+        calibrationInProgress.temperatureCondition.toString()
+      )
+      calibrationInProgressData.putBoolean(
+        "zeroOffsetCalibrationPending",
+        calibrationInProgress.zeroOffsetCalibrationPending
+      )
 
       eventData.putMap("calibrationInProgress", calibrationInProgressData)
 
@@ -215,19 +259,29 @@ class AntPlusFitnessEquipment(
 
       deviceData["calibrationResponse"] = calibrationResponse
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.CalibrationResponse.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.CalibrationResponse.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val calibrationResponseData = Arguments.createMap()
 
-      calibrationResponseData.putBoolean("spinDownCalibrationSuccess", calibrationResponse.spinDownCalibrationSuccess)
+      calibrationResponseData.putBoolean(
+        "spinDownCalibrationSuccess",
+        calibrationResponse.spinDownCalibrationSuccess
+      )
       calibrationResponseData.putInt("spinDownTime", calibrationResponse.spinDownTime)
-      calibrationResponseData.putDouble("temperature", calibrationResponse.temperature.toDouble())
+      calibrationResponseData.putDouble(
+        "temperature",
+        calibrationResponse.temperature.toDouble()
+      )
       calibrationResponseData.putInt("zeroOffset", calibrationResponse.zeroOffset)
-      calibrationResponseData.putBoolean("zeroOffsetCalibrationSuccess", calibrationResponse.zeroOffsetCalibrationSuccess)
+      calibrationResponseData.putBoolean(
+        "zeroOffsetCalibrationSuccess",
+        calibrationResponse.zeroOffsetCalibrationSuccess
+      )
 
       eventData.putMap("calibrationResponse", calibrationResponseData)
 
@@ -248,17 +302,30 @@ class AntPlusFitnessEquipment(
 
       deviceData["capabilities"] = capabilities
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.Capabilities.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.Capabilities.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val capabilitiesData = Arguments.createMap()
 
-      capabilitiesData.putInt("maximumResistance", capabilities.maximumResistance)
+      capabilities.maximumResistance?.let {
+        capabilitiesData.putDouble(
+          "maximumResistance",
+          it.toDouble()
+        )
+      }
       capabilitiesData.putBoolean("simulationModeSupport", capabilities.simulationModeSupport)
-      capabilitiesData.putBoolean("targetPowerModeSupport", capabilities.targetPowerModeSupport)
+      capabilitiesData.putBoolean(
+        "targetPowerModeSupport",
+        capabilities.targetPowerModeSupport
+      )
+      capabilitiesData.putBoolean(
+        "basicResistanceModeSupport",
+        capabilities.basicResistanceModeSupport
+      )
 
       eventData.putMap("capabilities", capabilitiesData)
 
@@ -297,11 +364,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousHeartRate"] = instantaneousHeartRate
       deviceData["heartRateDataSource"] = heartRateDataSource
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.GeneralFitnessEquipmentData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.GeneralFitnessEquipmentData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("elapsedTime", elapsedTime.toDouble())
       eventData.putInt("cumulativeDistance", cumulativeDistance.toInt())
@@ -336,13 +404,17 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousCaloricBurn"] = instantaneousCaloricBurn
       deviceData["cumulativeCalories"] = cumulativeCalories
 
-      val eventData = Arguments.createMap()
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.GeneralMetabolicData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
-      eventData.putString("event", Event.GeneralMetabolicData.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
-
-      eventData.putDouble("instantaneousMetabolicEquivalents", instantaneousMetabolicEquivalents.toDouble())
+      eventData.putDouble(
+        "instantaneousMetabolicEquivalents",
+        instantaneousMetabolicEquivalents.toDouble()
+      )
       eventData.putDouble("instantaneousCaloricBurn", instantaneousCaloricBurn.toDouble())
       eventData.putInt("cumulativeCalories", cumulativeCalories.toInt())
 
@@ -372,11 +444,12 @@ class AntPlusFitnessEquipment(
       deviceData["inclinePercentage"] = inclinePercentage
       deviceData["resistanceLevel"] = resistanceLevel
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.GeneralSettings.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.GeneralSettings.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("resistanceLevel", resistanceLevel.toDouble())
       eventData.putDouble("resistanceLevel", resistanceLevel.toDouble())
@@ -402,11 +475,12 @@ class AntPlusFitnessEquipment(
 
       deviceData["lapCount"] = lapCount
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.LapOccured.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.LapOccured.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("lapCount", lapCount)
 
@@ -430,16 +504,23 @@ class AntPlusFitnessEquipment(
 
       deviceData["userConfiguration"] = userConfiguration
 
-      val eventData = Arguments.createMap()
-
-      eventData.putString("event", Event.UserConfiguration.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        Event.UserConfiguration.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val userConfigurationData = Arguments.createMap()
 
-      userConfigurationData.putDouble("bicycleWeight", userConfiguration.bicycleWeight.toDouble())
-      userConfigurationData.putDouble("bicycleWheelDiameter", userConfiguration.bicycleWheelDiameter.toDouble())
+      userConfigurationData.putDouble(
+        "bicycleWeight",
+        userConfiguration.bicycleWeight.toDouble()
+      )
+      userConfigurationData.putDouble(
+        "bicycleWheelDiameter",
+        userConfiguration.bicycleWheelDiameter.toDouble()
+      )
       userConfigurationData.putDouble("gearRatio", userConfiguration.gearRatio.toDouble())
       userConfigurationData.putDouble("userWeight", userConfiguration.userWeight.toDouble())
 
@@ -482,7 +563,8 @@ class AntPlusFitnessEquipment(
       val eventData = AntPlusPlugin.createEventDataMap(
         TreadmillEvent.Treadmill.toString(),
         estTimestamp,
-        eventFlags
+        eventFlags,
+        antDeviceNumber
       )
 
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -523,7 +605,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousCadence"] = instantaneousCadence
       deviceData["instantaneousPower"] = instantaneousPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(ClimberEvent.ClimberData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        ClimberEvent.ClimberData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeStrideCycles", cumulativeStrideCycles.toInt())
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -566,7 +653,12 @@ class AntPlusFitnessEquipment(
       deviceData["cumulativeStrides"] = cumulativeStrides
       deviceData["instantaneousPower"] = instantaneousPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(EllipticalEvent.EllipticalData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        EllipticalEvent.EllipticalData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("cumulativePosVertDistance", cumulativePosVertDistance.toDouble())
       eventData.putInt("cumulativeStrides", cumulativeStrides.toInt())
@@ -607,7 +699,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousCadence"] = instantaneousCadence
       deviceData["instantaneousPower"] = instantaneousPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(NordicSkierEvent.NordicSkierData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        NordicSkierEvent.NordicSkierData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeStrides", cumulativeStrides.toInt())
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -647,7 +744,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousCadence"] = instantaneousCadence
       deviceData["instantaneousPower"] = instantaneousPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(RowerEvent.RowerData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        RowerEvent.RowerData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("cumulativeStrokes", cumulativeStrokes.toInt())
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -678,7 +780,12 @@ class AntPlusFitnessEquipment(
 
       deviceData["calculatedPower"] = calculatedPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.CalculatedTrainerPower.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.CalculatedTrainerPower.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("calculatedPower", calculatedPower.toDouble())
       eventData.putString("dataSource", dataSource.toString())
@@ -703,14 +810,24 @@ class AntPlusFitnessEquipment(
 
     fitnessEquipment!!.trainerMethods.subscribeCalculatedTrainerSpeedEvent(object :
       CalculatedTrainerSpeedReceiver(wheelCircumference) {
-      override fun onNewCalculatedTrainerSpeed(estTimestamp: Long, eventFlags: EnumSet<EventFlag>, dataSource: TrainerDataSource, calculatedSpeed: BigDecimal) {
+      override fun onNewCalculatedTrainerSpeed(
+        estTimestamp: Long,
+        eventFlags: EnumSet<EventFlag>,
+        dataSource: TrainerDataSource,
+        calculatedSpeed: BigDecimal
+      ) {
         if (isOnlyNewData && deviceData["calculatedSpeed"] == calculatedSpeed) {
           return
         }
 
         deviceData["calculatedSpeed"] = calculatedSpeed
 
-        val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.CalculatedTrainerSpeed.toString(), estTimestamp, eventFlags)
+        val eventData = AntPlusPlugin.createEventDataMap(
+          TrainerEvent.CalculatedTrainerSpeed.toString(),
+          estTimestamp,
+          eventFlags,
+          antDeviceNumber
+        )
 
         eventData.putDouble("calculatedSpeed", calculatedSpeed.toDouble())
         eventData.putString("dataSource", dataSource.toString())
@@ -722,7 +839,9 @@ class AntPlusFitnessEquipment(
 
   private fun unsubscribeBasicResistance() {
     when (equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeBasicResistanceEvent(null)
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeBasicResistanceEvent(
+        null
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeBasicResistanceEvent(null)
       else -> Log.e("Unsubscribe", "Device not support BasicResistance")
     }
@@ -730,20 +849,31 @@ class AntPlusFitnessEquipment(
   }
 
   private fun subscribeBasicResistance(isOnlyNewData: Boolean) {
-    fun subscribe(estTimestamp: Long, eventFlags: EnumSet<EventFlag>, totalResistance: BigDecimal) {
+    fun subscribe(
+      estTimestamp: Long,
+      eventFlags: EnumSet<EventFlag>,
+      totalResistance: BigDecimal
+    ) {
       if (isOnlyNewData && deviceData["totalResistance"] == totalResistance) {
         return
       }
 
       deviceData["totalResistance"] = totalResistance
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.BasicResistance.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.BasicResistance.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("totalResistance", totalResistance.toDouble())
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
 
-    when(equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeBasicResistanceEvent(::subscribe)
+    when (equipmentType) {
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeBasicResistanceEvent(
+        ::subscribe
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeBasicResistanceEvent(::subscribe)
       else -> Log.e("Subscribe", "Device not support BasicResistance")
     }
@@ -761,7 +891,8 @@ class AntPlusFitnessEquipment(
     if (equipmentType != EquipmentType.TRAINER) {
       return
     }
-    fitnessEquipment!!.trainerMethods.subscribeCalculatedTrainerDistanceEvent(object : CalculatedTrainerDistanceReceiver(wheelCircumference) {
+    fitnessEquipment!!.trainerMethods.subscribeCalculatedTrainerDistanceEvent(object :
+      CalculatedTrainerDistanceReceiver(wheelCircumference) {
       override fun onNewCalculatedTrainerDistance(
         estTimestamp: Long,
         eventFlags: EnumSet<EventFlag>,
@@ -774,7 +905,12 @@ class AntPlusFitnessEquipment(
 
         deviceData["calculatedDistance"] = calculatedDistance
 
-        val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.CalculatedTrainerDistance.toString(), estTimestamp, eventFlags)
+        val eventData = AntPlusPlugin.createEventDataMap(
+          TrainerEvent.CalculatedTrainerDistance.toString(),
+          estTimestamp,
+          eventFlags,
+          antDeviceNumber
+        )
         eventData.putDouble("calculatedDistance", calculatedDistance.toDouble())
         antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
       }
@@ -783,7 +919,9 @@ class AntPlusFitnessEquipment(
 
   private fun unsubscribeCommandStatus() {
     when (equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeCommandStatusEvent(null)
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeCommandStatusEvent(
+        null
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeCommandStatusEvent(null)
       else -> Log.e("Unsubscribe", "Device not support CommandStatus")
     }
@@ -792,36 +930,62 @@ class AntPlusFitnessEquipment(
   }
 
   private fun subscribeCommandStatus(isOnlyNewData: Boolean) {
-    fun subscribe(estTimestamp: Long, eventFlags: EnumSet<EventFlag>, commandStatus: CommandStatus) {
+    fun subscribe(
+      estTimestamp: Long,
+      eventFlags: EnumSet<EventFlag>,
+      commandStatus: CommandStatus
+    ) {
       if (isOnlyNewData && deviceData["commandStatus"] == commandStatus) {
         return
       }
 
       deviceData["commandStatus"] = commandStatus
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.CommandStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.CommandStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       val commandStatusData = Arguments.createMap()
 
-      commandStatusData.putInt("lastReceivedSequenceNumber", commandStatus.lastReceivedSequenceNumber)
+      commandStatusData.putInt(
+        "lastReceivedSequenceNumber",
+        commandStatus.lastReceivedSequenceNumber
+      )
       commandStatusData.putString("status", commandStatus.status.toString())
-      commandStatusData.putArray("rawResponseData", AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData))
-      commandStatusData.putString("lastReceivedCommandId", commandStatus.lastReceivedCommandId.toString())
+      commandStatusData.putArray(
+        "rawResponseData",
+        AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData)
+      )
+      commandStatusData.putString(
+        "lastReceivedCommandId",
+        commandStatus.lastReceivedCommandId.toString()
+      )
       commandStatusData.putDouble("totalResistance", commandStatus.totalResistance.toDouble())
       commandStatusData.putDouble("targetPower", commandStatus.targetPower.toDouble())
-      commandStatusData.putDouble("windResistanceCoefficient", commandStatus.windResistanceCoefficient.toDouble())
+      commandStatusData.putDouble(
+        "windResistanceCoefficient",
+        commandStatus.windResistanceCoefficient.toDouble()
+      )
       commandStatusData.putInt("windSpeed", commandStatus.windSpeed)
       commandStatusData.putDouble("draftingFactor", commandStatus.draftingFactor.toDouble())
       commandStatusData.putDouble("grade", commandStatus.grade.toDouble())
-      commandStatusData.putDouble("rollingResistanceCoefficient", commandStatus.rollingResistanceCoefficient.toDouble())
+      commandStatusData.putDouble(
+        "rollingResistanceCoefficient",
+        commandStatus.rollingResistanceCoefficient.toDouble()
+      )
 
       eventData.putMap("commandStatus", commandStatusData)
 
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
 
-    when(equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeCommandStatusEvent(::subscribe)
+    when (equipmentType) {
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeCommandStatusEvent(
+        ::subscribe
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeCommandStatusEvent(::subscribe)
       else -> Log.e("Subscribe", "Device not support CommandStatus")
     }
@@ -854,7 +1018,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousPower"] = instantaneousPower
       deviceData["accumulatedPower"] = accumulatedPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.RawTrainerData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.RawTrainerData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("updateEventCount", updateEventCount.toInt())
       eventData.putInt("instantaneousCadence", instantaneousCadence)
@@ -892,7 +1061,12 @@ class AntPlusFitnessEquipment(
       deviceData["accumulatedWheelPeriod"] = accumulatedWheelPeriod
       deviceData["accumulatedTorque"] = accumulatedTorque
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.RawTrainerTorqueData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.RawTrainerTorqueData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("updateEventCount", updateEventCount.toInt())
       eventData.putInt("accumulatedWheelTicks", accumulatedWheelTicks.toInt())
@@ -905,7 +1079,9 @@ class AntPlusFitnessEquipment(
 
   private fun unsubscribeTargetPower() {
     when (equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTargetPowerEvent(null)
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTargetPowerEvent(
+        null
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeTargetPowerEvent(null)
       else -> Log.e("Unsubscribe", "Device not support TargetPower")
     }
@@ -921,12 +1097,17 @@ class AntPlusFitnessEquipment(
 
       deviceData["targetPower"] = targetPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.TargetPower.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.TargetPower.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
       eventData.putDouble("targetPower", targetPower.toDouble())
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
 
-    when(equipmentType) {
+    when (equipmentType) {
       EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTargetPowerEvent(::subscribe)
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeTargetPowerEvent(::subscribe)
       else -> Log.e("Subscribe", "Device not support TargetPower")
@@ -935,7 +1116,9 @@ class AntPlusFitnessEquipment(
 
   private fun unsubscribeTrackResistance() {
     when (equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTrackResistanceEvent(null)
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTrackResistanceEvent(
+        null
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeTrackResistanceEvent(null)
       else -> Log.e("Unsubscribe", "Device not support TrackResistance")
     }
@@ -944,7 +1127,12 @@ class AntPlusFitnessEquipment(
   }
 
   private fun subscribeTrackResistance(isOnlyNewData: Boolean) {
-    fun subscribe(estTimestamp: Long, eventFlags: EnumSet<EventFlag>, grade: BigDecimal, rollingResistanceCoefficient: BigDecimal) {
+    fun subscribe(
+      estTimestamp: Long,
+      eventFlags: EnumSet<EventFlag>,
+      grade: BigDecimal,
+      rollingResistanceCoefficient: BigDecimal
+    ) {
       if (isOnlyNewData && deviceData["grade"] == grade && deviceData["rollingResistanceCoefficient"] == rollingResistanceCoefficient) {
         return
       }
@@ -952,16 +1140,26 @@ class AntPlusFitnessEquipment(
       deviceData["grade"] = grade
       deviceData["rollingResistanceCoefficient"] = rollingResistanceCoefficient
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.TrackResistance.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.TrackResistance.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("grade", grade.toDouble())
-      eventData.putDouble("rollingResistanceCoefficient", rollingResistanceCoefficient.toDouble())
+      eventData.putDouble(
+        "rollingResistanceCoefficient",
+        rollingResistanceCoefficient.toDouble()
+      )
 
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
 
-    when(equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTrackResistanceEvent(::subscribe)
+    when (equipmentType) {
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeTrackResistanceEvent(
+        ::subscribe
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeTrackResistanceEvent(::subscribe)
       else -> Log.e("Subscribe", "Device not support TrackResistance")
     }
@@ -986,7 +1184,12 @@ class AntPlusFitnessEquipment(
 
       deviceData["trainerStatusFlags"] = trainerStatusFlags
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.TrainerStatus.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.TrainerStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
       eventData.putString("trainerStatusFlags", trainerStatusFlags.toString())
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
@@ -994,7 +1197,9 @@ class AntPlusFitnessEquipment(
 
   private fun unsubscribeWindResistance() {
     when (equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeWindResistanceEvent(null)
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeWindResistanceEvent(
+        null
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeWindResistanceEvent(null)
       else -> Log.e("Unsubscribe", "Device not support WindResistance")
     }
@@ -1004,7 +1209,13 @@ class AntPlusFitnessEquipment(
   }
 
   private fun subscribeWindResistance(isOnlyNewData: Boolean) {
-    fun subscribe(estTimestamp: Long, eventFlags: EnumSet<EventFlag>, windResistanceCoefficient: BigDecimal, windSpeed: Int, draftingFactor: BigDecimal) {
+    fun subscribe(
+      estTimestamp: Long,
+      eventFlags: EnumSet<EventFlag>,
+      windResistanceCoefficient: BigDecimal,
+      windSpeed: Int,
+      draftingFactor: BigDecimal
+    ) {
       if (isOnlyNewData &&
         deviceData["windResistanceCoefficient"] == windResistanceCoefficient &&
         deviceData["windSpeed"] == windSpeed &&
@@ -1017,7 +1228,12 @@ class AntPlusFitnessEquipment(
       deviceData["windSpeed"] = windSpeed
       deviceData["draftingFactor"] = draftingFactor
 
-      val eventData = AntPlusPlugin.createEventDataMap(TrainerEvent.WindResistance.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        TrainerEvent.WindResistance.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putDouble("windResistanceCoefficient", windResistanceCoefficient.toDouble())
       eventData.putInt("windSpeed", windSpeed)
@@ -1026,8 +1242,10 @@ class AntPlusFitnessEquipment(
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
 
-    when(equipmentType) {
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeWindResistanceEvent(::subscribe)
+    when (equipmentType) {
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.subscribeWindResistanceEvent(
+        ::subscribe
+      )
       EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.subscribeWindResistanceEvent(::subscribe)
       else -> Log.e("Subscribe", "Device not support WindResistance")
     }
@@ -1056,7 +1274,12 @@ class AntPlusFitnessEquipment(
       deviceData["instantaneousCadence"] = instantaneousCadence
       deviceData["instantaneousPower"] = instantaneousPower
 
-      val eventData = AntPlusPlugin.createEventDataMap(BikeEvent.BikeData.toString(), estTimestamp, eventFlags)
+      val eventData = AntPlusPlugin.createEventDataMap(
+        BikeEvent.BikeData.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
 
       eventData.putInt("instantaneousCadence", instantaneousCadence)
       eventData.putInt("instantaneousPower", instantaneousPower)
@@ -1097,10 +1320,13 @@ class AntPlusFitnessEquipment(
       deviceData["numberOfBatteries"] = numberOfBatteries
       deviceData["batteryIdentifier"] = batteryIdentifier
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.BatteryStatus.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
-      eventData.putString("eventFlags", eventFlags.toString())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.BatteryStatus.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("cumulativeOperatingTime", cumulativeOperatingTime.toInt())
       eventData.putDouble("batteryVoltage", batteryVoltage.toDouble())
       eventData.putString("batteryStatus", batteryStatus.toString())
@@ -1130,10 +1356,13 @@ class AntPlusFitnessEquipment(
       deviceData["manufacturerID"] = manufacturerID
       deviceData["modelNumber"] = modelNumber
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ManufacturerIdentification.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerIdentification.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("hardwareRevision", hardwareRevision)
       eventData.putInt("manufacturerID", manufacturerID)
       eventData.putInt("modelNumber", modelNumber)
@@ -1155,10 +1384,13 @@ class AntPlusFitnessEquipment(
 
       deviceData["rawDataBytes"] = rawDataBytes
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ManufacturerSpecific.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ManufacturerSpecific.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       try {
         eventData.putArray("rawDataBytes", AntPlusModule.bytesToWritableArray(rawDataBytes))
       } catch (throwable: Throwable) {
@@ -1185,10 +1417,13 @@ class AntPlusFitnessEquipment(
       deviceData["supplementaryRevision"] = supplementaryRevision
       deviceData["serialNumber"] = serialNumber
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.ProductInformation.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.ProductInformation.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("softwareRevision", softwareRevision)
       eventData.putInt("supplementaryRevision", supplementaryRevision)
       eventData.putInt("serialNumber", serialNumber.toInt())
@@ -1209,10 +1444,13 @@ class AntPlusFitnessEquipment(
 
       deviceData["rssi"] = rssi
 
-      val eventData = Arguments.createMap()
-      eventData.putString("event", AntPlusCommonEvent.Rssi.toString())
-      eventData.putString("eventFlags", eventFlags.toString())
-      eventData.putInt("estTimestamp", estTimestamp.toInt())
+      val eventData = AntPlusPlugin.createEventDataMap(
+        AntPlusCommonEvent.Rssi.toString(),
+        estTimestamp,
+        eventFlags,
+        antDeviceNumber
+      )
+
       eventData.putInt("rssi", rssi)
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
@@ -1244,10 +1482,21 @@ class AntPlusFitnessEquipment(
     fitnessEquipment!!.requestCapabilities(null) { a, b, capabilities ->
       val capabilitiesData = Arguments.createMap()
 
-      capabilitiesData.putBoolean("basicResistanceModeSupport", capabilities.basicResistanceModeSupport)
-      capabilitiesData.putInt("maximumResistance", capabilities.maximumResistance)
+      capabilities.maximumResistance?.let {
+        capabilitiesData.putDouble(
+          "maximumResistance",
+          it.toDouble()
+        )
+      }
+      capabilitiesData.putBoolean(
+        "basicResistanceModeSupport",
+        capabilities.basicResistanceModeSupport
+      )
       capabilitiesData.putBoolean("simulationModeSupport", capabilities.simulationModeSupport)
-      capabilitiesData.putBoolean("targetPowerModeSupport", capabilities.targetPowerModeSupport)
+      capabilitiesData.putBoolean(
+        "targetPowerModeSupport",
+        capabilities.targetPowerModeSupport
+      )
 
       promise.resolve(capabilities.toString())
     }
@@ -1274,10 +1523,12 @@ class AntPlusFitnessEquipment(
   private fun requestUserConfiguration(promise: Promise) {
     fitnessEquipment!!.requestUserConfiguration(null) { a, b, userConfiguration ->
       val userConfigurationData = Arguments.createMap()
-      userConfigurationData.putDouble("bicycleWeight", userConfiguration.bicycleWeight.toDouble())
-      userConfigurationData.putDouble("bicycleWheelDiameter", userConfiguration.bicycleWheelDiameter.toDouble())
-      userConfigurationData.putDouble("gearRatio", userConfiguration.gearRatio.toDouble())
-      userConfigurationData.putDouble("userWeight", userConfiguration.userWeight.toDouble())
+
+      userConfiguration.bicycleWeight?.let { userConfigurationData.putDouble("bicycleWeight", it.toDouble()) }
+      userConfiguration.bicycleWheelDiameter?.let { userConfigurationData.putDouble("bicycleWheelDiameter", it.toDouble()) }
+      userConfiguration.gearRatio?.let { userConfigurationData.putDouble("gearRatio", it.toDouble()) }
+      userConfiguration.userWeight?.let { userConfigurationData.putDouble("userWeight", it.toDouble()) }
+
       promise.resolve(userConfigurationData)
     }
   }
@@ -1289,39 +1540,85 @@ class AntPlusFitnessEquipment(
   }
 
   private fun requestBasicResistance(promise: Promise) {
-    fun basicResistanceReceiver(a: Long , b: EnumSet<EventFlag>, totalResistance: BigDecimal) {
+    fun basicResistanceReceiver(a: Long, b: EnumSet<EventFlag>, totalResistance: BigDecimal) {
       promise.resolve(totalResistance.toDouble())
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestBasicResistance(null, ::basicResistanceReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestBasicResistance(null, ::basicResistanceReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestBasicResistance(
+        null,
+        ::basicResistanceReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestBasicResistance(
+        null,
+        ::basicResistanceReceiver
+      )
       else -> promise.reject(Error("Device not support requestBasicResistance"))
     }
   }
 
   private fun requestCommandStatus(promise: Promise) {
-    fun commandStatusReceiver(var1: Long , var3: EnumSet<EventFlag>, commandStatus: CommandStatus) {
+    fun commandStatusReceiver(a: Long, b: EnumSet<EventFlag>, commandStatus: CommandStatus) {
       val commandStatusData = Arguments.createMap()
 
-      commandStatusData.putInt("lastReceivedSequenceNumber", commandStatus.lastReceivedSequenceNumber)
+      commandStatusData.putInt(
+        "lastReceivedSequenceNumber",
+        commandStatus.lastReceivedSequenceNumber
+      )
       commandStatusData.putString("status", commandStatus.status.toString())
-      commandStatusData.putArray("rawResponseData", AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData))
-      commandStatusData.putString("lastReceivedCommandId", commandStatus.lastReceivedCommandId.toString())
-      commandStatusData.putDouble("totalResistance", commandStatus.totalResistance.toDouble())
-      commandStatusData.putDouble("targetPower", commandStatus.targetPower.toDouble())
-      commandStatusData.putDouble("windResistanceCoefficient", commandStatus.windResistanceCoefficient.toDouble())
-      commandStatusData.putInt("windSpeed", commandStatus.windSpeed)
-      commandStatusData.putDouble("draftingFactor", commandStatus.draftingFactor.toDouble())
-      commandStatusData.putDouble("grade", commandStatus.grade.toDouble())
-      commandStatusData.putDouble("rollingResistanceCoefficient", commandStatus.rollingResistanceCoefficient.toDouble())
+      commandStatusData.putArray(
+        "rawResponseData",
+        AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData)
+      )
+      commandStatusData.putString(
+        "lastReceivedCommandId",
+        commandStatus.lastReceivedCommandId.toString()
+      )
+      commandStatus.totalResistance?.let {
+        commandStatusData.putDouble(
+          "totalResistance",
+          it.toDouble()
+        )
+      }
+      commandStatus.targetPower?.let {
+        commandStatusData.putDouble(
+          "targetPower",
+          it.toDouble()
+        )
+      }
+      commandStatus.windResistanceCoefficient?.let {
+        commandStatusData.putDouble(
+          "windResistanceCoefficient",
+          it.toDouble()
+        )
+      }
+      commandStatus.windSpeed?.let { commandStatusData.putInt("windSpeed", it) }
+      commandStatus.draftingFactor?.let {
+        commandStatusData.putDouble(
+          "draftingFactor",
+          it.toDouble()
+        )
+      }
+      commandStatus.grade?.let { commandStatusData.putDouble("grade", it.toDouble()) }
+      commandStatus.rollingResistanceCoefficient?.let {
+        commandStatusData.putDouble(
+          "rollingResistanceCoefficient",
+          it.toDouble()
+        )
+      }
 
       promise.resolve(commandStatusData)
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestCommandStatus(null, ::commandStatusReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestCommandStatus(null, ::commandStatusReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestCommandStatus(
+        null,
+        ::commandStatusReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestCommandStatus(
+        null,
+        ::commandStatusReceiver
+      )
       else -> promise.reject(Error("Device not support requestCommandStatus"))
     }
   }
@@ -1333,9 +1630,15 @@ class AntPlusFitnessEquipment(
       promise.resolve(status.toString())
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetBasicResistance(totalResistance, ::requestFinishedReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetBasicResistance(totalResistance, ::requestFinishedReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetBasicResistance(
+        totalResistance,
+        ::requestFinishedReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetBasicResistance(
+        totalResistance,
+        ::requestFinishedReceiver
+      )
       else -> promise.reject(Error("Device not support requestSetBasicResistance"))
     }
   }
@@ -1347,24 +1650,39 @@ class AntPlusFitnessEquipment(
       promise.resolve(status.toString())
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetTargetPower(target, ::requestFinishedReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetTargetPower(target, ::requestFinishedReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetTargetPower(
+        target,
+        ::requestFinishedReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetTargetPower(
+        target,
+        ::requestFinishedReceiver
+      )
       else -> promise.reject(Error("Device not support requestSetTargetPower"))
     }
   }
 
   private fun requestSetTrackResistance(args: ReadableMap, promise: Promise) {
     val grade = BigDecimal(args.getDouble("grade"))
-    val rollingResistanceCoefficient = BigDecimal(args.getDouble("rollingResistanceCoefficient"))
+    val rollingResistanceCoefficient =
+      BigDecimal(args.getDouble("rollingResistanceCoefficient"))
 
     fun requestFinishedReceiver(status: RequestStatus) {
       promise.resolve(status.toString())
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetTrackResistance(grade, rollingResistanceCoefficient, ::requestFinishedReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetTrackResistance(grade, rollingResistanceCoefficient, ::requestFinishedReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetTrackResistance(
+        grade,
+        rollingResistanceCoefficient,
+        ::requestFinishedReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetTrackResistance(
+        grade,
+        rollingResistanceCoefficient,
+        ::requestFinishedReceiver
+      )
       else -> promise.reject(Error("Device not support requestSetTrackResistance"))
     }
   }
@@ -1380,9 +1698,19 @@ class AntPlusFitnessEquipment(
     if (args.hasKey("windResistanceCoefficient")) {
       val windResistanceCoefficient = BigDecimal(args.getDouble("windResistanceCoefficient"))
 
-      when(equipmentType) {
-        EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetWindResistance(windResistanceCoefficient, windSpeed, draftingFactor, ::requestFinishedReceiver)
-        EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetWindResistance(windResistanceCoefficient, windSpeed, draftingFactor, ::requestFinishedReceiver)
+      when (equipmentType) {
+        EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetWindResistance(
+          windResistanceCoefficient,
+          windSpeed,
+          draftingFactor,
+          ::requestFinishedReceiver
+        )
+        EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetWindResistance(
+          windResistanceCoefficient,
+          windSpeed,
+          draftingFactor,
+          ::requestFinishedReceiver
+        )
         else -> promise.reject(Error("Device not support requestSetWindResistance"))
       }
     } else {
@@ -1390,43 +1718,83 @@ class AntPlusFitnessEquipment(
       val dragCoefficient = BigDecimal(args.getDouble("dragCoefficient"))
       val airDensity = BigDecimal(args.getDouble("airDensity"))
 
-      when(equipmentType) {
-        EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetWindResistance(frontalSurfaceArea, dragCoefficient, airDensity, windSpeed, draftingFactor, ::requestFinishedReceiver)
-        EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetWindResistance(frontalSurfaceArea, dragCoefficient, airDensity, windSpeed, draftingFactor, ::requestFinishedReceiver)
+      when (equipmentType) {
+        EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestSetWindResistance(
+          frontalSurfaceArea,
+          dragCoefficient,
+          airDensity,
+          windSpeed,
+          draftingFactor,
+          ::requestFinishedReceiver
+        )
+        EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestSetWindResistance(
+          frontalSurfaceArea,
+          dragCoefficient,
+          airDensity,
+          windSpeed,
+          draftingFactor,
+          ::requestFinishedReceiver
+        )
         else -> promise.reject(Error("Device not support requestSetWindResistance"))
       }
     }
   }
 
   private fun requestTargetPower(promise: Promise) {
-    fun targetPowerReceiver(a: Long , b: EnumSet<EventFlag>, targetPower: BigDecimal) {
+    fun targetPowerReceiver(a: Long, b: EnumSet<EventFlag>, targetPower: BigDecimal) {
       promise.resolve(targetPower.toDouble())
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestTargetPower(null, ::targetPowerReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestTargetPower(null, ::targetPowerReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestTargetPower(
+        null,
+        ::targetPowerReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestTargetPower(
+        null,
+        ::targetPowerReceiver
+      )
       else -> promise.reject(Error("Device not support requestTargetPower"))
     }
   }
 
   private fun requestTrackResistance(promise: Promise) {
-    fun trackResistanceReceiver(a: Long , b: EnumSet<EventFlag>, grade: BigDecimal, rollingResistanceCoefficient: BigDecimal) {
+    fun trackResistanceReceiver(
+      a: Long,
+      b: EnumSet<EventFlag>,
+      grade: BigDecimal,
+      rollingResistanceCoefficient: BigDecimal
+    ) {
       val resistance = Arguments.createMap()
       resistance.putDouble("grade", grade.toDouble())
-      resistance.putDouble("rollingResistanceCoefficient", rollingResistanceCoefficient.toDouble())
+      resistance.putDouble(
+        "rollingResistanceCoefficient",
+        rollingResistanceCoefficient.toDouble()
+      )
       promise.resolve(resistance)
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestTrackResistance(null, ::trackResistanceReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestTrackResistance(null, ::trackResistanceReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestTrackResistance(
+        null,
+        ::trackResistanceReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestTrackResistance(
+        null,
+        ::trackResistanceReceiver
+      )
       else -> promise.reject(Error("Device not support requestTrackResistance"))
     }
   }
 
   private fun requestWindResistance(promise: Promise) {
-    fun windResistanceReceiver(a: Long , b: EnumSet<EventFlag>, windResistanceCoefficient: BigDecimal, windSpeed: Int, draftingFactor: BigDecimal) {
+    fun windResistanceReceiver(
+      a: Long,
+      b: EnumSet<EventFlag>,
+      windResistanceCoefficient: BigDecimal,
+      windSpeed: Int,
+      draftingFactor: BigDecimal
+    ) {
       val resistance = Arguments.createMap()
       resistance.putDouble("windResistanceCoefficient", windResistanceCoefficient.toDouble())
       resistance.putInt("windSpeed", windSpeed)
@@ -1434,9 +1802,15 @@ class AntPlusFitnessEquipment(
       promise.resolve(resistance)
     }
 
-    when(equipmentType) {
-      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestWindResistance(null, ::windResistanceReceiver)
-      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestWindResistance(null, ::windResistanceReceiver)
+    when (equipmentType) {
+      EquipmentType.BIKE -> fitnessEquipment!!.bikeMethods.requestWindResistance(
+        null,
+        ::windResistanceReceiver
+      )
+      EquipmentType.TRAINER -> fitnessEquipment!!.trainerMethods.requestWindResistance(
+        null,
+        ::windResistanceReceiver
+      )
       else -> promise.reject(Error("Device not support requestWindResistance"))
     }
   }
@@ -1444,7 +1818,7 @@ class AntPlusFitnessEquipment(
 
   private var fitnessEquipmentStateReceiver =
     IFitnessEquipmentStateReceiver { estTimestamp, eventFlags, type, equipmentState ->
-      if (subscriptionsDone || type == EquipmentType.UNKNOWN || type == EquipmentType.UNRECOGNIZED) {
+      if (type == EquipmentType.UNKNOWN || type == EquipmentType.UNRECOGNIZED) {
         return@IFitnessEquipmentStateReceiver
       }
 
