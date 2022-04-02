@@ -256,6 +256,7 @@ export enum AntPlusHeartRateEvent {
 
 export enum AntPlusWeightScaleEvent {
   BodyWeightBroadcast = 'BodyWeightBroadcast',
+
   BatteryStatus = 'BatteryStatus',
   ManufacturerIdentification = 'ManufacturerIdentification',
   ManufacturerSpecific = 'ManufacturerSpecific',
