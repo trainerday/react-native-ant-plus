@@ -1815,7 +1815,6 @@ class AntPlusFitnessEquipment(
     }
   }
 
-
   private var fitnessEquipmentStateReceiver =
     IFitnessEquipmentStateReceiver { estTimestamp, eventFlags, type, equipmentState ->
       if (type == EquipmentType.UNKNOWN || type == EquipmentType.UNRECOGNIZED) {
@@ -1838,7 +1837,8 @@ class AntPlusFitnessEquipment(
         fitnessEquipment = result
       } else {
         val status = Arguments.createMap()
-        status.putString("name", result.deviceName)
+
+        status.putInt("antDeviceNumber", antDeviceNumber)
         status.putString("state", initialDeviceState.toString())
         status.putString("code", resultCode.toString())
         status.putBoolean("connected", false)
@@ -1847,8 +1847,12 @@ class AntPlusFitnessEquipment(
     }
 
   fun disconnect(promise: Promise) {
-    destroy()
-    promise.resolve(true)
+    try {
+      destroy()
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.resolve(throwable)
+    }
   }
 
   private fun destroy() {

@@ -449,13 +449,14 @@ class AntPlusStrideSdm(
   private var resultReceiver =
     IPluginAccessResultReceiver<AntPlusStrideSdmPcc> { result, resultCode, initialDeviceState ->
       val status = Arguments.createMap()
-      status.putString("name", result.deviceName)
       status.putString("state", initialDeviceState.toString())
       status.putString("code", resultCode.toString())
+      status.putInt("antDeviceNumber", antDeviceNumber)
 
       if (resultCode === RequestAccessResult.SUCCESS) {
         strideSdm = result
         status.putBoolean("connected", true)
+        status.putString("name", result.deviceName)
       } else {
         status.putBoolean("connected", false)
       }
@@ -463,8 +464,12 @@ class AntPlusStrideSdm(
     }
 
   fun disconnect(promise: Promise) {
-    destroy()
-    promise.resolve(true)
+    try {
+      destroy()
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.resolve(throwable)
+    }
   }
 
   private fun destroy() {

@@ -190,6 +190,12 @@ export enum AntPlusFitnessEquipmentEvent {
   TrackResistance = 'TrackResistance',
   TrainerStatus = 'TrainerStatus',
   WindResistance = 'WindResistance',
+
+  BatteryStatus = 'BatteryStatus',
+  ManufacturerIdentification = 'ManufacturerIdentification',
+  ManufacturerSpecific = 'ManufacturerSpecific',
+  ProductInformation = 'ProductInformation',
+  Rssi = 'Rssi'
 }
 
 export enum AntPlusFitnessEquipmentRequest {

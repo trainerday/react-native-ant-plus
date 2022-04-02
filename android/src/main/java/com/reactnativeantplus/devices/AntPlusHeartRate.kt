@@ -258,22 +258,27 @@ class AntPlusHeartRate(
   private var resultReceiver =
     IPluginAccessResultReceiver<AntPlusHeartRatePcc> { result, resultCode, initialDeviceState ->
       val status = Arguments.createMap()
-      status.putString("name", result.deviceName)
       status.putString("state", initialDeviceState.toString())
       status.putString("code", resultCode.toString())
+      status.putInt("antDeviceNumber", antDeviceNumber)
+      status.putBoolean("connected", false)
 
       if (resultCode === RequestAccessResult.SUCCESS) {
         heartRate = result
         status.putBoolean("connected", true)
-      } else {
-        status.putBoolean("connected", false)
+        status.putString("name", result.deviceName)
       }
+
       connectPromise.resolve(status)
     }
 
   fun disconnect(promise: Promise) {
-    destroy()
-    promise.resolve(true)
+    try {
+      destroy()
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.resolve(throwable)
+    }
   }
 
   private fun destroy() {

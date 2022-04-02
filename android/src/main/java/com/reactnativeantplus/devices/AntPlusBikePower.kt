@@ -969,26 +969,30 @@ class AntPlusBikePower(
     }
   }
 
-
   private var resultReceiver =
     IPluginAccessResultReceiver<AntPlusBikePowerPcc> { result, resultCode, initialDeviceState ->
       val status = Arguments.createMap()
-      status.putString("name", result.deviceName)
       status.putString("state", initialDeviceState.toString())
       status.putString("code", resultCode.toString())
+      status.putBoolean("connected", false)
+      status.putInt("antDeviceNumber", antDeviceNumber)
 
       if (resultCode === RequestAccessResult.SUCCESS) {
         bikePower = result
         status.putBoolean("connected", true)
-      } else {
-        status.putBoolean("connected", false)
+        status.putString("name", result.deviceName)
       }
+
       connectPromise.resolve(status)
     }
 
   fun disconnect(promise: Promise) {
-    destroy()
-    promise.resolve(true)
+    try {
+      destroy()
+      promise.resolve(true)
+    } catch (throwable: Throwable) {
+      promise.resolve(throwable)
+    }
   }
 
   private fun destroy() {
