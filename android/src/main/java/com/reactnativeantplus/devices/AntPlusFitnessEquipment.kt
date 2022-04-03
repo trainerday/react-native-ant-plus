@@ -186,7 +186,7 @@ class AntPlusFitnessEquipment(
         Event.CalibrationInProgress.toString(),
         estTimestamp,
         eventFlags,
-        antDeviceNumber,
+        antDeviceNumber
       )
 
       val calibrationInProgressData = Arguments.createMap()
