@@ -101,41 +101,20 @@ class AntPlusBikeSpeedAndCadence(
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
       when (event as String) {
-        CadenceEvent.CalculatedCadence.toString() -> subscribeCalculatedCadence(
-          isOnlyNewData
-        )
-        CadenceEvent.MotionAndCadenceData.toString() -> subscribeMotionAndCadenceData(
-          isOnlyNewData
-        )
+        CadenceEvent.CalculatedCadence.toString() -> subscribeCalculatedCadence(isOnlyNewData)
+        CadenceEvent.MotionAndCadenceData.toString() -> subscribeMotionAndCadenceData(isOnlyNewData)
         CadenceEvent.RawCadenceData.toString() -> subscribeRawCadenceData(isOnlyNewData)
 
-        SpeedDistanceEvent.CalculatedAccumulatedDistance.toString() -> subscribeCalculatedAccumulatedDistance(
-          isOnlyNewData
-        )
-        SpeedDistanceEvent.CalculatedSpeed.toString() -> subscribeCalculatedSpeed(
-          isOnlyNewData
-        )
-        SpeedDistanceEvent.MotionAndSpeedData.toString() -> subscribeMotionAndSpeedData(
-          isOnlyNewData
-        )
-        SpeedDistanceEvent.RawSpeedAndDistanceData.toString() -> subscribeRawSpeedAndDistanceData(
-          isOnlyNewData
-        )
+        SpeedDistanceEvent.CalculatedAccumulatedDistance.toString() -> subscribeCalculatedAccumulatedDistance(isOnlyNewData)
+        SpeedDistanceEvent.CalculatedSpeed.toString() -> subscribeCalculatedSpeed(isOnlyNewData)
+        SpeedDistanceEvent.MotionAndSpeedData.toString() -> subscribeMotionAndSpeedData(isOnlyNewData)
+        SpeedDistanceEvent.RawSpeedAndDistanceData.toString() -> subscribeRawSpeedAndDistanceData(isOnlyNewData)
 
-        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTime(
-          isOnlyNewData
-        )
-        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerial(
-          isOnlyNewData
-        )
-        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> subscribeVersionAndModel(
-          isOnlyNewData
-        )
+        AntPlusLegacyCommonEvent.CumulativeOperatingTime.toString() -> subscribeCumulativeOperatingTime(isOnlyNewData)
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString() -> subscribeManufacturerAndSerial(isOnlyNewData)
+        AntPlusLegacyCommonEvent.VersionAndModel.toString() -> subscribeVersionAndModel(isOnlyNewData)
         AntPlusLegacyCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
-
-        SpeedAndCadenceEvent.BatteryStatus.toString() -> subscribeBatteryStatus(
-          isOnlyNewData
-        )
+        SpeedAndCadenceEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
       }
     }
   }
@@ -267,10 +246,7 @@ class AntPlusBikeSpeedAndCadence(
           antDeviceNumber
         )
 
-        eventData.putDouble(
-          "calculatedAccumulatedDistance",
-          calculatedAccumulatedDistance.toDouble()
-        )
+        eventData.putDouble("calculatedAccumulatedDistance", calculatedAccumulatedDistance.toDouble())
 
         antPlus.sendEvent(eventName, eventData)
       }
@@ -422,13 +398,12 @@ class AntPlusBikeSpeedAndCadence(
       deviceData["serialNumber"] = serialNumber
 
       val eventData = AntPlusPlugin.createEventDataMap(
-        CadenceEvent.CalculatedCadence.toString(),
+        AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString(),
         estTimestamp,
         eventFlags,
         antDeviceNumber
       )
 
-      eventData.putString("event", AntPlusLegacyCommonEvent.ManufacturerAndSerial.toString())
       eventData.putInt("manufacturerID", manufacturerID)
       eventData.putInt("serialNumber", serialNumber)
       antPlus.sendEvent(eventName, eventData)
