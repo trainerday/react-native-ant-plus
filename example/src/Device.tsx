@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import AntPlus, {
   AntPlusDevice,
@@ -18,13 +18,9 @@ const Device: FC<AntPlusDevice> = device => {
     const result = await connect(device)
     setConnected(!!result?.connected)
     setFec(result?.type === AntPlusFitnessEquipmentType.TRAINER || result?.type === AntPlusFitnessEquipmentType.BIKE)
-    setWaiting(false)
 
-    console.log(result, 'Connected ------')
     if (result?.connected) {
-      console.log('Get capabilities ------')
-      const data = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
-      console.log(data, 'Capabilities ------')
+      await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
     }
   }
 
@@ -32,31 +28,29 @@ const Device: FC<AntPlusDevice> = device => {
     setWaiting(true)
     await disconnect(device.antDeviceNumber)
     setConnected(false)
-    setWaiting(false)
   }
 
+  useEffect(() => {
+    setWaiting(false)
+  }, [isConnected])
+
   const CommandStatus = async () => {
-    console.log('CommandStatus')
-    const result = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.CommandStatus, {})
-    console.log('CommandStatus', result)
+    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.CommandStatus, {})
   }
 
   const onChangeTarget = async () => {
     const args = {target: 100}
-    const result = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, args)
-    console.log('onChangeTarget', result)
+    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, args)
   }
 
   const onChangeResistance = async () => {
     const args = {totalResistance: 15}
-    const result = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetBasicResistance, args)
-    console.log('onChangeResistance', result)
+    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetBasicResistance, args)
   }
 
   const onChangeSlope = async () => {
     const args = {grade: 2, rollingResistanceCoefficient: 0.0022}
-    const result = await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTrackResistance, args)
-    console.log('onChangeSlope', result)
+    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTrackResistance, args)
   }
 
 

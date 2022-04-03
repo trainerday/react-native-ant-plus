@@ -61,6 +61,12 @@ export enum AntPlusEvent {
   heartRate = 'heartRate',
 }
 
+export interface AntPlusArguments {
+  antDeviceNumber: number,
+  estTimestamp: number,
+  eventFlags: string,
+}
+
 export const AntPlusRssiSignal = {
   perfect: -65,
   good: -75,
@@ -74,6 +80,32 @@ export enum AntPlusLegacyCommonEvent {
   Rssi = 'Rssi',
 }
 
+interface CumulativeOperatingTime {
+  event: AntPlusLegacyCommonEvent.CumulativeOperatingTime
+  cumulativeOperatingTime: number
+}
+
+interface ManufacturerAndSerial {
+  event: AntPlusLegacyCommonEvent.ManufacturerAndSerial
+  manufacturerID: number
+  serialNumber: number
+}
+
+interface VersionAndModel {
+  event: AntPlusLegacyCommonEvent.VersionAndModel
+  hardwareVersion: number
+  softwareVersion: number
+  modelNumber: number
+}
+
+interface Rssi {
+  event: AntPlusLegacyCommonEvent.Rssi | AntPlusCommonEvent.Rssi
+  rssi: number
+}
+
+export type LegacyCommonEventArguments = AntPlusArguments & (CumulativeOperatingTime | ManufacturerAndSerial | VersionAndModel | Rssi)
+
+
 export enum AntPlusCommonEvent {
   BatteryStatus = 'BatteryStatus',
   ManufacturerIdentification = 'ManufacturerIdentification',
@@ -82,11 +114,36 @@ export enum AntPlusCommonEvent {
   Rssi = 'Rssi'
 }
 
-export enum AntPlusBikeCadenceEvent {
-  CalculatedCadence = 'CalculatedCadence',
-  MotionAndCadence = 'MotionAndCadence',
-  RawCadence = 'RawCadence',
+interface BatteryStatus {
+  event: AntPlusCommonEvent.BatteryStatus
+  cumulativeOperatingTime: number
+  batteryVoltage: number
+  batteryStatus: string
+  cumulativeOperatingTimeResolution: number
+  numberOfBatteries: number
+  batteryIdentifier: number
 }
+
+interface ManufacturerIdentification {
+  event: AntPlusCommonEvent.ManufacturerIdentification
+  hardwareRevision: number
+  manufacturerID: number
+  modelNumber: number
+}
+
+interface ManufacturerSpecific {
+  event: AntPlusCommonEvent.ManufacturerSpecific
+  rawDataBytes: number[]
+}
+
+interface ProductInformation {
+  event: AntPlusCommonEvent.ProductInformation
+  softwareRevision: number
+  supplementaryRevision: number
+  serialNumber: number
+}
+
+export type CommonEventArguments = AntPlusArguments & (BatteryStatus | ManufacturerIdentification | ManufacturerSpecific | ProductInformation | Rssi)
 
 export enum AntPlusBikePowerEvent {
   AutoZeroStatus = 'AutoZeroStatus',
@@ -107,6 +164,131 @@ export enum AntPlusBikePowerEvent {
   RawWheelTorqueData = 'RawWheelTorqueData',
   TorqueEffectiveness = 'TorqueEffectiveness'
 }
+
+interface AutoZeroStatus {
+  event: AntPlusBikePowerEvent.AutoZeroStatus
+  autoZeroStatus: string
+}
+
+interface CalculatedCrankCadence {
+  event: AntPlusBikePowerEvent.CalculatedCrankCadence
+  dataSource: string
+  calculatedCrankCadence: number
+}
+
+interface CalculatedPower {
+  event: AntPlusBikePowerEvent.CalculatedPower
+  dataSource: string
+  calculatedPower: number
+}
+
+interface CalculatedTorque {
+  event: AntPlusBikePowerEvent.CalculatedTorque
+  dataSource: string
+  calculatedTorque: number
+}
+
+interface CalculatedWheelDistance {
+  event: AntPlusBikePowerEvent.CalculatedWheelDistance
+  dataSource: string
+  calculatedWheelDistance: number
+}
+
+interface CalculatedWheelSpeed {
+  event: AntPlusBikePowerEvent.CalculatedWheelSpeed
+  dataSource: string
+  calculatedWheelSpeed: number
+}
+
+interface CalibrationMessage {
+  event: AntPlusBikePowerEvent.CalibrationMessage
+  calibrationMessage: {
+    calibrationId: string
+    calibrationData: number
+    ctfOffset: number
+    manufacturerSpecificData: number[]
+  }
+}
+
+interface CrankParameters {
+  event: AntPlusBikePowerEvent.CrankParameters
+  crankParameters: {
+    fullCrankLength: number
+    crankLengthStatus: string
+    sensorSoftwareMismatchStatus: string
+    sensorAvailabilityStatus: string
+    customCalibrationStatus: string
+    isAutoCrankLengthSupported: boolean
+  }
+}
+
+interface InstantaneousCadence {
+  event: AntPlusBikePowerEvent.InstantaneousCadence
+  dataSource: string
+  instantaneousCadence: number
+}
+
+interface MeasurementOutputData {
+  event: AntPlusBikePowerEvent.MeasurementOutputData
+  numOfDataTypes: number
+  dataType: number
+  timeStamp: number
+  measurementValue: number
+}
+
+interface PedalPowerBalance {
+  event: AntPlusBikePowerEvent.PedalPowerBalance
+  rightPedalIndicator: boolean
+  pedalPowerPercentage: number
+}
+
+interface PedalSmoothness {
+  event: AntPlusBikePowerEvent.PedalSmoothness
+  powerOnlyUpdateEventCount: number
+  separatePedalSmoothnessSupport: number
+  leftOrCombinedPedalSmoothness: number
+  rightPedalSmoothness: number
+}
+
+interface RawCrankTorqueData {
+  event: AntPlusBikePowerEvent.RawCrankTorqueData
+  crankTorqueUpdateEventCount: number
+  accumulatedCrankTicks: number
+  accumulatedCrankPeriod: number
+  accumulatedCrankTorque: number
+}
+
+interface RawCtfData {
+  event: AntPlusBikePowerEvent.RawCtfData
+  ctfUpdateEventCount: number
+  instantaneousSlope: number
+  accumulatedTimeStamp: number
+  accumulatedTorqueTicksStamp: number
+}
+
+interface RawPowerOnlyData {
+  event: AntPlusBikePowerEvent.RawPowerOnlyData
+  powerOnlyUpdateEventCount: number
+  instantaneousPower: number
+  accumulatedPower: number
+}
+
+interface RawWheelTorqueData {
+  event: AntPlusBikePowerEvent.RawWheelTorqueData
+  wheelTorqueUpdateEventCount: number
+  accumulatedWheelTicks: number
+  accumulatedWheelPeriod: number
+  accumulatedWheelTorque: number
+}
+
+interface TorqueEffectiveness {
+  event: AntPlusBikePowerEvent.TorqueEffectiveness
+  powerOnlyUpdateEventCount: number
+  leftTorqueEffectiveness: number
+  rightTorqueEffectiveness: number
+}
+
+export type BikePowerEventArguments = AntPlusArguments & (AutoZeroStatus | CalculatedCrankCadence | CalculatedPower | CalculatedTorque | CalculatedWheelDistance | CalculatedWheelSpeed | CalibrationMessage | CrankParameters | InstantaneousCadence | MeasurementOutputData | PedalPowerBalance | PedalSmoothness | RawCrankTorqueData | RawCtfData | RawPowerOnlyData | RawWheelTorqueData | TorqueEffectiveness | CommonEventArguments)
 
 export enum AntPlusBikePowerRequest {
   CommandBurst = 'CommandBurst',
@@ -149,6 +331,30 @@ export interface AntPlusBikePowerRequestSetCustomCalibrationParametersArguments 
   manufacturerSpecificParameters: number[]
 }
 
+export enum AntPlusBikeCadenceEvent {
+  CalculatedCadence = 'CalculatedCadence',
+  MotionAndCadence = 'MotionAndCadence',
+  RawCadence = 'RawCadence',
+}
+
+interface CalculatedCadence {
+  event: AntPlusBikeCadenceEvent.CalculatedCadence
+  calculatedCadence: number
+}
+
+interface MotionAndCadence {
+  event: AntPlusBikeCadenceEvent.MotionAndCadence
+  isPedallingStopped: boolean
+}
+
+interface RawCadence {
+  event: AntPlusBikeCadenceEvent.RawCadence
+  timestampOfLastEvent: number
+  cumulativeRevolutions: number
+}
+
+export type BikeCadenceEventArguments = AntPlusArguments & (CalculatedCadence | MotionAndCadence | RawCadence | LegacyCommonEventArguments)
+
 export enum AntPlusSpeedDistanceEvent {
   CalculatedAccumulatedDistance = 'CalculatedAccumulatedDistance',
   CalculatedSpeed = 'CalculatedSpeed',
@@ -156,13 +362,54 @@ export enum AntPlusSpeedDistanceEvent {
   RawSpeedAndDistanceData = 'RawSpeedAndDistanceData',
 }
 
+interface CalculatedAccumulatedDistance {
+  event: AntPlusSpeedDistanceEvent.CalculatedAccumulatedDistance
+  calculatedAccumulatedDistance: number
+}
+
+interface CalculatedSpeed {
+  event: AntPlusSpeedDistanceEvent.CalculatedSpeed
+  calculatedSpeed: number
+}
+
+interface MotionAndSpeedData {
+  event: AntPlusSpeedDistanceEvent.MotionAndSpeedData
+  isBikeStopped: boolean
+}
+
+interface RawSpeedAndDistanceData {
+  event: AntPlusSpeedDistanceEvent.RawSpeedAndDistanceData
+  timestampOfLastEvent: number
+  cumulativeRevolutions: number
+}
+
+export type SpeedDistanceEventArguments = AntPlusArguments & (CalculatedAccumulatedDistance | CalculatedSpeed | MotionAndSpeedData | RawSpeedAndDistanceData | LegacyCommonEventArguments)
+
 export enum AntPlusSpeedAndCadenceEvent {
   BatteryStatus = 'BatteryStatus',
 }
 
+interface SpeedAndCadenceBatteryStatus {
+  event: AntPlusSpeedAndCadenceEvent.BatteryStatus
+  batteryVoltage: number
+  batteryStatus: string
+}
+
+export type SpeedAndCadenceEventArguments = AntPlusArguments & (SpeedAndCadenceBatteryStatus | BikeCadenceEventArguments | SpeedDistanceEventArguments)
+
 export enum AntPlusEnvironmentEvent {
   TemperatureData = 'TemperatureData',
 }
+
+interface TemperatureData {
+  event: AntPlusEnvironmentEvent.TemperatureData
+  eventCount: number
+  currentTemperature: number
+  lowLast24Hours: number
+  highLast24Hours: number
+}
+
+export type EnvironmentEventArguments = AntPlusArguments & (TemperatureData | CommonEventArguments)
 
 export enum AntPlusFitnessEquipmentEvent {
   CalibrationInProgress = 'CalibrationInProgress',
@@ -198,6 +445,203 @@ export enum AntPlusFitnessEquipmentEvent {
   Rssi = 'Rssi'
 }
 
+interface CalibrationInProgress {
+  event: AntPlusFitnessEquipmentEvent.CalibrationInProgress
+  calibrationInProgress: {
+    currentTemperature: number
+    speedCondition: string
+    spinDownCalibrationPending: boolean
+    targetSpeed: number
+    targetSpinDownTime: number
+    temperatureCondition: string
+    zeroOffsetCalibrationPending: boolean
+  }
+}
+
+interface CalibrationResponse {
+  event: AntPlusFitnessEquipmentEvent.CalibrationResponse
+  calibrationResponse: {
+    spinDownCalibrationSuccess: boolean
+    spinDownTime: number
+    temperature: number
+    zeroOffset: number
+    zeroOffsetCalibrationSuccess: boolean
+  }
+}
+
+interface Capabilities {
+  event: AntPlusFitnessEquipmentEvent.Capabilities
+  capabilities: {
+    maximumResistance?: number
+    simulationModeSupport: boolean
+    targetPowerModeSupport: boolean
+    basicResistanceModeSupport: boolean
+  }
+}
+
+interface GeneralFitnessEquipmentData {
+  event: AntPlusFitnessEquipmentEvent.GeneralFitnessEquipmentData
+  elapsedTime: number
+  cumulativeDistance: number
+  instantaneousSpeed: number
+  virtualInstantaneousSpeed: boolean
+  instantaneousHeartRate: number
+  heartRateDataSource: string
+}
+
+interface GeneralMetabolicData {
+  event: AntPlusFitnessEquipmentEvent.GeneralMetabolicData
+  instantaneousMetabolicEquivalents: number
+  instantaneousCaloricBurn: number
+  cumulativeCalories: number
+}
+
+interface GeneralSettings {
+  event: AntPlusFitnessEquipmentEvent.GeneralSettings
+  cycleLength: number
+  inclinePercentage: number
+  resistanceLevel: number
+}
+
+interface LapOccured {
+  event: AntPlusFitnessEquipmentEvent.LapOccured
+  lapCount: number
+}
+
+interface UserConfiguration {
+  event: AntPlusFitnessEquipmentEvent.UserConfiguration
+  userConfiguration: {
+    bicycleWeight: number
+    bicycleWheelDiameter: number
+    gearRatio: number
+    userWeight: number
+  }
+}
+
+interface Treadmill {
+  event: AntPlusFitnessEquipmentEvent.Treadmill
+  instantaneousCadence: number
+  cumulativeNegVertDistance: number
+  cumulativePosVertDistance: number
+}
+
+interface ClimberData {
+  event: AntPlusFitnessEquipmentEvent.ClimberData
+  cumulativeStrideCycles: number
+  instantaneousCadence: number
+  instantaneousPower: number
+}
+
+interface EllipticalData {
+  event: AntPlusFitnessEquipmentEvent.EllipticalData
+  cumulativePosVertDistance: number
+  cumulativeStrides: number
+  instantaneousCadence: number
+  instantaneousPower: number
+}
+
+interface NordicSkierData {
+  event: AntPlusFitnessEquipmentEvent.NordicSkierData
+  cumulativeStrides: number
+  instantaneousCadence: number
+  instantaneousPower: number
+}
+
+interface RowerData {
+  event: AntPlusFitnessEquipmentEvent.RowerData
+  cumulativeStrokes: number
+  instantaneousCadence: number
+  instantaneousPower: number
+}
+
+interface BikeData {
+  event: AntPlusFitnessEquipmentEvent.BikeData
+  instantaneousCadence: number
+  instantaneousPower: number
+}
+
+interface BasicResistance {
+  event: AntPlusFitnessEquipmentEvent.BasicResistance
+  totalResistance: number
+}
+
+interface CalculatedTrainerDistance {
+  event: AntPlusFitnessEquipmentEvent.CalculatedTrainerDistance
+  calculatedDistance: number
+}
+
+interface CalculatedTrainerPower {
+  event: AntPlusFitnessEquipmentEvent.CalculatedTrainerPower
+  calculatedPower: number
+  dataSource: string
+
+}
+
+interface CalculatedTrainerSpeed {
+  event: AntPlusFitnessEquipmentEvent.CalculatedTrainerSpeed
+  calculatedSpeed: number
+  dataSource: string
+}
+
+interface CommandStatus {
+  event: AntPlusFitnessEquipmentEvent.CommandStatus
+  commandStatus: {
+    lastReceivedSequenceNumber: number
+    status: string
+    rawResponseData: number[]
+    lastReceivedCommandId: string
+    totalResistance: number
+    targetPower: number
+    windResistanceCoefficient: number
+    windSpeed: number
+    draftingFactor: number
+    grade: number
+    rollingResistanceCoefficient: number
+  }
+}
+
+interface RawTrainerData {
+  event: AntPlusFitnessEquipmentEvent.RawTrainerData
+  updateEventCount: number
+  instantaneousCadence: number
+  instantaneousPower: number
+  accumulatedPower: number
+}
+
+interface RawTrainerTorqueData {
+  event: AntPlusFitnessEquipmentEvent.RawTrainerTorqueData
+  updateEventCount: number
+  accumulatedWheelTicks: number
+  accumulatedWheelPeriod: number
+  accumulatedTorque: number
+}
+
+interface TargetPower {
+  event: AntPlusFitnessEquipmentEvent.TargetPower
+  targetPower: number
+}
+
+interface TrackResistance {
+  event: AntPlusFitnessEquipmentEvent.TrackResistance
+  grade: number
+  rollingResistanceCoefficient: number
+}
+
+interface TrainerStatus {
+  event: AntPlusFitnessEquipmentEvent.TrainerStatus
+  trainerStatusFlags: string
+}
+
+interface WindResistance {
+  event: AntPlusFitnessEquipmentEvent.WindResistance
+  windResistanceCoefficient: number
+  windSpeed: number
+  draftingFactor: number
+}
+
+
+export type FitnessEquipmentEventArguments = AntPlusArguments & (CalibrationInProgress | CalibrationResponse | Capabilities | GeneralFitnessEquipmentData | GeneralMetabolicData | GeneralSettings | LapOccured | UserConfiguration | Treadmill | ClimberData | EllipticalData | NordicSkierData | RowerData | BikeData | BasicResistance | CalculatedTrainerDistance | CalculatedTrainerPower | CalculatedTrainerSpeed | CommandStatus | RawTrainerData | RawTrainerTorqueData | TargetPower | TrackResistance | TrainerStatus | WindResistance | CommonEventArguments)
+
 export enum AntPlusFitnessEquipmentRequest {
   Capabilities = 'Capabilities',
   SetUserConfiguration = 'SetUserConfiguration',
@@ -228,7 +672,6 @@ export interface AntPlusFitnessEquipmentRequestSetTargetPower {
 
 export interface AntPlusFitnessEquipmentRequestSetBasicResistance {
   totalResistance: number
-
 }
 
 export interface AntPlusFitnessEquipmentRequestSetTrackResistance {
@@ -254,6 +697,28 @@ export enum AntPlusHeartRateEvent {
   Page4AddtData = 'Page4AddtData',
 }
 
+interface HeartRateData {
+  event: AntPlusHeartRateEvent.HeartRateData
+  heartRate: number
+  heartBeatCount: number
+  heartBeatEventTime: number
+  dataState: number
+}
+
+interface CalculatedRrInterval {
+  event: AntPlusHeartRateEvent.CalculatedRrInterval
+  rrInterval: number
+  rrFlag: string
+}
+
+interface Page4AddtData {
+  event: AntPlusHeartRateEvent.Page4AddtData
+  manufacturerSpecificByte: number
+  previousHeartBeatEventTime: number
+}
+
+export type HeartRateEventArguments = AntPlusArguments & (HeartRateData | CalculatedRrInterval | Page4AddtData | LegacyCommonEventArguments)
+
 export enum AntPlusWeightScaleEvent {
   BodyWeightBroadcast = 'BodyWeightBroadcast',
 
@@ -263,6 +728,14 @@ export enum AntPlusWeightScaleEvent {
   ProductInformation = 'ProductInformation',
   Rssi = 'Rssi',
 }
+
+interface BodyWeightBroadcast {
+  event: AntPlusWeightScaleEvent.BodyWeightBroadcast
+  bodyWeightStatus: string
+  bodyWeight: number
+}
+
+export type WeightScaleEventArguments = AntPlusArguments & (BodyWeightBroadcast | CommonEventArguments)
 
 export enum AntPlusWeightScaleRequest {
   BasicMeasurement = 'BasicMeasurement',
@@ -415,26 +888,6 @@ export interface DevicesStateChangeArguments {
   state: string
 }
 
-export interface BikeCadenceEventArguments {
-  event: string
-  estTimestamp: number
-  eventFlags: string
-  calculatedCadence?: number
-  isPedallingStopped?: boolean
-  timestampOfLastEvent?: number
-  cumulativeRevolutions?: number
-  hardwareRevision?: number
-  manufacturerID?: number
-  modelNumber?: number
-  rawDataBytes?: number
-  softwareRevision?: number
-  supplementaryRevision?: number
-  serialNumber?: number
-  rssi?: number
-  batteryVoltage?: number
-  batteryStatus?: string
-}
-
 type AntPlusEvents = | {
   event: AntPlusEvent.searchStatus
   listener: (data: SearchStatusArguments) => void
@@ -448,29 +901,29 @@ type AntPlusEvents = | {
   event: AntPlusEvent.devicesStateChange
   listener: (data: DevicesStateChangeArguments) => void
 } | {
+  event: AntPlusEvent.bikePower
+  listener: (data: BikePowerEventArguments) => void
+} | {
   event: AntPlusEvent.bikeCadence
   listener: (data: BikeCadenceEventArguments) => void
 } | {
-  event: AntPlusEvent.bikePower
-  listener: (data: any) => void
-} | {
   event: AntPlusEvent.bikeSpeedDistance
-  listener: (data: any) => void
+  listener: (data: SpeedDistanceEventArguments) => void
 } | {
   event: AntPlusEvent.bikeSpeedAndCadence
-  listener: (data: any) => void
+  listener: (data: SpeedAndCadenceEventArguments) => void
 } | {
   event: AntPlusEvent.environment
-  listener: (data: any) => void
+  listener: (data: EnvironmentEventArguments) => void
 } | {
   event: AntPlusEvent.fitnessEquipment
-  listener: (data: any) => void
+  listener: (data: FitnessEquipmentEventArguments) => void
 } | {
   event: AntPlusEvent.weightScale
-  listener: (data: any) => void
+  listener: (data: WeightScaleEventArguments) => void
 } | {
   event: AntPlusEvent.heartRate
-  listener: (data: any) => void
+  listener: (data: HeartRateEventArguments) => void
 }
 
 class AntPlus {

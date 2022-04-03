@@ -2,12 +2,18 @@ import React, {useEffect, useState} from 'react'
 
 import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native'
 import AntPlus, {
+  AntPlusBikeCadenceEvent, AntPlusBikePowerEvent,
   AntPlusDevice,
   AntPlusDeviceStateChange,
   AntPlusDeviceType,
   AntPlusEvent,
   AntPlusFitnessEquipmentEvent,
+  AntPlusHeartRateEvent,
   AntPlusSearchStatus,
+  BikeCadenceEventArguments, BikePowerEventArguments,
+  FitnessEquipmentEventArguments,
+  HeartRateEventArguments,
+  RssiArguments,
 } from 'react-native-ant-plus'
 import Device from './Device'
 
@@ -35,7 +41,6 @@ export default function App() {
   }
 
   const searchStatus = (status: AntPlusSearchStatus): void => {
-    console.log('searchStatus', status)
     setStatusSearch(status.isSearching)
   }
 
@@ -49,7 +54,7 @@ export default function App() {
     })
   }
 
-  const rssi = (event: {rssi: number, resultID: number}): void => {
+  const rssi = (event: RssiArguments) => {
     console.log('rssi', event.rssi)
   }
 
@@ -57,26 +62,36 @@ export default function App() {
     console.log('devicesStateChange', event)
   }
 
-  const heartRateChange = (data: any) => {
-    data.heartRate && setBpm(data.heartRate)
-  }
-
-  const bikeCadenceChange = (data: any) => {
-    data.calculatedCadence && setRpm(data.calculatedCadence)
-  }
-
-  const bikePowerChange = (data: any) => {
-    data.calculatedPower && setPower(data.calculatedPower)
-  }
-
-  const fitnessEquipmentChange = (data: any) => {
-    if (data.event === 'Testing') {
-      Alert.alert(data.type)
+  const heartRateChange = (data: HeartRateEventArguments) => {
+    switch (data.event) {
+    case AntPlusHeartRateEvent.HeartRateData: {
+      setBpm(data.heartRate)
     }
-    if (data.event === AntPlusFitnessEquipmentEvent.CalculatedTrainerPower) {
+    }
+  }
+
+  const bikeCadenceChange = (data: BikeCadenceEventArguments) => {
+    switch (data.event) {
+    case AntPlusBikeCadenceEvent.CalculatedCadence: {
+      data.calculatedCadence && setRpm(data.calculatedCadence)
+    }
+    }
+  }
+
+  const bikePowerChange = (data: BikePowerEventArguments) => {
+    switch (data.event) {
+    case AntPlusBikePowerEvent.CalculatedPower: {
       setPower(data.calculatedPower)
     }
-    console.log(data)
+    }
+  }
+
+  const fitnessEquipmentChange = (data: FitnessEquipmentEventArguments) => {
+    switch (data.event) {
+    case AntPlusFitnessEquipmentEvent.CalculatedTrainerPower: {
+      setPower(data.calculatedPower)
+    }
+    }
   }
 
   useEffect(() => {
@@ -113,7 +128,7 @@ export default function App() {
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView style={styles.devices}>
-        {devices.map((device) => <Device {...device} key={device.antPlusDeviceTypeName + device.resultID} />)}
+        {devices.map((device) => <Device {...device} key={device.antPlusDeviceTypeName + device.resultID}/>)}
       </ScrollView>
     </View>
   )
