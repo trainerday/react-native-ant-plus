@@ -45,15 +45,9 @@ class AntPlusWeightScale(
         Event.BodyWeightBroadcast.toString() -> subscribeBodyWeightBroadcast(isOnlyNewData)
 
         AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(
-          isOnlyNewData
-        )
-        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(
-          isOnlyNewData
-        )
-        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(
-          isOnlyNewData
-        )
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
         AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
       }
     }

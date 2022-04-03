@@ -79,14 +79,10 @@ class AntPlusFitnessEquipment(
   fun subscribe(events: ReadableArray, isOnlyNewData: Boolean) {
     events.toArrayList().forEach { event ->
       when (event) {
-        Event.CalibrationInProgress.toString() -> subscribeCalibrationInProgress(
-          isOnlyNewData
-        )
+        Event.CalibrationInProgress.toString() -> subscribeCalibrationInProgress(isOnlyNewData)
         Event.CalibrationResponse.toString() -> subscribeCalibrationResponse(isOnlyNewData)
         Event.Capabilities.toString() -> subscribeCapabilities(isOnlyNewData)
-        Event.GeneralFitnessEquipmentData.toString() -> subscribeGeneralFitnessEquipmentData(
-          isOnlyNewData
-        )
+        Event.GeneralFitnessEquipmentData.toString() -> subscribeGeneralFitnessEquipmentData(isOnlyNewData)
         Event.GeneralMetabolicData.toString() -> subscribeGeneralMetabolicData(isOnlyNewData)
         Event.GeneralSettings.toString() -> subscribeGeneralSettings(isOnlyNewData)
         Event.LapOccured.toString() -> subscribeLapOccured(isOnlyNewData)
@@ -98,44 +94,28 @@ class AntPlusFitnessEquipment(
 
         EllipticalEvent.EllipticalData.toString() -> subscribeEllipticalData(isOnlyNewData)
 
-        NordicSkierEvent.NordicSkierData.toString() -> subscribeNordicSkierData(
-          isOnlyNewData
-        )
+        NordicSkierEvent.NordicSkierData.toString() -> subscribeNordicSkierData(isOnlyNewData)
 
         RowerEvent.RowerData.toString() -> subscribeRowerData(isOnlyNewData)
 
         BikeEvent.BikeData.toString() -> subscribeBikeData(isOnlyNewData)
 
         TrainerEvent.BasicResistance.toString() -> subscribeBasicResistance(isOnlyNewData)
-        TrainerEvent.CalculatedTrainerDistance.toString() -> subscribeCalculatedTrainerDistance(
-          isOnlyNewData
-        )
-        TrainerEvent.CalculatedTrainerPower.toString() -> subscribeCalculatedTrainerPower(
-          isOnlyNewData
-        )
-        TrainerEvent.CalculatedTrainerSpeed.toString() -> subscribeCalculatedTrainerSpeed(
-          isOnlyNewData
-        )
+        TrainerEvent.CalculatedTrainerDistance.toString() -> subscribeCalculatedTrainerDistance(isOnlyNewData)
+        TrainerEvent.CalculatedTrainerPower.toString() -> subscribeCalculatedTrainerPower(isOnlyNewData)
+        TrainerEvent.CalculatedTrainerSpeed.toString() -> subscribeCalculatedTrainerSpeed(isOnlyNewData)
         TrainerEvent.CommandStatus.toString() -> subscribeCommandStatus(isOnlyNewData)
         TrainerEvent.RawTrainerData.toString() -> subscribeRawTrainerData(isOnlyNewData)
-        TrainerEvent.RawTrainerTorqueData.toString() -> subscribeRawTrainerTorqueData(
-          isOnlyNewData
-        )
+        TrainerEvent.RawTrainerTorqueData.toString() -> subscribeRawTrainerTorqueData(isOnlyNewData)
         TrainerEvent.TargetPower.toString() -> subscribeTargetPower(isOnlyNewData)
         TrainerEvent.TrackResistance.toString() -> subscribeTrackResistance(isOnlyNewData)
         TrainerEvent.TrainerStatus.toString() -> subscribeTrainerStatus(isOnlyNewData)
         TrainerEvent.WindResistance.toString() -> subscribeWindResistance(isOnlyNewData)
 
         AntPlusCommonEvent.BatteryStatus.toString() -> subscribeBatteryStatus(isOnlyNewData)
-        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(
-          isOnlyNewData
-        )
-        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(
-          isOnlyNewData
-        )
-        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(
-          isOnlyNewData
-        )
+        AntPlusCommonEvent.ManufacturerIdentification.toString() -> subscribeManufacturerIdentification(isOnlyNewData)
+        AntPlusCommonEvent.ManufacturerSpecific.toString() -> subscribeManufacturerSpecificData(isOnlyNewData)
+        AntPlusCommonEvent.ProductInformation.toString() -> subscribeProductInformation(isOnlyNewData)
         AntPlusCommonEvent.Rssi.toString() -> subscribeRssi(isOnlyNewData)
 
         else -> Log.d("subscribe", "Event not found")
@@ -206,39 +186,18 @@ class AntPlusFitnessEquipment(
         Event.CalibrationInProgress.toString(),
         estTimestamp,
         eventFlags,
-        antDeviceNumber
+        antDeviceNumber,
       )
 
       val calibrationInProgressData = Arguments.createMap()
 
-      calibrationInProgressData.putDouble(
-        "currentTemperature",
-        calibrationInProgress.currentTemperature.toDouble()
-      )
-      calibrationInProgressData.putString(
-        "speedCondition",
-        calibrationInProgress.speedCondition.toString()
-      )
-      calibrationInProgressData.putBoolean(
-        "spinDownCalibrationPending",
-        calibrationInProgress.spinDownCalibrationPending
-      )
-      calibrationInProgressData.putDouble(
-        "targetSpeed",
-        calibrationInProgress.targetSpeed.toDouble()
-      )
-      calibrationInProgressData.putInt(
-        "targetSpinDownTime",
-        calibrationInProgress.targetSpinDownTime
-      )
-      calibrationInProgressData.putString(
-        "temperatureCondition",
-        calibrationInProgress.temperatureCondition.toString()
-      )
-      calibrationInProgressData.putBoolean(
-        "zeroOffsetCalibrationPending",
-        calibrationInProgress.zeroOffsetCalibrationPending
-      )
+      calibrationInProgressData.putDouble("currentTemperature", calibrationInProgress.currentTemperature.toDouble())
+      calibrationInProgressData.putString("speedCondition", calibrationInProgress.speedCondition.toString())
+      calibrationInProgressData.putBoolean("spinDownCalibrationPending", calibrationInProgress.spinDownCalibrationPending)
+      calibrationInProgressData.putDouble("targetSpeed", calibrationInProgress.targetSpeed.toDouble())
+      calibrationInProgressData.putInt("targetSpinDownTime", calibrationInProgress.targetSpinDownTime)
+      calibrationInProgressData.putString("temperatureCondition", calibrationInProgress.temperatureCondition.toString())
+      calibrationInProgressData.putBoolean("zeroOffsetCalibrationPending", calibrationInProgress.zeroOffsetCalibrationPending)
 
       eventData.putMap("calibrationInProgress", calibrationInProgressData)
 
@@ -268,20 +227,11 @@ class AntPlusFitnessEquipment(
 
       val calibrationResponseData = Arguments.createMap()
 
-      calibrationResponseData.putBoolean(
-        "spinDownCalibrationSuccess",
-        calibrationResponse.spinDownCalibrationSuccess
-      )
+      calibrationResponseData.putBoolean("spinDownCalibrationSuccess", calibrationResponse.spinDownCalibrationSuccess)
       calibrationResponseData.putInt("spinDownTime", calibrationResponse.spinDownTime)
-      calibrationResponseData.putDouble(
-        "temperature",
-        calibrationResponse.temperature.toDouble()
-      )
+      calibrationResponseData.putDouble("temperature", calibrationResponse.temperature.toDouble())
       calibrationResponseData.putInt("zeroOffset", calibrationResponse.zeroOffset)
-      calibrationResponseData.putBoolean(
-        "zeroOffsetCalibrationSuccess",
-        calibrationResponse.zeroOffsetCalibrationSuccess
-      )
+      calibrationResponseData.putBoolean("zeroOffsetCalibrationSuccess", calibrationResponse.zeroOffsetCalibrationSuccess)
 
       eventData.putMap("calibrationResponse", calibrationResponseData)
 
@@ -311,21 +261,10 @@ class AntPlusFitnessEquipment(
 
       val capabilitiesData = Arguments.createMap()
 
-      capabilities.maximumResistance?.let {
-        capabilitiesData.putDouble(
-          "maximumResistance",
-          it.toDouble()
-        )
-      }
+      capabilities.maximumResistance?.let { capabilitiesData.putDouble("maximumResistance", it.toDouble()) }
       capabilitiesData.putBoolean("simulationModeSupport", capabilities.simulationModeSupport)
-      capabilitiesData.putBoolean(
-        "targetPowerModeSupport",
-        capabilities.targetPowerModeSupport
-      )
-      capabilitiesData.putBoolean(
-        "basicResistanceModeSupport",
-        capabilities.basicResistanceModeSupport
-      )
+      capabilitiesData.putBoolean("targetPowerModeSupport", capabilities.targetPowerModeSupport)
+      capabilitiesData.putBoolean("basicResistanceModeSupport", capabilities.basicResistanceModeSupport)
 
       eventData.putMap("capabilities", capabilitiesData)
 
@@ -411,10 +350,7 @@ class AntPlusFitnessEquipment(
         antDeviceNumber
       )
 
-      eventData.putDouble(
-        "instantaneousMetabolicEquivalents",
-        instantaneousMetabolicEquivalents.toDouble()
-      )
+      eventData.putDouble("instantaneousMetabolicEquivalents", instantaneousMetabolicEquivalents.toDouble())
       eventData.putDouble("instantaneousCaloricBurn", instantaneousCaloricBurn.toDouble())
       eventData.putInt("cumulativeCalories", cumulativeCalories.toInt())
 
@@ -451,8 +387,8 @@ class AntPlusFitnessEquipment(
         antDeviceNumber
       )
 
-      eventData.putDouble("resistanceLevel", resistanceLevel.toDouble())
-      eventData.putDouble("resistanceLevel", resistanceLevel.toDouble())
+      eventData.putDouble("cycleLength", cycleLength.toDouble())
+      eventData.putDouble("inclinePercentage", inclinePercentage.toDouble())
       eventData.putInt("resistanceLevel", resistanceLevel)
 
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
@@ -513,14 +449,8 @@ class AntPlusFitnessEquipment(
 
       val userConfigurationData = Arguments.createMap()
 
-      userConfigurationData.putDouble(
-        "bicycleWeight",
-        userConfiguration.bicycleWeight.toDouble()
-      )
-      userConfigurationData.putDouble(
-        "bicycleWheelDiameter",
-        userConfiguration.bicycleWheelDiameter.toDouble()
-      )
+      userConfigurationData.putDouble("bicycleWeight", userConfiguration.bicycleWeight.toDouble())
+      userConfigurationData.putDouble("bicycleWheelDiameter", userConfiguration.bicycleWheelDiameter.toDouble())
       userConfigurationData.putDouble("gearRatio", userConfiguration.gearRatio.toDouble())
       userConfigurationData.putDouble("userWeight", userConfiguration.userWeight.toDouble())
 
@@ -950,32 +880,17 @@ class AntPlusFitnessEquipment(
 
       val commandStatusData = Arguments.createMap()
 
-      commandStatusData.putInt(
-        "lastReceivedSequenceNumber",
-        commandStatus.lastReceivedSequenceNumber
-      )
+      commandStatusData.putInt("lastReceivedSequenceNumber", commandStatus.lastReceivedSequenceNumber)
       commandStatusData.putString("status", commandStatus.status.toString())
-      commandStatusData.putArray(
-        "rawResponseData",
-        AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData)
-      )
-      commandStatusData.putString(
-        "lastReceivedCommandId",
-        commandStatus.lastReceivedCommandId.toString()
-      )
+      commandStatusData.putArray("rawResponseData", AntPlusModule.bytesToWritableArray(commandStatus.rawResponseData))
+      commandStatusData.putString("lastReceivedCommandId", commandStatus.lastReceivedCommandId.toString())
       commandStatusData.putDouble("totalResistance", commandStatus.totalResistance.toDouble())
       commandStatusData.putDouble("targetPower", commandStatus.targetPower.toDouble())
-      commandStatusData.putDouble(
-        "windResistanceCoefficient",
-        commandStatus.windResistanceCoefficient.toDouble()
-      )
+      commandStatusData.putDouble("windResistanceCoefficient", commandStatus.windResistanceCoefficient.toDouble())
       commandStatusData.putInt("windSpeed", commandStatus.windSpeed)
       commandStatusData.putDouble("draftingFactor", commandStatus.draftingFactor.toDouble())
       commandStatusData.putDouble("grade", commandStatus.grade.toDouble())
-      commandStatusData.putDouble(
-        "rollingResistanceCoefficient",
-        commandStatus.rollingResistanceCoefficient.toDouble()
-      )
+      commandStatusData.putDouble("rollingResistanceCoefficient", commandStatus.rollingResistanceCoefficient.toDouble())
 
       eventData.putMap("commandStatus", commandStatusData)
 
@@ -1148,10 +1063,7 @@ class AntPlusFitnessEquipment(
       )
 
       eventData.putDouble("grade", grade.toDouble())
-      eventData.putDouble(
-        "rollingResistanceCoefficient",
-        rollingResistanceCoefficient.toDouble()
-      )
+      eventData.putDouble("rollingResistanceCoefficient", rollingResistanceCoefficient.toDouble())
 
       antPlus.sendEvent(AntPlusEvent.fitnessEquipment, eventData)
     }
@@ -1525,7 +1437,12 @@ class AntPlusFitnessEquipment(
       val userConfigurationData = Arguments.createMap()
 
       userConfiguration.bicycleWeight?.let { userConfigurationData.putDouble("bicycleWeight", it.toDouble()) }
-      userConfiguration.bicycleWheelDiameter?.let { userConfigurationData.putDouble("bicycleWheelDiameter", it.toDouble()) }
+      userConfiguration.bicycleWheelDiameter?.let {
+        userConfigurationData.putDouble(
+          "bicycleWheelDiameter",
+          it.toDouble()
+        )
+      }
       userConfiguration.gearRatio?.let { userConfigurationData.putDouble("gearRatio", it.toDouble()) }
       userConfiguration.userWeight?.let { userConfigurationData.putDouble("userWeight", it.toDouble()) }
 

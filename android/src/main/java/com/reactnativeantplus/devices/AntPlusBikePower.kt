@@ -969,6 +969,7 @@ class AntPlusBikePower(
     }
   }
 
+
   private var resultReceiver =
     IPluginAccessResultReceiver<AntPlusBikePowerPcc> { result, resultCode, initialDeviceState ->
       val status = Arguments.createMap()
