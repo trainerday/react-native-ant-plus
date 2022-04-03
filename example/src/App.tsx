@@ -1,19 +1,21 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
-import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import AntPlus, {
-  AntPlusBikeCadenceEvent, AntPlusBikePowerEvent,
+  AntPlusBikeCadenceEvent,
+  AntPlusBikePowerEvent,
   AntPlusDevice,
-  AntPlusDeviceStateChange,
   AntPlusDeviceType,
   AntPlusEvent,
   AntPlusFitnessEquipmentEvent,
   AntPlusHeartRateEvent,
-  AntPlusSearchStatus,
-  BikeCadenceEventArguments, BikePowerEventArguments,
+  BikeCadenceEventArguments,
+  BikePowerEventArguments,
+  DevicesStateChangeArguments,
   FitnessEquipmentEventArguments,
   HeartRateEventArguments,
   RssiArguments,
+  SearchStatusArguments,
 } from 'react-native-ant-plus'
 import Device from './Device'
 
@@ -28,24 +30,27 @@ export default function App() {
     try {
       const searchSeconds = 60
 
-      const result = await AntPlus?.startSearch([
-        AntPlusDeviceType.HEARTRATE,
-        AntPlusDeviceType.BIKE_CADENCE,
-        AntPlusDeviceType.BIKE_POWER,
-        AntPlusDeviceType.FITNESS_EQUIPMENT,
-      ], searchSeconds, true)
+      const result = await AntPlus?.startSearch(
+        [
+          AntPlusDeviceType.HEARTRATE,
+          AntPlusDeviceType.BIKE_CADENCE,
+          AntPlusDeviceType.BIKE_POWER,
+          AntPlusDeviceType.FITNESS_EQUIPMENT,
+        ],
+        searchSeconds,
+        true
+      )
       console.log(result, 'result')
     } catch (error) {
       console.log(error, 'error')
     }
   }
 
-  const searchStatus = (status: AntPlusSearchStatus): void => {
-    setStatusSearch(status.isSearching)
+  const searchStatus = (event: SearchStatusArguments) => {
+    setStatusSearch(event.isSearching)
   }
 
   const foundDevice = (device: AntPlusDevice) => {
-    console.log(device)
     setDevices((prev) => {
       if (prev.some((unit) => unit.resultID === device.resultID)) {
         return prev
@@ -58,39 +63,39 @@ export default function App() {
     console.log('rssi', event.rssi)
   }
 
-  const devicesStateChange = (event: AntPlusDeviceStateChange) => {
+  const devicesStateChange = (event: DevicesStateChangeArguments) => {
     console.log('devicesStateChange', event)
   }
 
   const heartRateChange = (data: HeartRateEventArguments) => {
     switch (data.event) {
-    case AntPlusHeartRateEvent.HeartRateData: {
-      setBpm(data.heartRate)
-    }
+      case AntPlusHeartRateEvent.HeartRateData: {
+        setBpm(data.heartRate)
+      }
     }
   }
 
   const bikeCadenceChange = (data: BikeCadenceEventArguments) => {
     switch (data.event) {
-    case AntPlusBikeCadenceEvent.CalculatedCadence: {
-      data.calculatedCadence && setRpm(data.calculatedCadence)
-    }
+      case AntPlusBikeCadenceEvent.CalculatedCadence: {
+        data.calculatedCadence && setRpm(data.calculatedCadence)
+      }
     }
   }
 
   const bikePowerChange = (data: BikePowerEventArguments) => {
     switch (data.event) {
-    case AntPlusBikePowerEvent.CalculatedPower: {
-      setPower(data.calculatedPower)
-    }
+      case AntPlusBikePowerEvent.CalculatedPower: {
+        setPower(data.calculatedPower)
+      }
     }
   }
 
   const fitnessEquipmentChange = (data: FitnessEquipmentEventArguments) => {
     switch (data.event) {
-    case AntPlusFitnessEquipmentEvent.CalculatedTrainerPower: {
-      setPower(data.calculatedPower)
-    }
+      case AntPlusFitnessEquipmentEvent.CalculatedTrainerPower: {
+        setPower(data.calculatedPower)
+      }
     }
   }
 
@@ -128,7 +133,9 @@ export default function App() {
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>
       <ScrollView style={styles.devices}>
-        {devices.map((device) => <Device {...device} key={device.antPlusDeviceTypeName + device.resultID}/>)}
+        {devices.map((device) => (
+          <Device {...device} key={device.antPlusDeviceTypeName + device.resultID} />
+        ))}
       </ScrollView>
     </View>
   )

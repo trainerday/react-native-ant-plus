@@ -1,5 +1,5 @@
-import React, {FC, useEffect, useState} from 'react'
-import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import React, { FC, useEffect, useState } from 'react'
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import AntPlus, {
   AntPlusDevice,
   AntPlusFitnessEquipmentRequest,
@@ -8,7 +8,7 @@ import AntPlus, {
 import connect from './functions/connect'
 import disconnect from './functions/disconnect'
 
-const Device: FC<AntPlusDevice> = device => {
+const Device: FC<AntPlusDevice> = (device) => {
   const [isConnected, setConnected] = useState(false)
   const [isWaiting, setWaiting] = useState(false)
   const [isFec, setFec] = useState(false)
@@ -39,20 +39,19 @@ const Device: FC<AntPlusDevice> = device => {
   }
 
   const onChangeTarget = async () => {
-    const args = {target: 100}
+    const args = { target: 100 }
     await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, args)
   }
 
   const onChangeResistance = async () => {
-    const args = {totalResistance: 15}
+    const args = { totalResistance: 15 }
     await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetBasicResistance, args)
   }
 
   const onChangeSlope = async () => {
-    const args = {grade: 2, rollingResistanceCoefficient: 0.0022}
+    const args = { grade: 2, rollingResistanceCoefficient: 0.0022 }
     await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTrackResistance, args)
   }
-
 
   return (
     <View style={styles.container}>
@@ -66,7 +65,9 @@ const Device: FC<AntPlusDevice> = device => {
           <TouchableOpacity onPress={isConnected ? onDisconnect : onConnect} style={styles.button}>
             <Text>{isConnected ? 'Disconnect' : 'Connect'}</Text>
           </TouchableOpacity>
-        ) : <ActivityIndicator size="large" color="#000"/>}
+        ) : (
+          <ActivityIndicator size="large" color="#000" />
+        )}
       </View>
       {isFec && (
         <>
