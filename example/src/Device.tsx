@@ -1,10 +1,6 @@
-import React, { FC, useEffect, useState } from 'react'
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import AntPlus, {
-  AntPlusDevice,
-  AntPlusFitnessEquipmentRequest,
-  AntPlusFitnessEquipmentType,
-} from 'react-native-ant-plus'
+import React, {FC, useEffect, useState} from 'react'
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import AntPlus, {AntPlusDevice, AntPlusDeviceType, AntPlusFitnessEquipmentRequest} from 'react-native-ant-plus'
 import connect from './functions/connect'
 import disconnect from './functions/disconnect'
 
@@ -16,23 +12,24 @@ const Device: FC<AntPlusDevice> = (device) => {
   const onConnect = async () => {
     setWaiting(true)
     const result = await connect(device)
-    setConnected(!!result?.connected)
-    setFec(result?.type === AntPlusFitnessEquipmentType.TRAINER || result?.type === AntPlusFitnessEquipmentType.BIKE)
-
-    if (result?.connected) {
-      await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
-    }
+    setConnected(result)
+    setFec(device.antPlusDeviceType === AntPlusDeviceType.FITNESS_EQUIPMENT)
   }
 
   const onDisconnect = async () => {
     setWaiting(true)
-    await disconnect(device.antDeviceNumber)
+    const result = await disconnect(device.antDeviceNumber)
+    console.log(result)
     setConnected(false)
   }
 
   useEffect(() => {
     setWaiting(false)
   }, [isConnected])
+
+  useEffect(() => {
+    isFec && AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
+  }, [isFec])
 
   const CommandStatus = async () => {
     await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.CommandStatus, {})

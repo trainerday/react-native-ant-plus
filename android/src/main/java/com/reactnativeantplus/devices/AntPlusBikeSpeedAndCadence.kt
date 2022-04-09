@@ -579,6 +579,8 @@ class AntPlusBikeSpeedAndCadence(
     if (releaseHandle != null) {
       releaseHandle!!.close()
     }
+    bikeCadence = null
+    bikeSpeedDistance = null
   }
 
   enum class CadenceEvent(val event: String) {

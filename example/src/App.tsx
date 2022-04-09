@@ -8,14 +8,14 @@ import AntPlus, {
   AntPlusDeviceType,
   AntPlusEvent,
   AntPlusFitnessEquipmentEvent,
-  AntPlusHeartRateEvent,
+  AntPlusHeartRateEvent, AntPlusSpeedDistanceEvent,
   BikeCadenceEventArguments,
   BikePowerEventArguments,
   DevicesStateChangeArguments,
   FitnessEquipmentEventArguments,
   HeartRateEventArguments,
   RssiArguments,
-  SearchStatusArguments,
+  SearchStatusArguments, SpeedDistanceEventArguments,
 } from 'react-native-ant-plus'
 import Device from './Device'
 
@@ -25,6 +25,7 @@ export default function App() {
   const [bpm, setBpm] = useState(0)
   const [rpm, setRpm] = useState(0)
   const [power, setPower] = useState(0)
+  const [speed, setSpeed] = useState(0)
 
   const startSearch = async () => {
     try {
@@ -36,6 +37,7 @@ export default function App() {
           AntPlusDeviceType.BIKE_CADENCE,
           AntPlusDeviceType.BIKE_POWER,
           AntPlusDeviceType.FITNESS_EQUIPMENT,
+          AntPlusDeviceType.BIKE_SPD,
         ],
         searchSeconds,
         true
@@ -99,6 +101,14 @@ export default function App() {
     }
   }
 
+  const bikeSpeedDistance = (data: SpeedDistanceEventArguments) => {
+    switch (data.event) {
+      case AntPlusSpeedDistanceEvent.CalculatedSpeed: {
+        setSpeed(data.calculatedSpeed)
+      }
+    }
+  }
+
   useEffect(() => {
     if (AntPlus) {
       startSearch()
@@ -112,6 +122,7 @@ export default function App() {
     AntPlus.addListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
     AntPlus.addListener(AntPlusEvent.bikePower, bikePowerChange)
     AntPlus.addListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
+    AntPlus.addListener(AntPlusEvent.bikeSpeedDistance, bikeSpeedDistance)
 
     return () => {
       AntPlus.removeListener(AntPlusEvent.searchStatus, searchStatus)
@@ -122,6 +133,7 @@ export default function App() {
       AntPlus.removeListener(AntPlusEvent.bikeCadence, bikeCadenceChange)
       AntPlus.removeListener(AntPlusEvent.bikePower, bikePowerChange)
       AntPlus.removeListener(AntPlusEvent.fitnessEquipment, fitnessEquipmentChange)
+      AntPlus.removeListener(AntPlusEvent.bikeSpeedDistance, bikeSpeedDistance)
     }
   }, [])
 
@@ -129,6 +141,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>BPM: {bpm}</Text>
       <Text>RPM: {rpm}</Text>
+      <Text>SPEED: {speed}</Text>
       <Text>POWER: {power}</Text>
       <Text>Searching: {String(statusSearch)}</Text>
       <Text>Devices</Text>

@@ -2,7 +2,7 @@
 import { NativeEventEmitter, NativeModules } from 'react-native'
 
 const AntPlusModule = NativeModules.AntPlusModule ? NativeModules.AntPlusModule : null
-export const AntPlusEmitter = new NativeEventEmitter(AntPlusModule)
+export const AntPlusEmitter = AntPlusModule ? new NativeEventEmitter(AntPlusModule) : null
 
 export enum AntPlusDeviceType {
   BIKE_POWER = 11,
@@ -860,9 +860,9 @@ export interface AntPlusConnect {
 type AntPlusSubscribeEvent =
   | AntPlusLegacyCommonEvent[]
   | AntPlusBikeCadenceEvent[]
-  | AntPlusBikePowerEvent[]
   | AntPlusSpeedDistanceEvent[]
   | AntPlusSpeedAndCadenceEvent[]
+  | AntPlusBikePowerEvent[]
   | AntPlusEnvironmentEvent[]
   | AntPlusFitnessEquipmentEvent[]
   | AntPlusHeartRateEvent[]
@@ -952,51 +952,51 @@ export interface DevicesStateChangeArguments {
 type AntPlusEvents =
   | {
       event: AntPlusEvent.searchStatus
-      listener: (data: SearchStatusArguments) => void
+      listener: (data: SearchStatusArguments) => any | Promise<any>
     }
   | {
       event: AntPlusEvent.rssi
-      listener: (data: RssiArguments) => void
+      listener: (data: RssiArguments) => any
     }
   | {
       event: AntPlusEvent.foundDevice
-      listener: (data: AntPlusDevice) => void
+      listener: (data: AntPlusDevice) => any
     }
   | {
       event: AntPlusEvent.devicesStateChange
-      listener: (data: DevicesStateChangeArguments) => void
+      listener: (data: DevicesStateChangeArguments) => any
     }
   | {
       event: AntPlusEvent.bikePower
-      listener: (data: BikePowerEventArguments) => void
+      listener: (data: BikePowerEventArguments) => any
     }
   | {
       event: AntPlusEvent.bikeCadence
-      listener: (data: BikeCadenceEventArguments) => void
+      listener: (data: BikeCadenceEventArguments) => any
     }
   | {
       event: AntPlusEvent.bikeSpeedDistance
-      listener: (data: SpeedDistanceEventArguments) => void
+      listener: (data: SpeedDistanceEventArguments) => any
     }
   | {
       event: AntPlusEvent.bikeSpeedAndCadence
-      listener: (data: SpeedAndCadenceEventArguments) => void
+      listener: (data: SpeedAndCadenceEventArguments) => any
     }
   | {
       event: AntPlusEvent.environment
-      listener: (data: EnvironmentEventArguments) => void
+      listener: (data: EnvironmentEventArguments) => any
     }
   | {
       event: AntPlusEvent.fitnessEquipment
-      listener: (data: FitnessEquipmentEventArguments) => void
+      listener: (data: FitnessEquipmentEventArguments) => any
     }
   | {
       event: AntPlusEvent.weightScale
-      listener: (data: WeightScaleEventArguments) => void
+      listener: (data: WeightScaleEventArguments) => any
     }
   | {
       event: AntPlusEvent.heartRate
-      listener: (data: HeartRateEventArguments) => void
+      listener: (data: HeartRateEventArguments) => any
     }
 
 class AntPlus {
@@ -1052,12 +1052,12 @@ class AntPlus {
     return await AntPlusModule.request(antDeviceNumber, requestName, args)
   }
 
-  static addListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']) {
-    AntPlusEmitter.addListener(event, listener)
+  static addListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']): any {
+    AntPlusEmitter?.addListener(event, listener)
   }
 
-  static removeListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']) {
-    AntPlusEmitter.removeListener(event, listener)
+  static removeListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']): any {
+    AntPlusEmitter?.removeListener(event, listener)
   }
 }
 
