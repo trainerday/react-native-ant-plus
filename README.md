@@ -31,6 +31,30 @@ An Ant+ module for React Native
 npm install react-native-ant-plus
 ```
 
+### Android - Update Manifest
+
+```xml
+<!-- file: android/app/src/main/AndroidManifest.xml -->
+
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  package="YOUR_PACKAGE_NAME">
+  ... your uses-permissions
+
+<!--  for Android 11 or higher -->
+  <queries>
+    <package android:name="com.dsi.ant.plugins.antplus"/>
+  </queries>
+
+  ...
+
+  <application>
+    ...
+  </application>
+</manifest>
+```
+
 # Usage
 
 ```js
