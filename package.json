@@ -1,6 +1,6 @@
 {
   "name": "react-native-ant-plus",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "An Ant+ module for React Native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
