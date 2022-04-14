@@ -28,26 +28,26 @@ const Device: FC<AntPlusDevice> = (device) => {
   }, [isConnected])
 
   useEffect(() => {
-    isFec && AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.Capabilities, {})
+    isFec && AntPlus.request(device.antDeviceNumber, device.antPlusDeviceType, AntPlusFitnessEquipmentRequest.Capabilities, {})
   }, [isFec])
 
   const CommandStatus = async () => {
-    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.CommandStatus, {})
+    await AntPlus.request(device.antDeviceNumber, device.antPlusDeviceType, AntPlusFitnessEquipmentRequest.CommandStatus, {})
   }
 
   const onChangeTarget = async () => {
     const args = { target: 100 }
-    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTargetPower, args)
+    await AntPlus.request(device.antDeviceNumber, device.antPlusDeviceType, AntPlusFitnessEquipmentRequest.SetTargetPower, args)
   }
 
   const onChangeResistance = async () => {
     const args = { totalResistance: 15 }
-    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetBasicResistance, args)
+    await AntPlus.request(device.antDeviceNumber, device.antPlusDeviceType, AntPlusFitnessEquipmentRequest.SetBasicResistance, args)
   }
 
   const onChangeSlope = async () => {
     const args = { grade: 2, rollingResistanceCoefficient: 0.0022 }
-    await AntPlus.request(device.antDeviceNumber, AntPlusFitnessEquipmentRequest.SetTrackResistance, args)
+    await AntPlus.request(device.antDeviceNumber, device.antPlusDeviceType, AntPlusFitnessEquipmentRequest.SetTrackResistance, args)
   }
 
   return (

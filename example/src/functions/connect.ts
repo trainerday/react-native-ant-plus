@@ -10,7 +10,7 @@ import AntPlus, {
 export default async (device: AntPlusDevice) => {
   let isConnected = false
   try {
-    isConnected = await AntPlus.isConnected(device.antDeviceNumber) || false
+    isConnected = await AntPlus.isConnected(device.antDeviceNumber, device.antPlusDeviceType) || false
     if (!isConnected) {
       const result = await AntPlus.connect(device.antDeviceNumber, device.antPlusDeviceType)
       isConnected = result.connected
@@ -19,23 +19,24 @@ export default async (device: AntPlusDevice) => {
 
     switch (device.antPlusDeviceType) {
       case AntPlusDeviceType.BIKE_CADENCE:
-        AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikeCadenceEvent.CalculatedCadence], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType,[AntPlusBikeCadenceEvent.CalculatedCadence], true)
         break
       case AntPlusDeviceType.BIKE_POWER:
-        AntPlus.subscribe(device.antDeviceNumber, [AntPlusBikePowerEvent.CalculatedPower], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType,[AntPlusBikePowerEvent.CalculatedPower], true)
         break
       case AntPlusDeviceType.FITNESS_EQUIPMENT:
         AntPlus.subscribe(
           device.antDeviceNumber,
+          device.antPlusDeviceType,
           [AntPlusFitnessEquipmentEvent.CalculatedTrainerPower, AntPlusFitnessEquipmentEvent.Capabilities],
           true
         )
         break
       case AntPlusDeviceType.HEARTRATE:
-        AntPlus.subscribe(device.antDeviceNumber, [AntPlusHeartRateEvent.HeartRateData], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType, [AntPlusHeartRateEvent.HeartRateData], true)
         break
       case AntPlusDeviceType.BIKE_SPD:
-        AntPlus.subscribe(device.antDeviceNumber, [AntPlusSpeedDistanceEvent.CalculatedSpeed], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType, [AntPlusSpeedDistanceEvent.CalculatedSpeed], true)
         break
     }
   } catch (error) {

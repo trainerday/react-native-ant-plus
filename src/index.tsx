@@ -952,51 +952,51 @@ export interface DevicesStateChangeArguments {
 type AntPlusEvents =
   | {
       event: AntPlusEvent.searchStatus
-      listener: (data: SearchStatusArguments) => any | Promise<any>
+      data: SearchStatusArguments
     }
   | {
       event: AntPlusEvent.rssi
-      listener: (data: RssiArguments) => any
+      data: RssiArguments
     }
   | {
       event: AntPlusEvent.foundDevice
-      listener: (data: AntPlusDevice) => any
+      data: AntPlusDevice
     }
   | {
       event: AntPlusEvent.devicesStateChange
-      listener: (data: DevicesStateChangeArguments) => any
+      data: DevicesStateChangeArguments
     }
   | {
       event: AntPlusEvent.bikePower
-      listener: (data: BikePowerEventArguments) => any
+      data: BikePowerEventArguments
     }
   | {
       event: AntPlusEvent.bikeCadence
-      listener: (data: BikeCadenceEventArguments) => any
+      data: BikeCadenceEventArguments
     }
   | {
       event: AntPlusEvent.bikeSpeedDistance
-      listener: (data: SpeedDistanceEventArguments) => any
+      data: SpeedDistanceEventArguments
     }
   | {
       event: AntPlusEvent.bikeSpeedAndCadence
-      listener: (data: SpeedAndCadenceEventArguments) => any
+      data: SpeedAndCadenceEventArguments
     }
   | {
       event: AntPlusEvent.environment
-      listener: (data: EnvironmentEventArguments) => any
+      data: EnvironmentEventArguments
     }
   | {
       event: AntPlusEvent.fitnessEquipment
-      listener: (data: FitnessEquipmentEventArguments) => any
+      data: FitnessEquipmentEventArguments
     }
   | {
       event: AntPlusEvent.weightScale
-      listener: (data: WeightScaleEventArguments) => any
+      data: WeightScaleEventArguments
     }
   | {
       event: AntPlusEvent.heartRate
-      listener: (data: HeartRateEventArguments) => any
+      data: HeartRateEventArguments
     }
 
 class AntPlus {
@@ -1012,51 +1012,53 @@ class AntPlus {
     return await AntPlusModule.stopSearch()
   }
 
-  static async isConnected(antDeviceNumber: number): Promise<boolean | undefined> {
-    return await AntPlusModule.isConnected(antDeviceNumber)
+  static async isConnected(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType): Promise<boolean | undefined> {
+    return await AntPlusModule.isConnected(antDeviceNumber, antPlusDeviceType)
   }
 
   static async connect(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType): Promise<AntPlusConnect> {
     return await AntPlusModule.connect(antDeviceNumber, antPlusDeviceType)
   }
 
-  static async disconnect(antDeviceNumber: number): Promise<boolean> {
-    return await AntPlusModule.disconnect(antDeviceNumber)
+  static async disconnect(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType): Promise<boolean> {
+    return await AntPlusModule.disconnect(antDeviceNumber, antPlusDeviceType)
   }
 
   static async subscribe(
     antDeviceNumber: number,
+    antPlusDeviceType: AntPlusDeviceType,
     events: AntPlusSubscribeEvent,
     isOnlyNewData: boolean = true
   ): Promise<boolean> {
-    return await AntPlusModule.subscribe(antDeviceNumber, events, isOnlyNewData)
+    return await AntPlusModule.subscribe(antDeviceNumber, antPlusDeviceType, events, isOnlyNewData)
   }
 
-  static async unsubscribe(antDeviceNumber: number, events: AntPlusSubscribeEvent): Promise<boolean> {
-    return await AntPlusModule.unsubscribe(antDeviceNumber, events)
+  static async unsubscribe(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType, events: AntPlusSubscribeEvent): Promise<boolean> {
+    return await AntPlusModule.unsubscribe(antDeviceNumber, antPlusDeviceType, events)
   }
 
-  static async setVariables(antDeviceNumber: number, variables: { [key: string]: any }): Promise<boolean> {
-    return await AntPlusModule.setVariables(antDeviceNumber, variables)
+  static async setVariables(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType, variables: { [key: string]: any }): Promise<boolean> {
+    return await AntPlusModule.setVariables(antDeviceNumber, antPlusDeviceType, variables)
   }
 
-  static async getVariables(antDeviceNumber: number, variables: { [key: string]: any }): Promise<any> {
-    return await AntPlusModule.getVariables(antDeviceNumber, variables)
+  static async getVariables(antDeviceNumber: number, antPlusDeviceType: AntPlusDeviceType, variables: { [key: string]: any }): Promise<any> {
+    return await AntPlusModule.getVariables(antDeviceNumber, antPlusDeviceType, variables)
   }
 
   static async request<T extends AntPlusRequest>(
     antDeviceNumber: number,
+    antPlusDeviceType: AntPlusDeviceType,
     requestName: T['requestName'],
     args: T['args'] = {}
   ): Promise<any> {
-    return await AntPlusModule.request(antDeviceNumber, requestName, args)
+    return await AntPlusModule.request(antDeviceNumber, antPlusDeviceType, requestName, args)
   }
 
-  static addListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']): any {
+  static addListener<T extends AntPlusEvents>(event: T['event'], listener: (...args: any[]) => any) {
     AntPlusEmitter?.addListener(event, listener)
   }
 
-  static removeListener<T extends AntPlusEvents>(event: T['event'], listener: T['listener']): any {
+  static removeListener<T extends AntPlusEvents>(event: T['event'], listener: (...args: any[]) => any) {
     AntPlusEmitter?.removeListener(event, listener)
   }
 }

@@ -137,13 +137,15 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 
 **Example**
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 
-AntPlus.disconnect(antDeviceNumber).then(isDisconnect => {
+AntPlus.disconnect(antDeviceNumber, antPlusDeviceType).then(isDisconnect => {
   console.log(`Device disconnected: ${isDisconnect}`)
 }).catch(error => {
   console.log(error)
@@ -158,6 +160,7 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 - `events` - `Array of String` - supported device events.
 - `isOnlyNewData` - `Boolean` - receive only if the values have changed.
 
@@ -165,10 +168,11 @@ Returns a `Promise` object.
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 const events = ['HeartRateData', 'Rssi']
 const isOnlyNewData = true
 
-AntPlus.subscribe(antDeviceNumber, events, isOnlyNewData).then(isSubscribed => {
+AntPlus.subscribe(antDeviceNumber, antPlusDeviceType, events, isOnlyNewData).then(isSubscribed => {
   console.log(`Subscribed: ${isSubscribed}`)
 }).catch(error => {
   console.log(error)
@@ -183,15 +187,17 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 - `events` - `Array of String` - supported device events.
 
 **Example**
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 const events = ['HeartRateData', 'Rssi']
 
-AntPlus.unsubscribe(antDeviceNumber, events).then(isUnsubscribed => {
+AntPlus.unsubscribe(antDeviceNumber, antPlusDeviceType, events).then(isUnsubscribed => {
   console.log(`Unsubscribed: ${isUnsubscribed}`)
 }).catch(error => {
   console.log(error)
@@ -281,15 +287,17 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 - `variables` - `ReadableMap` - Variables you want to change.
 
 **Example**
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 const variables = {wheelCircumferenceInMeters: 2.06}
 
-AntPlus.setVariables(antDeviceNumber, variables)
+AntPlus.setVariables(antDeviceNumber, antPlusDeviceType, variables)
 ```
 
 ### request(antDeviceNumber, requestName, args)
@@ -300,6 +308,7 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 - `requestName` - `String` - Name of request.
 - `args` - `ReadableMap` - Arguments for the request.
 
@@ -307,10 +316,11 @@ Returns a `Promise` object.
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 const requestName = 'BasicMeasurement'
 const args = {}
 
-AntPlus.request(antDeviceNumber, requestName, args)
+AntPlus.request(antDeviceNumber, antPlusDeviceType, requestName, args)
 ```
 
 ### request(antDeviceNumber, requestName, args)
@@ -321,6 +331,7 @@ Returns a `Promise` object.
 **Arguments**
 
 - `antDeviceNumber` - `Integer` - the Ant device number.
+- `antPlusDeviceType` - `Integer` - the ANT+ Device Type.
 - `requestName` - `String` - Name of request.
 - `args` - `ReadableMap` - Arguments for the request.
 
@@ -328,10 +339,11 @@ Returns a `Promise` object.
 
 ```js
 const antDeviceNumber = 012345
+const antPlusDeviceType = AntPlusDeviceType.HEARTRATE
 const requestName = 'BasicMeasurement'
 const args = {}
 
-AntPlus.request(antDeviceNumber, requestName, args)
+AntPlus.request(antDeviceNumber, antPlusDeviceType, requestName, args)
 ```
 
 
