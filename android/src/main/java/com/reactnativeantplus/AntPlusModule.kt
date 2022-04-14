@@ -9,7 +9,7 @@ import kotlin.experimental.and
 
 class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val antPlusSearch = AntPlusSearch(context, this)
-  private val devices = mutableMapOf<Int, AntPlusDevice>()
+  private val devices = mutableMapOf<String, AntPlusDevice>()
 
   override fun getName(): String {
     return "AntPlusModule"
@@ -40,41 +40,50 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
     antPlusSearch.stopSearch(promise)
   }
 
+  fun createDeviceId(antDeviceNumber: Int, deviceTypeNumber: Int): String {
+    return "$antDeviceNumber $deviceTypeNumber"
+  }
+
   @ReactMethod
   fun connect(antDeviceNumber: Int, deviceTypeNumber: Int, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] != null && devices[antDeviceNumber]!!.isConnected) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+      if (devices[deviceId] != null && devices[deviceId]!!.isConnected) {
         throw Error("The device is already connected")
       }
 
-      devices[antDeviceNumber] = AntPlusDevice(context, this, antDeviceNumber, deviceTypeNumber)
-      devices[antDeviceNumber]?.connect(promise)
+      devices[deviceId] = AntPlusDevice(context, this, antDeviceNumber, deviceTypeNumber)
+      devices[deviceId]?.connect(promise)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
   }
 
   @ReactMethod
-  fun disconnect(antDeviceNumber: Int, promise: Promise) {
+  fun disconnect(antDeviceNumber: Int, deviceTypeNumber: Int, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null) {
         throw Error("Device not found")
       }
 
-      devices[antDeviceNumber]?.disconnect(promise)
-      devices.remove(antDeviceNumber)
+      devices[deviceId]?.disconnect(promise)
+      devices.remove(deviceId)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
   }
 
   @ReactMethod
-  fun subscribe(antDeviceNumber: Int, events: ReadableArray, isOnlyNewData: Boolean, promise: Promise) {
+  fun subscribe(antDeviceNumber: Int, deviceTypeNumber: Int, events: ReadableArray, isOnlyNewData: Boolean, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]?.isConnected!!) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null || !devices[deviceId]?.isConnected!!) {
         throw Error("Device not connected")
       }
-      devices[antDeviceNumber]?.subscribe(events, isOnlyNewData)
+      devices[deviceId]?.subscribe(events, isOnlyNewData)
       promise.resolve(true)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
@@ -82,12 +91,14 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
-  fun unsubscribe(antDeviceNumber: Int, events: ReadableArray, promise: Promise) {
+  fun unsubscribe(antDeviceNumber: Int, deviceTypeNumber: Int, events: ReadableArray, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]?.isConnected!!) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null || !devices[deviceId]?.isConnected!!) {
         throw Error("Device not connected")
       }
-      devices[antDeviceNumber]?.unsubscribe(events)
+      devices[deviceId]?.unsubscribe(events)
       promise.resolve(true)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
@@ -95,44 +106,55 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
   }
 
   @ReactMethod
-  fun setVariables(antDeviceNumber: Int, variables: ReadableMap, promise: Promise) {
+  fun setVariables(antDeviceNumber: Int, deviceTypeNumber: Int, variables: ReadableMap, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
         throw Error("Device not connected")
       }
-      devices[antDeviceNumber]?.setVariables(variables, promise)
+
+      devices[deviceId]?.setVariables(variables, promise)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
   }
 
   @ReactMethod
-  fun getVariables(antDeviceNumber: Int, variables: ReadableMap, promise: Promise) {
+  fun getVariables(antDeviceNumber: Int, deviceTypeNumber: Int, variables: ReadableMap, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
         throw Error("Device not connected")
       }
-      devices[antDeviceNumber]?.getVariables(variables, promise)
+
+      devices[deviceId]?.getVariables(variables, promise)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
   }
 
   @ReactMethod
-  fun request(antDeviceNumber: Int, requestName: String, args: ReadableMap, promise: Promise) {
+  fun request(antDeviceNumber: Int, deviceTypeNumber: Int, requestName: String, args: ReadableMap, promise: Promise) {
     try {
-      if (devices[antDeviceNumber] == null || !devices[antDeviceNumber]!!.isConnected) {
+      val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+      if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
         throw Error("Device not connected")
       }
-      devices[antDeviceNumber]?.request(requestName, args, promise)
+
+      devices[deviceId]?.request(requestName, args, promise)
     } catch (throwable: Throwable) {
       promise.reject(throwable)
     }
   }
 
   @ReactMethod
-  fun isConnected(antDeviceNumber: Int, promise: Promise) {
-    promise.resolve(devices[antDeviceNumber]?.isConnected)
+  fun isConnected(antDeviceNumber: Int, deviceTypeNumber: Int, promise: Promise) {
+    val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
+
+    promise.resolve(devices[deviceId]?.isConnected)
   }
 
   @ReactMethod
