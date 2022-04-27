@@ -1055,11 +1055,11 @@ class AntPlus {
   }
 
   static addListener<T extends AntPlusEvents>(event: T['event'], listener: (...args: any[]) => any) {
-    AntPlusEmitter?.addListener(event, listener)
+    return AntPlusEmitter?.addListener(event, listener)
   }
 
   static removeListener<T extends AntPlusEvents>(event: T['event'], listener: (...args: any[]) => any) {
-    AntPlusEmitter?.removeListener(event, listener)
+    return AntPlusEmitter?.removeListener(event, listener)
   }
 }
 
