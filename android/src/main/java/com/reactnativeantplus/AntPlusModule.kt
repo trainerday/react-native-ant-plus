@@ -81,7 +81,7 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
       val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
 
       if (devices[deviceId] == null || !devices[deviceId]?.isConnected!!) {
-        throw Error("Device not connected")
+        throw Error("Device is not connected")
       }
       devices[deviceId]?.subscribe(events, isOnlyNewData)
       promise.resolve(true)
@@ -96,7 +96,7 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
       val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
 
       if (devices[deviceId] == null || !devices[deviceId]?.isConnected!!) {
-        throw Error("Device not connected")
+        throw Error("Device is not connected")
       }
       devices[deviceId]?.unsubscribe(events)
       promise.resolve(true)
@@ -111,7 +111,7 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
       val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
 
       if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
-        throw Error("Device not connected")
+        throw Error("Device is not connected")
       }
 
       devices[deviceId]?.setVariables(variables, promise)
@@ -126,7 +126,7 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
       val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
 
       if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
-        throw Error("Device not connected")
+        throw Error("Device is not connected")
       }
 
       devices[deviceId]?.getVariables(variables, promise)
@@ -141,7 +141,7 @@ class AntPlusModule(val context: ReactApplicationContext) : ReactContextBaseJava
       val deviceId = createDeviceId(antDeviceNumber, deviceTypeNumber)
 
       if (devices[deviceId] == null || !devices[deviceId]!!.isConnected) {
-        throw Error("Device not connected")
+        throw Error("Device is not connected")
       }
 
       devices[deviceId]?.request(requestName, args, promise)
