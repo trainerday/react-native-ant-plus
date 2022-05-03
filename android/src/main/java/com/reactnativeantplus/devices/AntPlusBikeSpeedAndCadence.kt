@@ -579,6 +579,11 @@ class AntPlusBikeSpeedAndCadence(
     if (releaseHandle != null) {
       releaseHandle!!.close()
     }
+
+    if (releaseHandleSpeedDistance != null) {
+      releaseHandleSpeedDistance!!.close()
+    }
+
     bikeCadence = null
     bikeSpeedDistance = null
   }
