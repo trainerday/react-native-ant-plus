@@ -1,6 +1,6 @@
-import React, {FC, useEffect, useState} from 'react'
-import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
-import AntPlus, {AntPlusDevice, AntPlusDeviceType, AntPlusFitnessEquipmentRequest} from 'react-native-ant-plus'
+import React, { FC, useEffect, useState } from 'react'
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import AntPlus, { AntPlusDevice, AntPlusDeviceType, AntPlusFitnessEquipmentRequest } from 'react-native-ant-plus'
 import connect from './functions/connect'
 import disconnect from './functions/disconnect'
 
@@ -93,24 +93,24 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#efefef',
     paddingHorizontal: 10,
-    marginBottom: 5,
+    marginBottom: 5
   },
   main: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   controls: {
     justifyContent: 'space-around',
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   button: {
     borderWidth: 1,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
-  },
+    width: 100
+  }
 })
 
 export default Device
