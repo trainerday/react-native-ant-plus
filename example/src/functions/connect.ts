@@ -1,16 +1,17 @@
 import AntPlus, {
   AntPlusBikeCadenceEvent,
-  AntPlusBikePowerEvent, AntPlusDevice,
+  AntPlusBikePowerEvent,
+  AntPlusDevice,
   AntPlusDeviceType,
   AntPlusFitnessEquipmentEvent,
   AntPlusHeartRateEvent,
-  AntPlusSpeedDistanceEvent,
+  AntPlusSpeedDistanceEvent
 } from 'react-native-ant-plus'
 
 export default async (device: AntPlusDevice) => {
   let isConnected = false
   try {
-    isConnected = await AntPlus.isConnected(device.antDeviceNumber, device.antPlusDeviceType) || false
+    isConnected = (await AntPlus.isConnected(device.antDeviceNumber, device.antPlusDeviceType)) || false
     if (!isConnected) {
       const result = await AntPlus.connect(device.antDeviceNumber, device.antPlusDeviceType)
       isConnected = result.connected
@@ -19,10 +20,10 @@ export default async (device: AntPlusDevice) => {
 
     switch (device.antPlusDeviceType) {
       case AntPlusDeviceType.BIKE_CADENCE:
-        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType,[AntPlusBikeCadenceEvent.CalculatedCadence], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType, [AntPlusBikeCadenceEvent.CalculatedCadence], true)
         break
       case AntPlusDeviceType.BIKE_POWER:
-        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType,[AntPlusBikePowerEvent.CalculatedPower], true)
+        AntPlus.subscribe(device.antDeviceNumber, device.antPlusDeviceType, [AntPlusBikePowerEvent.CalculatedPower], true)
         break
       case AntPlusDeviceType.FITNESS_EQUIPMENT:
         AntPlus.subscribe(

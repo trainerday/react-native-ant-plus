@@ -8,14 +8,16 @@ import AntPlus, {
   AntPlusDeviceType,
   AntPlusEvent,
   AntPlusFitnessEquipmentEvent,
-  AntPlusHeartRateEvent, AntPlusSpeedDistanceEvent,
+  AntPlusHeartRateEvent,
+  AntPlusSpeedDistanceEvent,
   BikeCadenceEventArguments,
   BikePowerEventArguments,
   DevicesStateChangeArguments,
   FitnessEquipmentEventArguments,
   HeartRateEventArguments,
   RssiArguments,
-  SearchStatusArguments, SpeedDistanceEventArguments,
+  SearchStatusArguments,
+  SpeedDistanceEventArguments
 } from 'react-native-ant-plus'
 import Device from './Device'
 
@@ -37,7 +39,7 @@ export default function App() {
           AntPlusDeviceType.BIKE_CADENCE,
           AntPlusDeviceType.BIKE_POWER,
           AntPlusDeviceType.FITNESS_EQUIPMENT,
-          AntPlusDeviceType.BIKE_SPD,
+          AntPlusDeviceType.BIKE_SPD
         ],
         searchSeconds,
         true
@@ -158,23 +160,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   devices: {
-    width: '100%',
+    width: '100%'
   },
   box: {
     width: 60,
     height: 60,
-    marginVertical: 20,
+    marginVertical: 20
   },
   device: {
-    alignItems: 'center',
+    alignItems: 'center'
   },
   controls: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   button: {
-    marginHorizontal: 2,
-  },
+    marginHorizontal: 2
+  }
 })
