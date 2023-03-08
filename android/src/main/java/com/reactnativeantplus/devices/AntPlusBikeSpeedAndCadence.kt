@@ -569,7 +569,7 @@ class AntPlusBikeSpeedAndCadence(
       status.putInt("antDeviceNumber", antDeviceNumber)
 
       if (resultCode === RequestAccessResult.SUCCESS) {
-        bikeCadence = result
+        bikeSpeedDistance = result
         status.putBoolean("connected", true)
         status.putString("name", result.deviceName)
       }
