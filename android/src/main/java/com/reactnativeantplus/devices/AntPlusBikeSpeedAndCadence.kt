@@ -545,16 +545,6 @@ class AntPlusBikeSpeedAndCadence(
         status.putString("name", result.deviceName)
       }
 
-      connectPromise.resolve(status)
-    }
-
-  private var resultReceiverSpeedDistance =
-    IPluginAccessResultReceiver<AntPlusBikeSpeedDistancePcc> { result, resultCode, initialDeviceState ->
-      val status = Arguments.createMap()
-      status.putString("state", initialDeviceState.toString())
-      status.putString("code", resultCode.toString())
-      status.putInt("antDeviceNumber", antDeviceNumber)
-
       if (isSpdCadCombinedSensor) {
         runOnUiThread(Runnable {
           releaseHandleSpeedDistance = AntPlusBikeSpeedDistancePcc.requestAccess(
@@ -569,6 +559,22 @@ class AntPlusBikeSpeedAndCadence(
       } else {
         connectPromise.resolve(status)
       }
+    }
+
+  private var resultReceiverSpeedDistance =
+    IPluginAccessResultReceiver<AntPlusBikeSpeedDistancePcc> { result, resultCode, initialDeviceState ->
+      val status = Arguments.createMap()
+      status.putString("state", initialDeviceState.toString())
+      status.putString("code", resultCode.toString())
+      status.putInt("antDeviceNumber", antDeviceNumber)
+
+      if (resultCode === RequestAccessResult.SUCCESS) {
+        bikeCadence = result
+        status.putBoolean("connected", true)
+        status.putString("name", result.deviceName)
+      }
+
+      connectPromise.resolve(status)
     }
 
   fun disconnect(promise: Promise) {
