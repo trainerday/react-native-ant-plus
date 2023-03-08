@@ -33,9 +33,7 @@ class AntPlusSearch(val context: ReactApplicationContext, val antPlus: AntPlusMo
       device.putBoolean("isPreferredDevice", deviceFound.isPreferredDevice)
       device.putBoolean("isUserRecognizedDevice", deviceFound.isUserRecognizedDevice)
 
-      if (devicesRssi[deviceFound.resultID] != null) {
-        devicesRssi[deviceFound.resultID]?.let { device.putInt("rssi", it) }
-      }
+      devicesRssi[deviceFound.resultID]?.let { device.putInt("rssi", it) }
 
       antPlus.sendEvent(AntPlusEvent.foundDevice, device)
     }
