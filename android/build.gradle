@@ -127,6 +127,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation files('antplugin/fit_21.18.jar')
   implementation files('antplugin/antpluginlib_3-8-0.aar')
 }

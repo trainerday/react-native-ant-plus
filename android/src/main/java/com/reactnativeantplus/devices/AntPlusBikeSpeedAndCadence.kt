@@ -19,6 +19,7 @@ import com.dsi.ant.plugins.antplus.pcc.defines.RequestAccessResult
 import com.dsi.ant.plugins.antplus.pccbase.AntPluginPcc.IPluginAccessResultReceiver
 import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle
 import com.facebook.react.bridge.*
+import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import java.lang.Error
 import java.math.BigDecimal
 import java.util.*
@@ -48,7 +49,7 @@ class AntPlusBikeSpeedAndCadence(
 
     isSpdCadCombinedSensor = deviceType == DeviceType.BIKE_SPDCAD
 
-    if (isSpdCadCombinedSensor || deviceType == DeviceType.BIKE_CADENCE) {
+    if (deviceType == DeviceType.BIKE_CADENCE || isSpdCadCombinedSensor) {
       releaseHandle = requestAccess(
         context,
         antDeviceNumber,
@@ -57,9 +58,7 @@ class AntPlusBikeSpeedAndCadence(
         resultReceiver,
         AntPlusPlugin.stateReceiver(antPlus, antDeviceNumber)
       )
-    }
-
-    if (isSpdCadCombinedSensor || deviceType == DeviceType.BIKE_SPD) {
+    } else if (deviceType == DeviceType.BIKE_SPD || isSpdCadCombinedSensor) {
       releaseHandleSpeedDistance = AntPlusBikeSpeedDistancePcc.requestAccess(
         context,
         antDeviceNumber,
@@ -556,14 +555,20 @@ class AntPlusBikeSpeedAndCadence(
       status.putString("code", resultCode.toString())
       status.putInt("antDeviceNumber", antDeviceNumber)
 
-      if (resultCode === RequestAccessResult.SUCCESS) {
-        bikeSpeedDistance = result
-        status.putBoolean("connected", true)
-        status.putString("name", result.deviceName)
+      if (isSpdCadCombinedSensor) {
+        runOnUiThread(Runnable {
+          releaseHandleSpeedDistance = AntPlusBikeSpeedDistancePcc.requestAccess(
+            context,
+            antDeviceNumber,
+            0,
+            isSpdCadCombinedSensor,
+            resultReceiverSpeedDistance,
+            AntPlusPlugin.stateReceiver(antPlus, antDeviceNumber)
+          )
+        })
       } else {
-        status.putBoolean("connected", false)
+        connectPromise.resolve(status)
       }
-      connectPromise.resolve(status)
     }
 
   fun disconnect(promise: Promise) {
